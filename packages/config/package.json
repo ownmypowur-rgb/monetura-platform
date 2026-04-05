@@ -1,0 +1,14 @@
+{
+  "name": "@monetura/config",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./tailwind.config.ts",
+  "types": "./tailwind.config.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tailwindcss": "^3.4.0"
+  }
+}

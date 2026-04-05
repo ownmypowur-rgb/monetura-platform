@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --monetura-charcoal: #2C2420;
+    --monetura-champagne: #D4A853;
+    --monetura-cream: #FBF5ED;
+    --monetura-mocha: #4A3728;
+    --monetura-terracotta: #C17A4A;
+    --monetura-earth: #8B6E52;
+    --monetura-sand: #E8DCCB;
+    --monetura-sunset: #C4973D;
+  }
+
+  body {
+    @apply bg-monetura-cream text-monetura-charcoal font-garet;
+  }
+}
