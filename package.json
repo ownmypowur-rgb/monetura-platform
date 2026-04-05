@@ -19,6 +19,7 @@
     "drizzle-orm": "^0.31.0",
     "mysql2": "^3.9.0"
   },
+  "_comment": "Monetura monorepo — see CLAUDE.md for project standards",
   "workspaces": [
     "apps/*",
     "packages/*"
