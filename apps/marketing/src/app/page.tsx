@@ -2,6 +2,7 @@ import HeroSection from "@/components/home/HeroSection";
 import StorySection from "@/components/home/StorySection";
 import ProblemSection from "@/components/home/ProblemSection";
 import SolutionSection from "@/components/home/SolutionSection";
+import PlatformSection from "@/components/home/PlatformSection";
 import OfferSection from "@/components/home/OfferSection";
 import TiersSection from "@/components/home/TiersSection";
 import UrgencySection from "@/components/home/UrgencySection";
@@ -14,6 +15,7 @@ export default function HomePage() {
       <StorySection />
       <ProblemSection />
       <SolutionSection />
+      <PlatformSection />
       <OfferSection />
       <TiersSection />
       <UrgencySection />
