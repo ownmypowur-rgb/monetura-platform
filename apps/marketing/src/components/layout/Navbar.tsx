@@ -1,131 +1,120 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
+const links = [
+  { href: "/story", label: "Our Story" },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/founders", label: "Founders" },
+];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const onResize = () => {
+      if (window.innerWidth >= 768) {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [menuOpen]);
+
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-monetura-charcoal/95 backdrop-blur-sm border-b border-monetura-sand/10"
-          : "bg-transparent"
+          ? "border-b border-monetura-sand/10 bg-monetura-charcoal/86 backdrop-blur-xl"
+          : "bg-gradient-to-b from-monetura-charcoal/60 to-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
-        {/* Logo */}
+      <div className="page-shell flex h-20 items-center justify-between gap-6">
         <Link
           href="/"
-          className="text-monetura-champagne font-garet font-bold text-xl tracking-[0.15em] uppercase hover:opacity-80 transition-opacity"
+          className="text-[0.95rem] uppercase tracking-[0.45em] text-monetura-champagne transition-opacity duration-300 hover:opacity-80 sm:text-[1rem]"
         >
           Monetura
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-10">
-          <NavLink href="/story">Our Story</NavLink>
-          <NavLink href="/how-it-works">How It Works</NavLink>
-          <NavLink href="/founders">Founders</NavLink>
-          <Link
-            href="/founders/apply"
-            className="btn-champagne text-xs py-3 px-8"
-          >
+        <div className="hidden items-center gap-10 md:flex">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-[11px] uppercase tracking-[0.34em] text-monetura-cream/72 transition-colors duration-300 hover:text-monetura-champagne"
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Link href="/founders/apply" className="btn-primary px-6 py-3 text-[10px]">
             Apply Now
           </Link>
         </div>
 
-        {/* Mobile hamburger */}
         <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
-          onClick={() => setMenuOpen(!menuOpen)}
+          type="button"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-monetura-sand/15 bg-monetura-charcoal/25 md:hidden"
+          onClick={() => setMenuOpen((value) => !value)}
           aria-label="Toggle menu"
+          aria-expanded={menuOpen}
         >
-          <span
-            className={`block w-6 h-px bg-monetura-cream transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2.5" : ""}`}
-          />
-          <span
-            className={`block w-6 h-px bg-monetura-cream transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`}
-          />
-          <span
-            className={`block w-6 h-px bg-monetura-cream transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2.5" : ""}`}
-          />
+          <span className="relative block h-4 w-5">
+            <span
+              className={`absolute left-0 top-0 block h-px w-5 bg-monetura-cream transition-all duration-300 ${
+                menuOpen ? "translate-y-[7px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`absolute left-0 top-[7px] block h-px w-5 bg-monetura-cream transition-all duration-300 ${
+                menuOpen ? "opacity-0" : ""
+              }`}
+            />
+            <span
+              className={`absolute left-0 top-[14px] block h-px w-5 bg-monetura-cream transition-all duration-300 ${
+                menuOpen ? "-translate-y-[7px] -rotate-45" : ""
+              }`}
+            />
+          </span>
         </button>
       </div>
 
-      {/* Mobile Menu */}
       <div
-        className={`md:hidden transition-all duration-300 overflow-hidden ${
-          menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
-        } bg-monetura-charcoal border-t border-monetura-sand/10`}
+        className={`overflow-hidden border-t border-monetura-sand/10 bg-monetura-charcoal/96 backdrop-blur-xl transition-all duration-500 md:hidden ${
+          menuOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0"
+        }`}
       >
-        <div className="px-6 py-8 flex flex-col gap-6">
-          <MobileNavLink href="/story" onClick={() => setMenuOpen(false)}>
-            Our Story
-          </MobileNavLink>
-          <MobileNavLink
-            href="/how-it-works"
-            onClick={() => setMenuOpen(false)}
-          >
-            How It Works
-          </MobileNavLink>
-          <MobileNavLink href="/founders" onClick={() => setMenuOpen(false)}>
-            Founders
-          </MobileNavLink>
+        <div className="page-shell flex flex-col gap-6 py-8">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className="text-sm uppercase tracking-[0.3em] text-monetura-cream/78 transition-colors duration-300 hover:text-monetura-champagne"
+            >
+              {link.label}
+            </Link>
+          ))}
           <Link
             href="/founders/apply"
             onClick={() => setMenuOpen(false)}
-            className="btn-champagne text-center"
+            className="btn-primary mt-2 w-full"
           >
-            Apply Now
+            Apply for Founder Access
           </Link>
         </div>
       </div>
     </nav>
-  );
-}
-
-function NavLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="text-monetura-cream/70 hover:text-monetura-cream text-xs tracking-[0.15em] uppercase transition-colors duration-200 font-garet"
-    >
-      {children}
-    </Link>
-  );
-}
-
-function MobileNavLink({
-  href,
-  onClick,
-  children,
-}: {
-  href: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className="text-monetura-cream/70 hover:text-monetura-champagne text-sm tracking-[0.15em] uppercase transition-colors duration-200"
-    >
-      {children}
-    </Link>
   );
 }

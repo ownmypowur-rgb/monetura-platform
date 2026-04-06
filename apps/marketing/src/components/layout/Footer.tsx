@@ -1,78 +1,72 @@
 import Link from "next/link";
 
+const links = [
+  { href: "/story", label: "Our Story" },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/founders", label: "Founders Club" },
+  { href: "/founders/apply", label: "Apply for Access" },
+];
+
 export default function Footer() {
   return (
-    <footer className="bg-monetura-charcoal border-t border-monetura-sand/10">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-20">
-        {/* Top */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
-          {/* Brand */}
-          <div className="md:col-span-1">
-            <p className="text-monetura-champagne font-garet font-bold text-xl tracking-[0.15em] uppercase mb-4">
+    <footer className="border-t border-monetura-sand/10 bg-monetura-charcoal">
+      <div className="page-shell py-16 sm:py-20 lg:py-24">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_0.7fr_0.8fr] lg:gap-16">
+          <div>
+            <p className="text-[0.95rem] uppercase tracking-[0.45em] text-monetura-champagne sm:text-[1rem]">
               Monetura
             </p>
-            <p className="text-monetura-cream/50 text-sm leading-relaxed max-w-xs">
-              Passion becomes creation.
-              <br />
-              Creation becomes freedom.
-              <br />
-              <span className="text-monetura-cream/25 text-xs">
-                Canada&rsquo;s AI-powered travel creator platform.
-              </span>
+            <p className="mt-6 max-w-md text-[1.15rem] leading-8 tracking-[0.06em] text-monetura-cream sm:text-[1.35rem] sm:leading-9">
+              Passion becomes creation. Creation becomes freedom.
+            </p>
+            <p className="mt-5 max-w-lg text-sm leading-7 text-monetura-cream/56">
+              A premium travel creator platform for founders who want their
+              experiences to become content, community, and income.
             </p>
           </div>
 
-          {/* Navigation */}
           <div>
-            <p className="section-label mb-6">Navigate</p>
-            <ul className="space-y-4">
-              {[
-                { href: "/story", label: "Our Story" },
-                { href: "/how-it-works", label: "How It Works" },
-                { href: "/founders", label: "Founders" },
-                { href: "/founders/apply", label: "Apply for Access" },
-              ].map(({ href, label }) => (
-                <li key={href}>
+            <p className="text-[11px] uppercase tracking-[0.38em] text-monetura-champagne">
+              Navigate
+            </p>
+            <ul className="mt-6 space-y-4">
+              {links.map((link) => (
+                <li key={link.href}>
                   <Link
-                    href={href}
-                    className="text-monetura-cream/50 hover:text-monetura-cream text-sm tracking-wide transition-colors duration-200"
+                    href={link.href}
+                    className="text-sm uppercase tracking-[0.24em] text-monetura-cream/64 transition-colors duration-300 hover:text-monetura-champagne"
                   >
-                    {label}
+                    {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
-            <p className="section-label mb-6">Connect</p>
-            <ul className="space-y-4">
-              <li>
-                <a
-                  href="mailto:founders@monetura.com"
-                  className="text-monetura-cream/50 hover:text-monetura-champagne text-sm tracking-wide transition-colors duration-200"
-                >
-                  founders@monetura.com
-                </a>
-              </li>
-              <li>
-                <p className="text-monetura-cream/30 text-sm">
-                  Canada — By invitation only
-                </p>
-              </li>
-            </ul>
+            <p className="text-[11px] uppercase tracking-[0.38em] text-monetura-champagne">
+              Contact
+            </p>
+            <div className="mt-6 space-y-4">
+              <a
+                href="mailto:founders@monetura.com"
+                className="block text-sm uppercase tracking-[0.2em] text-monetura-cream/64 transition-colors duration-300 hover:text-monetura-champagne"
+              >
+                founders@monetura.com
+              </a>
+              <p className="text-sm leading-7 text-monetura-cream/46">
+                Canada only. Limited to 200 founders. Applications reviewed
+                personally.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-monetura-sand/10 pt-10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-monetura-cream/25 text-xs tracking-[0.1em] uppercase">
-            &copy; {new Date().getFullYear()} Monetura. All rights reserved.
-          </p>
-          <p className="text-monetura-cream/25 text-xs tracking-[0.1em] uppercase">
-            200 Founders &mdash; Canada Only &mdash; Lifetime Access
-          </p>
+        <div className="mt-12 h-px w-full bg-[linear-gradient(90deg,transparent_0%,rgba(212,168,83,0.4)_50%,transparent_100%)] sm:mt-16" />
+
+        <div className="mt-8 flex flex-col gap-3 text-[11px] uppercase tracking-[0.28em] text-monetura-cream/34 sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; {new Date().getFullYear()} Monetura. All rights reserved.</p>
+          <p>200 founders — Canada only — lifetime access</p>
         </div>
       </div>
     </footer>

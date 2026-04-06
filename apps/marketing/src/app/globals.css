@@ -1,9 +1,8 @@
+@import url("https://fonts.cdnfonts.com/css/garet");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* TODO: Replace with Garet font when files are available */
-/* @font-face blocks for Garet-Book.woff2 and Garet-Heavy.woff2 removed until font files exist */
 
 @layer base {
   :root {
@@ -15,56 +14,163 @@
     --monetura-earth: #8b6e52;
     --monetura-sand: #e8dccb;
     --monetura-sunset: #c4973d;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    /* TODO: Replace with Garet font when files are available */
-    @apply bg-monetura-charcoal text-monetura-cream antialiased;
-    font-family: var(--font-body);
-  }
-
-  ::selection {
-    background-color: #d4a85333;
-    color: #d4a853;
+    --font-garet: "Garet", "Avenir Next", "Segoe UI", sans-serif;
   }
 
   * {
     box-sizing: border-box;
   }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--monetura-charcoal);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top, rgba(212, 168, 83, 0.1), transparent 28%),
+      linear-gradient(180deg, rgba(44, 36, 32, 1) 0%, rgba(51, 40, 35, 1) 35%, rgba(44, 36, 32, 1) 100%);
+    color: var(--monetura-cream);
+    font-family: var(--font-garet);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  ::selection {
+    background: rgba(212, 168, 83, 0.24);
+    color: var(--monetura-cream);
+  }
 }
 
 @layer components {
-  .btn-champagne {
-    /* TODO: Replace with Garet font when files are available */
-    @apply inline-block border border-monetura-champagne text-monetura-champagne px-10 py-4 text-sm tracking-[0.2em] uppercase transition-all duration-300;
-    font-family: var(--font-body);
+  .page-shell {
+    @apply mx-auto w-full max-w-[1440px] px-5 sm:px-6 lg:px-10;
   }
 
-  .btn-champagne:hover {
-    @apply bg-monetura-champagne text-monetura-charcoal;
+  .section-padding {
+    @apply py-20 sm:py-24 lg:py-32;
   }
 
-  .btn-cream {
-    /* TODO: Replace with Garet font when files are available */
-    @apply inline-block border border-monetura-cream text-monetura-cream px-10 py-4 text-sm tracking-[0.2em] uppercase transition-all duration-300;
-    font-family: var(--font-body);
+  .editorial-label {
+    @apply mb-5 inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.42em] text-monetura-champagne;
+    font-family: var(--font-garet);
   }
 
-  .btn-cream:hover {
-    @apply bg-monetura-cream text-monetura-charcoal;
+  .editorial-label::before {
+    content: "";
+    width: 2.75rem;
+    height: 1px;
+    background: rgba(212, 168, 83, 0.55);
   }
 
-  .section-label {
-    /* TODO: Replace with Garet font when files are available */
-    @apply text-monetura-champagne text-xs tracking-[0.3em] uppercase mb-6;
-    font-family: var(--font-body);
+  .lux-heading {
+    font-family: var(--font-garet);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    line-height: 1.02;
   }
 
-  .gold-divider {
-    @apply w-12 h-px bg-monetura-champagne mx-auto my-8;
+  .lux-heading-tight {
+    font-family: var(--font-garet);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    line-height: 1.08;
+  }
+
+  .lux-body {
+    @apply text-[15px] leading-7 sm:text-base sm:leading-8;
+  }
+
+  .lux-panel {
+    border: 1px solid rgba(232, 220, 203, 0.14);
+    background: linear-gradient(180deg, rgba(82, 64, 49, 0.34) 0%, rgba(44, 36, 32, 0.78) 100%);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(10px);
+  }
+
+  .lux-cream-panel {
+    border: 1px solid rgba(139, 110, 82, 0.18);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(251, 245, 237, 0.94) 100%);
+    box-shadow: 0 24px 60px rgba(74, 55, 40, 0.08);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg px-6 py-4 text-[11px] uppercase tracking-[0.34em] transition-all duration-300 sm:px-8;
+    background: var(--monetura-champagne);
+    color: var(--monetura-charcoal);
+    border: 1px solid rgba(212, 168, 83, 0.75);
+    font-family: var(--font-garet);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    background: #dfb662;
+    box-shadow: 0 12px 30px rgba(212, 168, 83, 0.24);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg px-6 py-4 text-[11px] uppercase tracking-[0.34em] transition-all duration-300 sm:px-8;
+    border: 1px solid rgba(212, 168, 83, 0.6);
+    color: var(--monetura-champagne);
+    background: transparent;
+    font-family: var(--font-garet);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(212, 168, 83, 0.08);
+    border-color: rgba(212, 168, 83, 0.9);
+  }
+
+  .image-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(232, 220, 203, 0.12);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
+  }
+
+  .image-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 10%, rgba(44, 36, 32, 0.24) 100%);
+    pointer-events: none;
+  }
+
+  .hairline {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, transparent 0%, rgba(212, 168, 83, 0.55) 48%, transparent 100%);
+  }
+
+  .card-grid-border {
+    border-top: 1px solid rgba(232, 220, 203, 0.12);
+    border-left: 1px solid rgba(232, 220, 203, 0.12);
+  }
+
+  .card-grid-border > * {
+    border-right: 1px solid rgba(232, 220, 203, 0.12);
+    border-bottom: 1px solid rgba(232, 220, 203, 0.12);
+  }
+
+  .cream-grid-border {
+    border-top: 1px solid rgba(139, 110, 82, 0.18);
+    border-left: 1px solid rgba(139, 110, 82, 0.18);
+  }
+
+  .cream-grid-border > * {
+    border-right: 1px solid rgba(139, 110, 82, 0.18);
+    border-bottom: 1px solid rgba(139, 110, 82, 0.18);
   }
 }
