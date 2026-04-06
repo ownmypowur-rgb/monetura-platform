@@ -2,21 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: "Garet";
-  src: url("/fonts/Garet-Book.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Garet";
-  src: url("/fonts/Garet-Heavy.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+/* TODO: Replace with Garet font when files are available */
+/* @font-face blocks for Garet-Book.woff2 and Garet-Heavy.woff2 removed until font files exist */
 
 @layer base {
   :root {
@@ -35,7 +22,9 @@
   }
 
   body {
-    @apply bg-monetura-charcoal text-monetura-cream font-garet antialiased;
+    /* TODO: Replace with Garet font when files are available */
+    @apply bg-monetura-charcoal text-monetura-cream antialiased;
+    font-family: var(--font-body);
   }
 
   ::selection {
@@ -50,7 +39,9 @@
 
 @layer components {
   .btn-champagne {
-    @apply inline-block border border-monetura-champagne text-monetura-champagne px-10 py-4 text-sm tracking-[0.2em] uppercase font-garet transition-all duration-300;
+    /* TODO: Replace with Garet font when files are available */
+    @apply inline-block border border-monetura-champagne text-monetura-champagne px-10 py-4 text-sm tracking-[0.2em] uppercase transition-all duration-300;
+    font-family: var(--font-body);
   }
 
   .btn-champagne:hover {
@@ -58,7 +49,9 @@
   }
 
   .btn-cream {
-    @apply inline-block border border-monetura-cream text-monetura-cream px-10 py-4 text-sm tracking-[0.2em] uppercase font-garet transition-all duration-300;
+    /* TODO: Replace with Garet font when files are available */
+    @apply inline-block border border-monetura-cream text-monetura-cream px-10 py-4 text-sm tracking-[0.2em] uppercase transition-all duration-300;
+    font-family: var(--font-body);
   }
 
   .btn-cream:hover {
@@ -66,7 +59,9 @@
   }
 
   .section-label {
-    @apply text-monetura-champagne text-xs tracking-[0.3em] uppercase font-garet mb-6;
+    /* TODO: Replace with Garet font when files are available */
+    @apply text-monetura-champagne text-xs tracking-[0.3em] uppercase mb-6;
+    font-family: var(--font-body);
   }
 
   .gold-divider {

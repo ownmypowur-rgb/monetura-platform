@@ -14,7 +14,9 @@ const moneturaConfig: Omit<Config, "content"> = {
         "monetura-sunset": "#C4973D",
       },
       fontFamily: {
-        garet: ["Garet", "sans-serif"],
+        // TODO: Replace with Garet font when files are available
+        // font-garet maps to --font-heading (Cormorant Garamond) as temporary fallback
+        garet: ["var(--font-heading)", "Georgia", "serif"],
       },
     },
   },
