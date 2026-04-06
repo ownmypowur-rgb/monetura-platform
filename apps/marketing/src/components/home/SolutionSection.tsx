@@ -1,23 +1,18 @@
 const steps = [
   {
     number: "01",
-    title: "Apply for founder access",
-    body: "Complete a short application. We review every submission personally. This isn't a checkout page — it's a conversation.",
+    title: "Book and go",
+    body: "Access exclusive member travel rates through our partner network. Hotels, flights, and experiences at prices the public can't touch.",
   },
   {
     number: "02",
-    title: "Choose your founder tier",
-    body: "Select Explorer, Trailblazer, or Luminary based on where you are and how deep you want to go. Each tier is lifetime access.",
+    title: "Capture and create",
+    body: "Take photos. Write one sentence of notes. Monetura's AI turns your raw experience into a full blog post, Instagram caption, LinkedIn post, TikTok caption, and hashtags — in seconds.",
   },
   {
     number: "03",
-    title: "Join the inner circle",
-    body: "Access the platform, the community, the events, and the network. Real relationships. Real conversations. Real access.",
-  },
-  {
-    number: "04",
-    title: "Grow with founders who get it",
-    body: "Monthly sessions, curated introductions, and a private community of operators who are building at the same level as you.",
+    title: "Publish and earn",
+    body: "Your content goes out to all your social platforms simultaneously — with your unique affiliate link embedded in every post. When someone joins Monetura through your content, you earn. Three active referrals and your membership pays for itself.",
   },
 ];
 
@@ -32,22 +27,20 @@ export default function SolutionSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start mb-20">
           <h2 className="font-garet font-bold text-3xl md:text-4xl lg:text-5xl text-monetura-cream leading-[1.15]">
-            Four steps into
+            Three steps from
             <br />
-            a different calibre
-            <br />
-            <span className="text-monetura-champagne">of company.</span>
+            <span className="text-monetura-champagne">trip to income.</span>
           </h2>
           <p className="text-monetura-cream/50 text-base md:text-lg leading-relaxed lg:pt-4">
-            Monetura isn&rsquo;t open to everyone. That&rsquo;s the point. We
-            curate for alignment — founders who are building serious things and
-            who are serious about community.
+            No content experience required. No existing audience needed. Just
+            your experiences, Monetura&rsquo;s AI, and a few minutes after each
+            trip.
           </p>
         </div>
 
         {/* Steps */}
         <div className="space-y-px">
-          {steps.map(({ number, title, body }, i) => (
+          {steps.map(({ number, title, body }) => (
             <div
               key={number}
               className="group grid grid-cols-1 md:grid-cols-[80px_1fr_1fr] gap-6 md:gap-12 items-start py-10 border-t border-monetura-sand/10 hover:border-monetura-champagne/20 transition-colors duration-300"
@@ -67,7 +60,7 @@ export default function SolutionSection() {
 
         <div className="mt-16 border-t border-monetura-sand/10 pt-16 text-center">
           <a href="/founders/apply" className="btn-champagne">
-            Begin Your Application
+            Apply for Founder Access
           </a>
         </div>
       </div>

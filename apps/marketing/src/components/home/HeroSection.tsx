@@ -13,7 +13,7 @@ export default function HeroSection() {
         <source src="/videos/hero.mp4" type="video/mp4" />
       </video>
 
-      {/* Gradient overlay — charcoal dark at edges, slightly lighter center */}
+      {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-monetura-charcoal/80 via-monetura-charcoal/60 to-monetura-charcoal/90" />
       <div className="absolute inset-0 bg-monetura-charcoal/40" />
 
@@ -29,14 +29,16 @@ export default function HeroSection() {
 
         {/* Headline */}
         <h1 className="font-garet font-bold text-4xl md:text-6xl lg:text-7xl text-monetura-cream leading-[1.1] tracking-tight mb-8">
-          Where Passion Becomes
+          Passion becomes creation.
           <br />
-          <span className="text-monetura-champagne">Creation</span>
+          <span className="text-monetura-champagne">Creation becomes freedom.</span>
         </h1>
 
-        {/* Tagline */}
-        <p className="text-monetura-cream/60 text-base md:text-lg tracking-[0.15em] uppercase mb-16 font-garet">
-          Passion becomes creation. Creation becomes freedom.
+        {/* Subheadline */}
+        <p className="text-monetura-cream/60 text-base md:text-lg leading-relaxed mb-16 max-w-2xl mx-auto">
+          Monetura is the AI-powered platform that helps travellers turn every
+          trip into content, every post into income, and every experience into
+          something worth sharing.
         </p>
 
         {/* CTA */}

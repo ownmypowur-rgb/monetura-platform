@@ -15,6 +15,10 @@ export default function Footer() {
               Passion becomes creation.
               <br />
               Creation becomes freedom.
+              <br />
+              <span className="text-monetura-cream/25 text-xs">
+                Canada&rsquo;s AI-powered travel creator platform.
+              </span>
             </p>
           </div>
 

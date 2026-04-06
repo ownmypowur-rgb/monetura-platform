@@ -12,7 +12,7 @@ export default function UrgencySection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div>
             <p className="text-white/70 text-xs tracking-[0.3em] uppercase font-garet mb-4">
-              Founding Cohort
+              Founding Cohort — Canada Only
             </p>
             <h2 className="font-garet font-bold text-2xl md:text-3xl lg:text-4xl text-white leading-[1.2]">
               {spotsRemaining} of {totalSpots} founder
@@ -43,7 +43,7 @@ export default function UrgencySection() {
               href="/founders/apply"
               className="inline-block border border-white text-white text-xs tracking-[0.2em] uppercase font-garet px-10 py-4 hover:bg-white hover:text-monetura-terracotta transition-all duration-300"
             >
-              Secure Your Spot Now
+              Apply for Founder Access
             </a>
           </div>
         </div>

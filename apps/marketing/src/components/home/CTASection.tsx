@@ -14,14 +14,16 @@ export default function CTASection() {
         </p>
 
         <h2 className="font-garet font-bold text-3xl md:text-5xl lg:text-6xl text-monetura-cream leading-[1.1] mb-8">
-          The room is waiting.
+          Turn your next trip
           <br />
-          <span className="text-monetura-champagne">Are you ready?</span>
+          <span className="text-monetura-champagne">into something more.</span>
         </h2>
 
         <p className="text-monetura-cream/50 text-base md:text-lg leading-relaxed mb-14 max-w-xl mx-auto">
           200 founders. Canada only. One payment. Lifetime access. This is not
-          a course. This is not a mastermind. This is your people.
+          a course. This is not a mastermind. This is a platform, a business
+          model, and a community — built around the life you already want to
+          live.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">

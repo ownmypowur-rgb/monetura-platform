@@ -1,53 +1,53 @@
-export default function ProblemSection() {
-  const problems = [
-    {
-      number: "01",
-      title: "You're outgrowing your circle",
-      body: "Your friends want stability. You want scale. That gap gets lonelier every year.",
-    },
-    {
-      number: "02",
-      title: "Masterminds are watered-down",
-      body: "You've paid for rooms full of people at completely different stages. The signal-to-noise is brutal.",
-    },
-    {
-      number: "03",
-      title: "Information isn't your problem",
-      body: "You've consumed the courses. You know what to do. What you need is who to do it with.",
-    },
-    {
-      number: "04",
-      title: "Canada's network is invisible",
-      body: "The serious operators in this country don't post on LinkedIn. They're not in your city's \"entrepreneur\" Facebook group.",
-    },
-  ];
+const points = [
+  {
+    number: "01",
+    title: "You travel at least a few times a year — or you want to",
+    body: "You already have the experiences. You already have the photos. You just haven't had a reason to do anything with them beyond sharing them with friends.",
+  },
+  {
+    number: "02",
+    title: "You've thought about building something around your life",
+    body: "The idea of turning your travels into content — maybe even income — has crossed your mind. You just didn't know where to start or what platform made sense.",
+  },
+  {
+    number: "03",
+    title: "You're not trying to become a full-time influencer",
+    body: "You're not chasing fame. You want travel to mean more than it does right now. You want it to pay for itself. You want the experiences to add up to something.",
+  },
+  {
+    number: "04",
+    title: "You want a community of people who are doing the same thing",
+    body: "Not a Facebook group. Not a random Discord. A curated, serious community of people who are building a lifestyle around travel, content, and income.",
+  },
+];
 
+export default function ProblemSection() {
   return (
     <section className="bg-monetura-mocha py-32 lg:py-40">
       <div className="max-w-6xl mx-auto px-6 lg:px-12">
         {/* Section label */}
         <p className="text-monetura-champagne text-xs tracking-[0.3em] uppercase font-garet mb-12">
-          The Problem
+          Who This Is For
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-end mb-20">
           <h2 className="font-garet font-bold text-3xl md:text-4xl lg:text-5xl text-monetura-cream leading-[1.15]">
-            You&rsquo;ve built something real.
+            Built for people who
             <br />
             <span className="text-monetura-champagne">
-              The room hasn&rsquo;t caught up.
+              already love to travel.
             </span>
           </h2>
           <p className="text-monetura-cream/50 text-base md:text-lg leading-relaxed">
-            The networks built for founders in Canada are either too early-stage,
-            too expensive for what they deliver, or built around a personality
-            rather than a genuine community.
+            Monetura is not for everyone. It&rsquo;s for a specific kind of
+            person — someone who already has the experiences, already has the
+            stories, and just needs the right platform to make them count.
           </p>
         </div>
 
-        {/* Problem grid */}
+        {/* Points grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-monetura-sand/10">
-          {problems.map(({ number, title, body }) => (
+          {points.map(({ number, title, body }) => (
             <div
               key={number}
               className="bg-monetura-mocha p-10 lg:p-12 border border-monetura-sand/10 hover:border-monetura-champagne/20 transition-colors duration-300"
