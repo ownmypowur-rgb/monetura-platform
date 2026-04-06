@@ -2,19 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Garet";
+  src: url("/fonts/Garet-Book.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Garet";
+  src: url("/fonts/Garet-Heavy.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
-    --monetura-charcoal: #2C2420;
-    --monetura-champagne: #D4A853;
-    --monetura-cream: #FBF5ED;
-    --monetura-mocha: #4A3728;
-    --monetura-terracotta: #C17A4A;
-    --monetura-earth: #8B6E52;
-    --monetura-sand: #E8DCCB;
-    --monetura-sunset: #C4973D;
+    --monetura-charcoal: #2c2420;
+    --monetura-champagne: #d4a853;
+    --monetura-cream: #fbf5ed;
+    --monetura-mocha: #4a3728;
+    --monetura-terracotta: #c17a4a;
+    --monetura-earth: #8b6e52;
+    --monetura-sand: #e8dccb;
+    --monetura-sunset: #c4973d;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-monetura-cream text-monetura-charcoal font-garet;
+    @apply bg-monetura-charcoal text-monetura-cream font-garet antialiased;
+  }
+
+  ::selection {
+    background-color: #d4a85333;
+    color: #d4a853;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  .btn-champagne {
+    @apply inline-block border border-monetura-champagne text-monetura-champagne px-10 py-4 text-sm tracking-[0.2em] uppercase font-garet transition-all duration-300;
+  }
+
+  .btn-champagne:hover {
+    @apply bg-monetura-champagne text-monetura-charcoal;
+  }
+
+  .btn-cream {
+    @apply inline-block border border-monetura-cream text-monetura-cream px-10 py-4 text-sm tracking-[0.2em] uppercase font-garet transition-all duration-300;
+  }
+
+  .btn-cream:hover {
+    @apply bg-monetura-cream text-monetura-charcoal;
+  }
+
+  .section-label {
+    @apply text-monetura-champagne text-xs tracking-[0.3em] uppercase font-garet mb-6;
+  }
+
+  .gold-divider {
+    @apply w-12 h-px bg-monetura-champagne mx-auto my-8;
   }
 }

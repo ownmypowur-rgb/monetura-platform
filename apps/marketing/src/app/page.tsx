@@ -1,9 +1,23 @@
+import HeroSection from "@/components/home/HeroSection";
+import StorySection from "@/components/home/StorySection";
+import ProblemSection from "@/components/home/ProblemSection";
+import SolutionSection from "@/components/home/SolutionSection";
+import OfferSection from "@/components/home/OfferSection";
+import TiersSection from "@/components/home/TiersSection";
+import UrgencySection from "@/components/home/UrgencySection";
+import CTASection from "@/components/home/CTASection";
+
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-monetura-cream">
-      <h1 className="text-monetura-charcoal font-garet">
-        Monetura — Coming Soon
-      </h1>
+    <main>
+      <HeroSection />
+      <StorySection />
+      <ProblemSection />
+      <SolutionSection />
+      <OfferSection />
+      <TiersSection />
+      <UrgencySection />
+      <CTASection />
     </main>
   );
 }
