@@ -1,1 +1,1 @@
-{"framework":"nextjs","installCommand":"pnpm install --no-frozen-lockfile","buildCommand":"cd ../.. && pnpm --filter @monetura/marketing build","outputDirectory":".next"}
+{"framework":"nextjs","installCommand":"npm install -g pnpm@9.15.4 && pnpm install --no-frozen-lockfile","buildCommand":"cd ../.. && pnpm --filter @monetura/marketing build","outputDirectory":".next"}
