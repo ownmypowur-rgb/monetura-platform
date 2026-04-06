@@ -170,22 +170,22 @@ export default function HomePage() {
         </div>
 
         <div className="page-shell relative z-10 flex min-h-screen items-end pb-8 pt-28 sm:pb-16 sm:pt-32 lg:pt-36">
-          <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,720px)_1fr] lg:items-end">
-            <div className="max-w-[19rem] sm:max-w-3xl">
+          <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,680px)_1fr] lg:items-end xl:gap-12">
+            <div className="max-w-[19rem] sm:max-w-[42rem]">
               <p className="editorial-label">Monetura</p>
-              <h1 className="lux-heading max-w-[18rem] text-[2.45rem] text-monetura-cream sm:max-w-3xl sm:text-[4.2rem] lg:text-[5.8rem]">
+              <h1 className="lux-heading max-w-[18rem] text-[2.38rem] text-monetura-cream sm:max-w-[32rem] sm:text-[3.4rem] lg:max-w-[37rem] lg:text-[4.3rem] xl:text-[4.55rem]">
                 Passion becomes creation.
                 <span className="mt-3 block text-monetura-champagne">
                   Creation becomes freedom.
                 </span>
               </h1>
-              <p className="lux-body mt-7 max-w-[20rem] text-[14px] leading-7 text-monetura-cream/78 sm:mt-10 sm:max-w-2xl sm:text-base sm:leading-8">
+              <p className="lux-body mt-7 max-w-[20rem] text-[14px] leading-7 text-monetura-cream/78 sm:mt-8 sm:max-w-[32rem] sm:text-[15px] sm:leading-8 lg:mt-9 lg:max-w-[34rem] lg:text-[15.5px]">
                 Monetura is the AI-powered platform that helps travellers turn every
                 trip into content, every post into income, and every experience into
                 something worth sharing.
               </p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:gap-4">
+              <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4 lg:mt-11">
                 <Link href="/founders/apply" className="btn-primary">
                   Apply for Founder Access
                 </Link>
@@ -195,7 +195,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="self-end lg:justify-self-end">
+            <div className="self-end lg:max-w-[21rem] lg:justify-self-end xl:max-w-sm">
               <div className="lux-panel rounded-[1.5rem] p-5 sm:rounded-[1.75rem] sm:p-8 lg:max-w-sm">
                 <p className="text-[11px] uppercase tracking-[0.42em] text-monetura-champagne/90">
                   Editorial notes
@@ -442,14 +442,14 @@ export default function HomePage() {
 
       <section id="founders" className="relative bg-monetura-charcoal">
         <div className="page-shell section-padding">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,520px)_1fr] lg:items-end">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,460px)_1fr] lg:items-end xl:gap-10">
             <div>
               <p className="editorial-label">Founders Club</p>
-              <h2 className="lux-heading-tight max-w-3xl text-[2.15rem] text-monetura-cream sm:text-[3.25rem] lg:text-[4.25rem]">
+              <h2 className="lux-heading-tight max-w-[19rem] text-[2rem] text-monetura-cream sm:max-w-[26rem] sm:text-[2.85rem] lg:max-w-[29rem] lg:text-[3.35rem] xl:text-[3.55rem]">
                 Be part of the founding chapter. One payment. Lifetime access.
               </h2>
             </div>
-            <div className="max-w-2xl lg:justify-self-end">
+            <div className="max-w-[33rem] lg:justify-self-end">
               <p className="lux-body text-monetura-cream/72">
                 This is not a course. This is not a mastermind. This is a
                 platform, a business model, and a community — built around the
@@ -462,43 +462,43 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-14 grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
-            <div className="card-grid-border grid overflow-hidden rounded-[1.75rem] md:grid-cols-2 2xl:grid-cols-4">
+          <div className="mt-12 grid gap-7 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start 2xl:grid-cols-[minmax(0,1fr)_390px]">
+            <div className="card-grid-border grid overflow-hidden rounded-[1.75rem] md:grid-cols-2">
               {tiers.map((tier) => (
                 <article
                   key={tier.name}
-                  className={`relative flex h-full flex-col p-8 sm:p-9 ${
+                  className={`relative flex h-full flex-col p-7 sm:p-8 xl:p-9 ${
                     tier.highlight
                       ? "bg-[linear-gradient(180deg,rgba(212,168,83,0.15)_0%,rgba(74,55,40,0.92)_100%)]"
                       : "bg-[linear-gradient(180deg,rgba(74,55,40,0.24)_0%,rgba(44,36,32,0.92)_100%)]"
                   }`}
                 >
                   {tier.highlight ? (
-                    <span className="mb-6 inline-flex w-fit rounded-full border border-monetura-champagne/50 bg-monetura-champagne/14 px-4 py-2 text-[10px] uppercase tracking-[0.34em] text-monetura-champagne">
+                    <span className="mb-5 inline-flex w-fit rounded-full border border-monetura-champagne/50 bg-monetura-champagne/14 px-4 py-2 text-[10px] uppercase tracking-[0.32em] text-monetura-champagne">
                       Most popular
                     </span>
                   ) : null}
-                  <p className="text-[11px] uppercase tracking-[0.34em] text-monetura-champagne/78">
+                  <p className="text-[10px] uppercase tracking-[0.32em] text-monetura-champagne/78 sm:text-[11px]">
                     {tier.tagline}
                   </p>
-                  <h3 className="mt-4 text-[1.6rem] tracking-[0.08em] text-monetura-cream">
+                  <h3 className="mt-3 text-[1.4rem] tracking-[0.07em] text-monetura-cream sm:text-[1.5rem]">
                     {tier.name}
                   </h3>
-                  <div className="mt-6 flex items-end gap-2">
-                    <span className="text-[2.35rem] leading-none tracking-[0.08em] text-monetura-cream">
+                  <div className="mt-5 flex items-end gap-2">
+                    <span className="text-[2.05rem] leading-none tracking-[0.06em] text-monetura-cream sm:text-[2.2rem]">
                       {tier.price}
                     </span>
-                    <span className="pb-1 text-sm uppercase tracking-[0.22em] text-monetura-cream/45">
+                    <span className="pb-1 text-[12px] uppercase tracking-[0.18em] text-monetura-cream/45 sm:text-sm sm:tracking-[0.2em]">
                       {tier.currency}
                     </span>
                   </div>
-                  <p className="mt-2 text-[11px] uppercase tracking-[0.32em] text-monetura-cream/36">
+                  <p className="mt-2 text-[10px] uppercase tracking-[0.28em] text-monetura-cream/36 sm:text-[11px] sm:tracking-[0.3em]">
                     One-time payment
                   </p>
-                  <p className="mt-6 text-[15px] leading-7 text-monetura-cream/68">
+                  <p className="mt-5 text-[14px] leading-7 text-monetura-cream/68 sm:text-[14.5px]">
                     {tier.description}
                   </p>
-                  <ul className="mt-8 space-y-3 text-sm leading-7 text-monetura-cream/66">
+                  <ul className="mt-7 space-y-2.5 text-[13.5px] leading-7 text-monetura-cream/66 sm:text-sm">
                     {tier.features.map((feature) => (
                       <li key={feature} className="flex gap-3">
                         <span className="mt-2 h-1.5 w-1.5 rounded-full bg-monetura-champagne" />
@@ -506,7 +506,7 @@ export default function HomePage() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-8 pt-2">
+                  <div className="mt-7 pt-1">
                     <Link
                       href="/founders/apply"
                       className={tier.highlight ? "btn-primary w-full" : "btn-secondary w-full"}
@@ -528,13 +528,13 @@ export default function HomePage() {
                   sizes="(max-width: 1280px) 100vw, 420px"
                 />
               </div>
-              <div className="lux-panel rounded-[1.5rem] p-6 sm:p-7">
+              <div className="lux-panel rounded-[1.5rem] p-6 sm:p-7 xl:p-6">
                 <p className="text-[11px] uppercase tracking-[0.38em] text-monetura-champagne">
                   Founding Cohort — Canada only
                 </p>
                 <div className="mt-5 flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-[2.6rem] leading-none tracking-[0.08em] text-monetura-cream sm:text-[3.25rem]">
+                    <p className="text-[2.35rem] leading-none tracking-[0.06em] text-monetura-cream sm:text-[2.9rem]">
                       47
                     </p>
                     <p className="mt-2 text-[11px] uppercase tracking-[0.32em] text-monetura-cream/42">
