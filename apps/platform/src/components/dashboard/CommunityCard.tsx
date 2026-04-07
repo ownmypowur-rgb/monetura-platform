@@ -30,7 +30,7 @@ export function CommunityCard() {
               className="text-2xl font-light leading-snug"
               style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
             >
-              April Adventure
+              Kill Them With Kindness
               <br />Challenge
             </h2>
           </div>
