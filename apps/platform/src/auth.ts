@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * NextAuth v5 configuration for app.monetura.com
  *
