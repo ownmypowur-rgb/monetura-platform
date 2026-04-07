@@ -26,17 +26,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
+  console.log("[confirm] mediaUploadId:", body.mediaUploadId, "memberId:", memberId);
+
   // ── Fetch upload record (verifying ownership) ─────────────────────────────
-  const rows = await getDb()
-    .select({ publicUrl: moneturaMediaUploads.publicUrl })
-    .from(moneturaMediaUploads)
-    .where(
-      and(
-        eq(moneturaMediaUploads.id, body.mediaUploadId),
-        eq(moneturaMediaUploads.uploaderId, memberId)
+  let rows: { publicUrl: string | null }[];
+  try {
+    rows = await getDb()
+      .select({ publicUrl: moneturaMediaUploads.publicUrl })
+      .from(moneturaMediaUploads)
+      .where(
+        and(
+          eq(moneturaMediaUploads.id, body.mediaUploadId),
+          eq(moneturaMediaUploads.uploaderId, memberId)
+        )
       )
-    )
-    .limit(1);
+      .limit(1);
+  } catch (err) {
+    console.error("[confirm] DB select error:", err);
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
+  }
+
+  console.log("[confirm] select result rows:", rows.length, rows[0] ?? null);
 
   const record = rows[0];
   if (!record) {
@@ -44,15 +54,21 @@ export async function POST(request: Request) {
   }
 
   // ── Update status to uploaded ─────────────────────────────────────────────
-  await getDb()
-    .update(moneturaMediaUploads)
-    .set({ status: "uploaded" })
-    .where(
-      and(
-        eq(moneturaMediaUploads.id, body.mediaUploadId),
-        eq(moneturaMediaUploads.uploaderId, memberId)
-      )
-    );
+  try {
+    const updateResult = await getDb()
+      .update(moneturaMediaUploads)
+      .set({ status: "uploaded" })
+      .where(
+        and(
+          eq(moneturaMediaUploads.id, body.mediaUploadId),
+          eq(moneturaMediaUploads.uploaderId, memberId)
+        )
+      );
+    console.log("[confirm] update result:", updateResult);
+  } catch (err) {
+    console.error("[confirm] DB update error:", err);
+    return NextResponse.json({ error: "Database error" }, { status: 500 });
+  }
 
   return NextResponse.json({
     success: true,
