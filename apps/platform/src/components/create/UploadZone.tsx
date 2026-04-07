@@ -152,17 +152,15 @@ export function UploadZone({ onMediaUploadIds }: UploadZoneProps) {
   }
 
   function removeEntry(id: string) {
-    setEntries((prev) => {
-      const removed = prev.find((e) => e.id === id);
-      if (removed?.preview) URL.revokeObjectURL(removed.preview);
-      const next = prev.filter((e) => e.id !== id);
-      onMediaUploadIds(
-        next
-          .filter((e) => e.status === "done" && e.mediaUploadId !== undefined)
-          .map((e) => e.mediaUploadId!)
-      );
-      return next;
-    });
+    const removed = entries.find((e) => e.id === id);
+    if (removed?.preview) URL.revokeObjectURL(removed.preview);
+    const next = entries.filter((e) => e.id !== id);
+    setEntries(next);
+    onMediaUploadIds(
+      next
+        .filter((e) => e.status === "done" && e.mediaUploadId !== undefined)
+        .map((e) => e.mediaUploadId!)
+    );
   }
 
   const processFiles = useCallback(
@@ -239,7 +237,7 @@ export function UploadZone({ onMediaUploadIds }: UploadZoneProps) {
             publicUrl: confirm.publicUrl ?? presign.publicUrl,
           });
 
-          // Notify parent with all completed IDs
+          // Notify parent — read state after the sync update above settles
           setEntries((prev) => {
             const ids = prev
               .map((e) =>
@@ -250,7 +248,8 @@ export function UploadZone({ onMediaUploadIds }: UploadZoneProps) {
                     : undefined
               )
               .filter((id): id is number => id !== undefined);
-            onMediaUploadIds(ids);
+            // Schedule the parent notification outside the updater
+            Promise.resolve().then(() => onMediaUploadIds(ids));
             return prev;
           });
         } catch (err) {
@@ -341,7 +340,7 @@ export function UploadZone({ onMediaUploadIds }: UploadZoneProps) {
                 : undefined
           )
           .filter((id): id is number => id !== undefined);
-        onMediaUploadIds(ids);
+        Promise.resolve().then(() => onMediaUploadIds(ids));
         return prev;
       });
     } catch (err) {
