@@ -110,9 +110,9 @@ export async function POST(request: Request) {
       publicUrl,
       status: "pending",
     });
-    // Drizzle with mysql2 returns ResultSetHeader — insertId may be number or bigint
-    const raw = result as unknown as { insertId?: number | bigint };
-    mediaUploadId = Number(raw.insertId ?? 0);
+    // Drizzle with mysql2 returns [ResultSetHeader, ...] — insertId is on index 0
+    const [header] = result as unknown as [{ insertId: number | bigint }];
+    mediaUploadId = Number(header.insertId);
   } catch (err) {
     console.error("DB insert error:", err);
     return NextResponse.json({ error: "Database error" }, { status: 500 });
