@@ -1,0 +1,135 @@
+"use client";
+
+import {
+  HomeIcon,
+  CreateIcon,
+  EarningsIcon,
+  TravelIcon,
+  CommunityIcon,
+  SettingsIcon,
+} from "./icons";
+
+interface NavItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { id: "home", label: "Home", icon: <HomeIcon size={18} /> },
+  { id: "create", label: "Create", icon: <CreateIcon size={18} /> },
+  { id: "earnings", label: "Earnings", icon: <EarningsIcon size={18} /> },
+  { id: "travel", label: "Travel", icon: <TravelIcon size={18} /> },
+  { id: "community", label: "Community", icon: <CommunityIcon size={18} /> },
+];
+
+interface SidebarNavProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}
+
+export function SidebarNav({ activeTab, onTabChange }: SidebarNavProps) {
+  return (
+    <aside
+      className="hidden lg:flex flex-col w-60 flex-shrink-0 h-screen sticky top-0"
+      style={{
+        background: "#1A0F0A",
+        borderRight: "1px solid #3D2E26",
+      }}
+    >
+      {/* Logo */}
+      <div className="px-6 pt-8 pb-8" style={{ borderBottom: "1px solid #3D2E26" }}>
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{ background: "linear-gradient(135deg, #D4A853 0%, #C4973D 100%)" }}
+          >
+            <span
+              className="text-xs font-bold tracking-wider"
+              style={{ color: "#2C2420", fontFamily: "var(--font-heading)" }}
+            >
+              M
+            </span>
+          </div>
+          <span
+            className="text-base tracking-[0.25em] font-light"
+            style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
+          >
+            MONETURA
+          </span>
+        </div>
+      </div>
+
+      {/* Nav items */}
+      <nav className="flex-1 px-3 py-5 space-y-1">
+        <p
+          className="px-3 mb-3 text-[10px] tracking-[0.2em] uppercase"
+          style={{ color: "#4A3728" }}
+        >
+          Navigation
+        </p>
+        {NAV_ITEMS.map((item) => {
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => onTabChange(item.id)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all"
+              style={{
+                background: isActive ? "rgba(212,168,83,0.08)" : "transparent",
+                border: isActive ? "1px solid rgba(212,168,83,0.15)" : "1px solid transparent",
+                color: isActive ? "#D4A853" : "#8B6E52",
+              }}
+            >
+              <span>{item.icon}</span>
+              <span
+                className="text-sm"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                {item.label}
+              </span>
+              {isActive && (
+                <span
+                  className="ml-auto w-1 h-1 rounded-full"
+                  style={{ background: "#D4A853" }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Bottom: settings + membership tier */}
+      <div className="px-3 pb-6" style={{ borderTop: "1px solid #3D2E26", paddingTop: "16px" }}>
+        <button
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+          style={{ color: "#8B6E52" }}
+        >
+          <SettingsIcon size={18} />
+          <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
+            Settings
+          </span>
+        </button>
+
+        {/* Tier badge */}
+        <div
+          className="mx-3 mt-4 rounded-xl p-3"
+          style={{
+            background: "rgba(212,168,83,0.05)",
+            border: "1px solid rgba(212,168,83,0.15)",
+          }}
+        >
+          <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#8B6E52" }}>
+            Membership
+          </p>
+          <p
+            className="text-sm font-semibold tracking-widest"
+            style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
+          >
+            FOUNDER
+          </p>
+        </div>
+      </div>
+    </aside>
+  );
+}
