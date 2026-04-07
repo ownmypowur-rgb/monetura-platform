@@ -969,25 +969,35 @@ function Step3Review({
       </div>
 
       {/* Preview / Edit toggle */}
-      <div
-        className="flex rounded-xl overflow-hidden"
-        style={{ border: `1px solid ${C.cardBorder}`, background: C.card }}
-      >
-        {(["preview", "edit"] as const).map((mode) => (
-          <button
-            key={mode}
-            onClick={() => setViewMode(mode)}
-            className="flex-1 py-2 text-sm font-medium tracking-[0.08em] uppercase transition-all"
-            style={{
-              background: viewMode === mode ? "rgba(212,168,83,0.12)" : "transparent",
-              color: viewMode === mode ? C.gold : C.mocha,
-              borderRight: mode === "preview" ? `1px solid ${C.cardBorder}` : "none",
-              fontFamily: "var(--font-heading)",
-            }}
-          >
-            {mode === "preview" ? "Preview" : "Edit"}
-          </button>
-        ))}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setViewMode("preview")}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold tracking-[0.08em] uppercase transition-all"
+          style={{
+            background: viewMode === "preview" ? C.gold : C.card,
+            color: viewMode === "preview" ? "#2C2420" : C.mocha,
+            border: `1px solid ${viewMode === "preview" ? C.gold : C.cardBorder}`,
+            fontFamily: "var(--font-heading)",
+          }}
+        >
+          <span>👁</span>
+          <span>Preview</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode("edit")}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold tracking-[0.08em] uppercase transition-all"
+          style={{
+            background: viewMode === "edit" ? C.gold : C.card,
+            color: viewMode === "edit" ? "#2C2420" : C.mocha,
+            border: `1px solid ${viewMode === "edit" ? C.gold : C.cardBorder}`,
+            fontFamily: "var(--font-heading)",
+          }}
+        >
+          <span>✏️</span>
+          <span>Edit</span>
+        </button>
       </div>
 
       {/* ── Preview pane ─────────────────────────────────────────────── */}
