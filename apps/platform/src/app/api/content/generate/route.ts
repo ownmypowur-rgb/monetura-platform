@@ -49,10 +49,14 @@ export async function POST(request: Request) {
 
   // ── Build prompt ─────────────────────────────────────────────────────────
   const location = body.locationName ? ` at ${body.locationName}` : "";
+  const photoNote =
+    body.mediaUploadIds && body.mediaUploadIds.length > 0
+      ? `\nNote: The member has uploaded ${body.mediaUploadIds.length} photo${body.mediaUploadIds.length !== 1 ? "s" : ""} of this experience. Write content that explicitly references and encourages sharing these visuals.`
+      : "";
   const prompt = `You are a world-class content strategist for Monetura, a premium lifestyle brand. Create compelling, authentic social media content for a member who just had a ${body.experienceType} experience${location}.
 
 Member's notes about their experience:
-${body.memberNotes}
+${body.memberNotes}${photoNote}
 
 Generate content optimized for each platform. Return ONLY valid JSON with this exact structure (no markdown, no code fences):
 {

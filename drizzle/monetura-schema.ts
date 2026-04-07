@@ -191,10 +191,14 @@ export const moneturaMediaUploads = mysqlTable(
       unsigned: true,
     }),
     publicUrl: varchar("public_url", { length: 1000 }),
+    status: mysqlEnum("status", ["pending", "uploaded", "failed"])
+      .notNull()
+      .default("pending"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (t) => ({
     uploaderIdx: index("idx_media_uploads_uploader").on(t.uploaderId),
+    statusIdx: index("idx_media_uploads_status").on(t.status),
   })
 );
 

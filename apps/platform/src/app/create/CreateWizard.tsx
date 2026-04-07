@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { MemberTier } from "@/types/next-auth";
+import { UploadZone } from "@/components/create/UploadZone";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -120,6 +121,8 @@ interface Step1Props {
   memberNotes: string;
   setMemberNotes: (v: string) => void;
   creditsRemaining: number;
+  mediaUploadIds: number[];
+  setMediaUploadIds: (ids: number[]) => void;
   onGenerate: () => void;
 }
 
@@ -131,12 +134,34 @@ function Step1Input({
   memberNotes,
   setMemberNotes,
   creditsRemaining,
+  mediaUploadIds,
+  setMediaUploadIds,
   onGenerate,
 }: Step1Props) {
   const canGenerate = !!experienceType && memberNotes.trim().length >= 10 && creditsRemaining > 0;
 
   return (
     <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
+      {/* Photos upload */}
+      <div>
+        <p
+          className="text-sm tracking-[0.15em] uppercase mb-1"
+          style={{ color: "#E8DCCB" }}
+        >
+          Your Photos
+        </p>
+        <p className="text-xs mb-3" style={{ color: "#C4A882" }}>
+          Upload photos from your experience{" "}
+          <span style={{ color: "#C4A882" }}>(optional but recommended)</span>
+        </p>
+        <UploadZone onMediaUploadIds={setMediaUploadIds} />
+        {mediaUploadIds.length > 0 && (
+          <p className="text-xs mt-1" style={{ color: "#D4A853" }}>
+            {mediaUploadIds.length} photo{mediaUploadIds.length !== 1 ? "s" : ""} ready
+          </p>
+        )}
+      </div>
+
       {/* Experience type */}
       <div>
         <p
@@ -644,6 +669,7 @@ export function CreateWizard({ initialCredits }: CreateWizardProps) {
   const [experienceType, setExperienceType] = useState<ExperienceType | null>(null);
   const [locationName, setLocationName] = useState("");
   const [memberNotes, setMemberNotes] = useState("");
+  const [mediaUploadIds, setMediaUploadIds] = useState<number[]>([]);
 
   // Step 3 state
   const [content, setContent] = useState<GeneratedContent | null>(null);
@@ -670,7 +696,12 @@ export function CreateWizard({ initialCredits }: CreateWizardProps) {
       const res = await fetch("/api/content/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ memberNotes, experienceType, locationName }),
+        body: JSON.stringify({
+          memberNotes,
+          experienceType,
+          locationName,
+          mediaUploadIds: mediaUploadIds.length > 0 ? mediaUploadIds : undefined,
+        }),
       });
       const data = (await res.json()) as {
         success?: boolean;
@@ -794,6 +825,8 @@ export function CreateWizard({ initialCredits }: CreateWizardProps) {
           memberNotes={memberNotes}
           setMemberNotes={setMemberNotes}
           creditsRemaining={creditsRemaining}
+          mediaUploadIds={mediaUploadIds}
+          setMediaUploadIds={setMediaUploadIds}
           onGenerate={handleGenerate}
         />
       )}
