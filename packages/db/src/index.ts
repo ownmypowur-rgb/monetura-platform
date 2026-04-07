@@ -35,3 +35,6 @@ export * from "../../../drizzle/monetura-schema";
 
 // Re-export credit helpers
 export * from "./credits";
+
+// Re-export affiliate helpers
+export * from "./affiliates";

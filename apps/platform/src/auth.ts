@@ -12,7 +12,7 @@ import "server-only";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { getDb, moneturaMembers, moneturaFounderKeys } from "@monetura/db";
+import { getDb, moneturaMembers, moneturaFounderKeys, getOrCreateAffiliateLink } from "@monetura/db";
 import { apexcrmUsers } from "@/lib/apexcrm-users";
 import { eq } from "drizzle-orm";
 import type { MemberTier } from "@/types/next-auth";
@@ -62,6 +62,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const member = members[0];
         console.log("AUTH: member found", !!member, "status", member?.status, "tier", member?.membershipTier);
         if (!member || member.status !== "active") return null;
+
+        // Step 3b: Ensure member has an affiliate link — fire and forget
+        void getOrCreateAffiliateLink(member.id).catch((err: unknown) => {
+          console.error("AUTH: affiliate link creation failed (non-blocking):", err);
+        });
 
         // Step 4: Fetch founder number for founder-tier members
         let founderNumber: number | null = null;

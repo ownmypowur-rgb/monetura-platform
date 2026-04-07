@@ -1,18 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CopyIcon, CheckIcon, ArrowRightIcon } from "./icons";
+
+interface AffiliateData {
+  code: string;
+  trackingUrl: string;
+  clicksThisMonth: number;
+  referralCount: number;
+}
+
+const REFERRALS_FOR_FREE = 3;
 
 export function EarningsHubCard() {
   const [copied, setCopied] = useState(false);
+  const [affiliate, setAffiliate] = useState<AffiliateData | null>(null);
+
+  useEffect(() => {
+    void fetch("/api/member/affiliate")
+      .then((r) => r.ok ? r.json() as Promise<AffiliateData> : null)
+      .then((data) => { if (data) setAffiliate(data); })
+      .catch(() => { /* non-blocking */ });
+  }, []);
+
+  const code = affiliate?.code ?? "MTR-—";
+  const trackingUrl = affiliate?.trackingUrl ?? "";
+  const clicksThisMonth = affiliate?.clicksThisMonth ?? 0;
+  const referralCount = affiliate?.referralCount ?? 0;
+  const referralProgress = Math.min((referralCount / REFERRALS_FOR_FREE) * 100, 100);
+  const referralsLeft = Math.max(REFERRALS_FOR_FREE - referralCount, 0);
 
   function handleCopy() {
-    void navigator.clipboard.writeText("MTR-00247");
+    if (!trackingUrl) return;
+    void navigator.clipboard.writeText(trackingUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
-
-  const referralProgress = (2 / 3) * 100;
 
   return (
     <div
@@ -59,7 +82,7 @@ export function EarningsHubCard() {
               className="text-xs font-semibold"
               style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
             >
-              2 of 3
+              {referralCount} of {REFERRALS_FOR_FREE}
             </span>
           </div>
           <div
@@ -75,38 +98,46 @@ export function EarningsHubCard() {
             />
           </div>
           <p className="text-xs mt-2" style={{ color: "#C4A882" }}>
-            1 more referral unlocks free membership
+            {referralsLeft > 0
+              ? `${referralsLeft} more referral${referralsLeft === 1 ? "" : "s"} unlock${referralsLeft === 1 ? "s" : ""} free membership`
+              : "Free membership unlocked!"}
           </p>
         </div>
 
         {/* Affiliate link */}
         <div
-          className="rounded-xl p-3.5 flex items-center justify-between mb-4"
+          className="rounded-xl p-3.5 mb-4"
           style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
         >
-          <div>
-            <p className="text-xs tracking-[0.12em] uppercase mb-0.5" style={{ color: "#C4A882" }}>
-              Affiliate Link
-            </p>
-            <p
-              className="text-sm font-semibold tracking-widest"
-              style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <p className="text-xs tracking-[0.12em] uppercase mb-0.5" style={{ color: "#C4A882" }}>
+                Affiliate Link
+              </p>
+              <p
+                className="text-sm font-semibold tracking-widest"
+                style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
+              >
+                {code}
+              </p>
+            </div>
+            <button
+              onClick={handleCopy}
+              disabled={!trackingUrl}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-95 disabled:opacity-40"
+              style={{
+                background: copied ? "#1F3A1F" : "#2C2420",
+                border: `1px solid ${copied ? "#4A7A4A" : "#4A3728"}`,
+                color: copied ? "#7DAF7D" : "#C4A882",
+              }}
             >
-              MTR-00247
-            </p>
+              {copied ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
+              {copied ? "Copied!" : "Copy"}
+            </button>
           </div>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-95"
-            style={{
-              background: copied ? "#1F3A1F" : "#2C2420",
-              border: `1px solid ${copied ? "#4A7A4A" : "#4A3728"}`,
-              color: copied ? "#7DAF7D" : "#C4A882",
-            }}
-          >
-            {copied ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
-            {copied ? "Copied!" : "Copy"}
-          </button>
+          <p className="text-xs" style={{ color: "#8B6E52" }}>
+            {clicksThisMonth} click{clicksThisMonth === 1 ? "" : "s"} this month
+          </p>
         </div>
 
         {/* View full earnings link */}
