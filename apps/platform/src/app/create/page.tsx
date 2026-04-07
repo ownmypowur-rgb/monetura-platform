@@ -18,6 +18,7 @@ export default async function CreatePage() {
       memberId={memberId}
       memberTier={memberTier as MemberTier}
       initialCredits={creditsRemaining}
+      memberName={session.user.name ?? ""}
     />
   );
 }
