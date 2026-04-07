@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import {
   HomeIcon,
   CreateIcon,
@@ -9,6 +10,16 @@ import {
   CommunityIcon,
   SettingsIcon,
 } from "./icons";
+
+function LogOutIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+      <polyline points="16,17 21,12 16,7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  );
+}
 
 function ShieldIcon({ size = 18 }: { size?: number }) {
   return (
@@ -140,8 +151,8 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
         </div>
       )}
 
-      {/* Bottom: settings + membership tier */}
-      <div className="px-3 pb-6" style={{ borderTop: memberTier === "admin" ? "none" : "1px solid #3D2E26", paddingTop: "16px" }}>
+      {/* Bottom: settings + sign out + membership tier */}
+      <div className="px-3 pb-6" style={{ borderTop: "1px solid #3D2E26", paddingTop: "16px" }}>
         <button
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
           style={{ color: "#8B6E52" }}
@@ -152,9 +163,22 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
           </span>
         </button>
 
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+          style={{ color: "#8B6E52" }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = "#C17A4A"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = "#8B6E52"; }}
+        >
+          <LogOutIcon size={18} />
+          <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
+            Sign Out
+          </span>
+        </button>
+
         {/* Tier badge */}
         <div
-          className="mx-3 mt-4 rounded-xl p-3"
+          className="mx-3 mt-3 rounded-xl p-3"
           style={{
             background: "rgba(212,168,83,0.05)",
             border: "1px solid rgba(212,168,83,0.15)",
@@ -167,7 +191,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
             className="text-sm font-semibold tracking-widest"
             style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
           >
-            FOUNDER
+            {(memberTier ?? "free").toUpperCase()}
           </p>
         </div>
       </div>
