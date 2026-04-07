@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { CameraIcon, SparkleIcon } from "./icons";
 
 export function ContentCreatorCard() {
@@ -71,18 +72,21 @@ export function ContentCreatorCard() {
         </div>
 
         {/* CTA button */}
-        <button
+        <Link
+          href="/create"
           className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.98]"
           style={{
             background: "linear-gradient(135deg, #D4A853 0%, #C4973D 100%)",
             color: "#2C2420",
             boxShadow: "0 4px 16px rgba(212,168,83,0.25)",
             fontFamily: "var(--font-heading)",
+            textDecoration: "none",
+            display: "flex",
           }}
         >
           <SparkleIcon size={16} />
           Start Creating
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -38,7 +38,10 @@ export function DashboardShell({ user }: DashboardShellProps) {
           {/* Scrollable content */}
           <main className="flex-1 lg:overflow-y-auto pb-28 lg:pb-10">
             {/* Stats bar */}
-            <StatsBar />
+            <StatsBar
+              creditsRemaining={user.creditsRemaining}
+              creditsTotal={user.creditsTotal}
+            />
 
             {/* Cards grid */}
             <div className="px-4 lg:px-8 mt-4 space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4">

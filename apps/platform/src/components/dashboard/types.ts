@@ -4,4 +4,6 @@ export interface DashboardUser {
   name: string;
   memberTier: MemberTier;
   founderNumber: number | null;
+  creditsRemaining?: number;
+  creditsTotal?: number;
 }

@@ -32,3 +32,6 @@ export function getDb(): Database {
 
 // Re-export schema for convenience
 export * from "../../../drizzle/monetura-schema";
+
+// Re-export credit helpers
+export * from "./credits";

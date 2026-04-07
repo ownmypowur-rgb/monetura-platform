@@ -8,38 +8,49 @@ interface StatCard {
   icon: string;
 }
 
-const STATS: StatCard[] = [
-  {
-    label: "Total Reach",
-    value: "24,847",
-    sub: "+12% this month",
-    positive: true,
-    icon: "👁",
-  },
-  {
-    label: "Commissions",
-    value: "$1,240",
-    sub: "CAD this month",
-    positive: true,
-    icon: "◈",
-  },
-  {
-    label: "Posts",
-    value: "8",
-    sub: "published this month",
-    positive: true,
-    icon: "✦",
-  },
-  {
-    label: "AI Credits",
-    value: "340",
-    sub: "of 500 remaining",
-    positive: false,
-    icon: "⬡",
-  },
-];
+interface StatsBarProps {
+  creditsRemaining?: number;
+  creditsTotal?: number;
+}
 
-export function StatsBar() {
+export function StatsBar({ creditsRemaining, creditsTotal }: StatsBarProps) {
+  const creditsValue = creditsRemaining !== undefined ? String(creditsRemaining) : "—";
+  const creditsSub =
+    creditsTotal !== undefined && creditsRemaining !== undefined
+      ? `of ${creditsTotal} remaining`
+      : "this month";
+
+  const STATS: StatCard[] = [
+    {
+      label: "Total Reach",
+      value: "24,847",
+      sub: "+12% this month",
+      positive: true,
+      icon: "👁",
+    },
+    {
+      label: "Commissions",
+      value: "$1,240",
+      sub: "CAD this month",
+      positive: true,
+      icon: "◈",
+    },
+    {
+      label: "Posts",
+      value: "8",
+      sub: "published this month",
+      positive: true,
+      icon: "✦",
+    },
+    {
+      label: "AI Credits",
+      value: creditsValue,
+      sub: creditsSub,
+      positive: false,
+      icon: "⬡",
+    },
+  ];
+
   return (
     <section className="px-4 lg:px-8 mt-2">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
