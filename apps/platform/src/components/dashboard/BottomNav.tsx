@@ -66,7 +66,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               )}
               <span className="relative">{tab.icon}</span>
               <span
-                className="text-[10px] tracking-wide"
+                className="text-xs tracking-wide"
                 style={{
                   color: isActive ? "#D4A853" : "#E8DCCB",
                   fontFamily: "var(--font-heading)",

@@ -23,11 +23,11 @@ export function ContentCreatorCard() {
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-xs tracking-[0.15em] uppercase mb-1.5" style={{ color: "#C4A882" }}>
+            <p className="text-sm tracking-[0.15em] uppercase mb-1.5" style={{ color: "#C4A882" }}>
               Content Studio
             </p>
             <h2
-              className="text-xl font-light"
+              className="text-2xl font-light"
               style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
             >
               Create Your Next Post
@@ -42,7 +42,7 @@ export function ContentCreatorCard() {
         </div>
 
         {/* Subtext */}
-        <p className="text-sm leading-relaxed mb-5" style={{ color: "#E8DCCB" }}>
+        <p className="text-base leading-relaxed mb-5" style={{ color: "#E8DCCB" }}>
           Upload photos from your latest experience and let AI do the rest — captions, hashtags, and multi-platform scheduling.
         </p>
 
@@ -59,12 +59,12 @@ export function ContentCreatorCard() {
               style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
             >
               <div
-                className="text-base font-light"
+                className="text-lg font-light"
                 style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
               >
                 {item.value}
               </div>
-              <div className="text-[10px] mt-0.5" style={{ color: "#C4A882" }}>
+              <div className="text-xs mt-0.5" style={{ color: "#C4A882" }}>
                 {item.label}
               </div>
             </div>

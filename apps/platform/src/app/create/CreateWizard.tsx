@@ -99,7 +99,7 @@ function CreditsIndicator({ remaining }: { remaining: number }) {
   const color = remaining === 0 ? C.terracotta : remaining <= 10 ? "#E8A44A" : C.gold;
   return (
     <div
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs"
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm"
       style={{ background: "rgba(212,168,83,0.08)", border: `1px solid rgba(212,168,83,0.2)`, color }}
     >
       <span>⬡</span>
@@ -140,7 +140,7 @@ function Step1Input({
       {/* Experience type */}
       <div>
         <p
-          className="text-xs tracking-[0.15em] uppercase mb-3"
+          className="text-sm tracking-[0.15em] uppercase mb-3"
           style={{ color: C.canyon }}
         >
           Experience Type
@@ -160,7 +160,7 @@ function Step1Input({
                 }}
               >
                 <span className="text-xl">{e.icon}</span>
-                <span className="text-xs" style={{ fontFamily: "var(--font-heading)" }}>
+                <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
                   {e.label}
                 </span>
               </button>
@@ -172,7 +172,7 @@ function Step1Input({
       {/* Location */}
       <div>
         <label
-          className="text-xs tracking-[0.15em] uppercase block mb-2"
+          className="text-sm tracking-[0.15em] uppercase block mb-2"
           style={{ color: C.canyon }}
         >
           Location <span style={{ color: C.mocha }}>(optional)</span>
@@ -182,7 +182,7 @@ function Step1Input({
           value={locationName}
           onChange={(e) => setLocationName(e.target.value)}
           placeholder="e.g. Amalfi Coast, Italy"
-          className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
+          className="w-full px-4 py-3 rounded-xl text-base outline-none transition-all"
           style={{
             background: C.card,
             border: `1px solid ${C.cardBorder}`,
@@ -196,7 +196,7 @@ function Step1Input({
       {/* Notes */}
       <div>
         <label
-          className="text-xs tracking-[0.15em] uppercase block mb-2"
+          className="text-sm tracking-[0.15em] uppercase block mb-2"
           style={{ color: C.canyon }}
         >
           Your Notes
@@ -206,7 +206,7 @@ function Step1Input({
           onChange={(e) => setMemberNotes(e.target.value)}
           rows={5}
           placeholder="Describe your experience — what you saw, felt, tasted, or learned. The more detail, the better the content."
-          className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none transition-all leading-relaxed"
+          className="w-full px-4 py-3 rounded-xl text-base outline-none resize-none transition-all leading-relaxed"
           style={{
             background: C.card,
             border: `1px solid ${C.cardBorder}`,
@@ -215,7 +215,7 @@ function Step1Input({
           onFocus={(e) => (e.target.style.borderColor = "rgba(212,168,83,0.4)")}
           onBlur={(e) => (e.target.style.borderColor = C.cardBorder)}
         />
-        <p className="text-right text-[10px] mt-1" style={{ color: C.mocha }}>
+        <p className="text-right text-xs mt-1" style={{ color: C.mocha }}>
           {memberNotes.length}/2000
         </p>
       </div>
@@ -226,7 +226,7 @@ function Step1Input({
         <button
           onClick={onGenerate}
           disabled={!canGenerate}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.97]"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.97]"
           style={{
             background: canGenerate
               ? `linear-gradient(135deg, ${C.gold} 0%, ${C.goldDark} 100%)`
@@ -244,7 +244,7 @@ function Step1Input({
       </div>
 
       {creditsRemaining === 0 && (
-        <p className="text-xs text-center" style={{ color: C.terracotta }}>
+        <p className="text-sm text-center" style={{ color: C.terracotta }}>
           You have no AI credits remaining this month. Credits reset on the 1st.
         </p>
       )}
@@ -268,12 +268,12 @@ function Step2Loading({ messageIdx }: { messageIdx: number }) {
       />
       <div className="text-center space-y-2">
         <p
-          className="text-lg font-light"
+          className="text-xl font-light"
           style={{ color: C.cream, fontFamily: "var(--font-heading)" }}
         >
           {msg}
         </p>
-        <p className="text-xs tracking-widest uppercase" style={{ color: C.canyon }}>
+        <p className="text-sm tracking-widest uppercase" style={{ color: C.canyon }}>
           Claude is writing your content
         </p>
       </div>
@@ -338,7 +338,7 @@ function Step3Review({
           <button
             key={pl.id}
             onClick={() => setActiveTab(pl.id)}
-            className="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+            className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
             style={{
               background: activeTab === pl.id ? "rgba(212,168,83,0.12)" : C.card,
               border: `1px solid ${activeTab === pl.id ? "rgba(212,168,83,0.4)" : C.cardBorder}`,
@@ -354,13 +354,13 @@ function Step3Review({
       {/* Blog title when on blog */}
       {activeTab === "blog" && (
         <div>
-          <p className="text-xs tracking-widest uppercase mb-2" style={{ color: C.canyon }}>
+          <p className="text-sm tracking-widest uppercase mb-2" style={{ color: C.canyon }}>
             Title
           </p>
           <input
             value={edited.blogTitle}
             onChange={(e) => setEdited((prev) => ({ ...prev, blogTitle: e.target.value }))}
-            className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
+            className="w-full px-3 py-2.5 rounded-xl text-base outline-none"
             style={{ background: C.card, border: `1px solid ${C.cardBorder}`, color: C.cream }}
           />
         </div>
@@ -369,13 +369,13 @@ function Step3Review({
       {/* Magazine title when on magazine */}
       {activeTab === "magazine" && (
         <div>
-          <p className="text-xs tracking-widest uppercase mb-2" style={{ color: C.canyon }}>
+          <p className="text-sm tracking-widest uppercase mb-2" style={{ color: C.canyon }}>
             Title
           </p>
           <input
             value={edited.magazineTitle}
             onChange={(e) => setEdited((prev) => ({ ...prev, magazineTitle: e.target.value }))}
-            className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
+            className="w-full px-3 py-2.5 rounded-xl text-base outline-none"
             style={{ background: C.card, border: `1px solid ${C.cardBorder}`, color: C.cream }}
           />
         </div>
@@ -387,7 +387,7 @@ function Step3Review({
           <p className="text-xs tracking-widest uppercase" style={{ color: C.canyon }}>
             {activeTab === "blog" ? "Article" : activeTab === "magazine" ? "Introduction" : "Caption"}
           </p>
-          <p className="text-[10px]" style={{ color: C.mocha }}>
+          <p className="text-xs" style={{ color: C.mocha }}>
             {currentText.length}/{p.charLimit.toLocaleString()}
           </p>
         </div>
@@ -395,7 +395,7 @@ function Step3Review({
           value={currentText}
           onChange={(e) => setPlatformContent(activeTab, e.target.value)}
           rows={activeTab === "blog" ? 14 : 7}
-          className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none leading-relaxed"
+          className="w-full px-4 py-3 rounded-xl text-base outline-none resize-none leading-relaxed"
           style={{ background: C.card, border: `1px solid ${C.cardBorder}`, color: C.cream }}
         />
       </div>
@@ -403,14 +403,14 @@ function Step3Review({
       {/* Instagram hashtag chips */}
       {activeTab === "instagram" && (
         <div>
-          <p className="text-xs tracking-widest uppercase mb-2" style={{ color: C.canyon }}>
+          <p className="text-sm tracking-widest uppercase mb-2" style={{ color: C.canyon }}>
             Hashtags
           </p>
           <div className="flex flex-wrap gap-1.5">
             {edited.instagramHashtags.map((tag, i) => (
               <span
                 key={i}
-                className="px-2.5 py-1 rounded-full text-xs"
+                className="px-2.5 py-1 rounded-full text-sm"
                 style={{
                   background: "rgba(212,168,83,0.08)",
                   border: "1px solid rgba(212,168,83,0.2)",
@@ -430,7 +430,7 @@ function Step3Review({
         <CreditsIndicator remaining={creditsRemaining} />
         <button
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.97]"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.97]"
           style={{
             background: `linear-gradient(135deg, ${C.gold} 0%, ${C.goldDark} 100%)`,
             color: "#2C2420",
@@ -478,7 +478,7 @@ function Step4Publish({ slug, onPublish, publishing }: Step4Props) {
     <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
       <div>
         <p
-          className="text-xs tracking-[0.15em] uppercase mb-3"
+          className="text-sm tracking-[0.15em] uppercase mb-3"
           style={{ color: C.canyon }}
         >
           Select Platforms
@@ -506,7 +506,7 @@ function Step4Publish({ slug, onPublish, publishing }: Step4Props) {
                 >
                   {active ? "✓" : ""}
                 </span>
-                <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
+                <span className="text-base" style={{ fontFamily: "var(--font-heading)" }}>
                   {pl.label}
                 </span>
               </button>
@@ -517,7 +517,7 @@ function Step4Publish({ slug, onPublish, publishing }: Step4Props) {
 
       {/* Schedule toggle */}
       <div>
-        <p className="text-xs tracking-[0.15em] uppercase mb-3" style={{ color: C.canyon }}>
+        <p className="text-sm tracking-[0.15em] uppercase mb-3" style={{ color: C.canyon }}>
           Timing
         </p>
         <div className="flex gap-2">
@@ -525,7 +525,7 @@ function Step4Publish({ slug, onPublish, publishing }: Step4Props) {
             <button
               key={mode}
               onClick={() => setScheduleMode(mode)}
-              className="flex-1 py-2.5 rounded-xl text-sm transition-all"
+              className="flex-1 py-2.5 rounded-xl text-base transition-all"
               style={{
                 background: scheduleMode === mode ? "rgba(212,168,83,0.08)" : C.card,
                 border: `1px solid ${scheduleMode === mode ? "rgba(212,168,83,0.4)" : C.cardBorder}`,
@@ -542,7 +542,7 @@ function Step4Publish({ slug, onPublish, publishing }: Step4Props) {
             type="datetime-local"
             value={scheduleAt}
             onChange={(e) => setScheduleAt(e.target.value)}
-            className="mt-3 w-full px-4 py-3 rounded-xl text-sm outline-none"
+            className="mt-3 w-full px-4 py-3 rounded-xl text-base outline-none"
             style={{
               background: C.card,
               border: `1px solid ${C.cardBorder}`,
@@ -556,7 +556,7 @@ function Step4Publish({ slug, onPublish, publishing }: Step4Props) {
       {/* Actions */}
       <div className="flex gap-3 pt-2">
         <button
-          className="flex-1 py-3 rounded-xl text-sm transition-all"
+          className="flex-1 py-3 rounded-xl text-base transition-all"
           style={{
             background: C.card,
             border: `1px solid ${C.cardBorder}`,
@@ -569,7 +569,7 @@ function Step4Publish({ slug, onPublish, publishing }: Step4Props) {
         <button
           onClick={handlePublish}
           disabled={selected.size === 0 || publishing}
-          className="flex-1 py-3 rounded-xl text-sm font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.97]"
+          className="flex-1 py-3 rounded-xl text-base font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.97]"
           style={{
             background:
               selected.size > 0 && !publishing
@@ -604,7 +604,7 @@ function SuccessBanner() {
       </div>
       <div>
         <h2
-          className="text-2xl font-light mb-2"
+          className="text-3xl font-light mb-2"
           style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
         >
           Content Published
@@ -730,7 +730,7 @@ export function CreateWizard({ initialCredits }: CreateWizardProps) {
         </Link>
         <div className="flex-1">
           <h1
-            className="text-base font-light tracking-[0.15em]"
+            className="text-lg font-light tracking-[0.15em]"
             style={{ color: C.cream, fontFamily: "var(--font-heading)" }}
           >
             Content Studio
@@ -761,7 +761,7 @@ export function CreateWizard({ initialCredits }: CreateWizardProps) {
           className="px-4 py-3 flex items-center gap-2"
           style={{ borderBottom: `1px solid ${C.cardBorder}` }}
         >
-          <p className="text-[10px] tracking-[0.2em] uppercase" style={{ color: C.canyon }}>
+          <p className="text-xs tracking-[0.2em] uppercase" style={{ color: C.canyon }}>
             {step === 1 && "Step 1 — Your Experience"}
             {step === 2 && "Step 2 — Generating"}
             {step === 3 && "Step 3 — Review & Edit"}

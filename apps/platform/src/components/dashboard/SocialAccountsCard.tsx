@@ -62,11 +62,11 @@ export function SocialAccountsCard() {
       />
 
       <div className="p-5">
-        <p className="text-xs tracking-[0.15em] uppercase mb-1.5" style={{ color: "#C4A882" }}>
+        <p className="text-sm tracking-[0.15em] uppercase mb-1.5" style={{ color: "#C4A882" }}>
           Connected Accounts
         </p>
         <h2
-          className="text-xl font-light mb-4"
+          className="text-2xl font-light mb-4"
           style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
         >
           Social Platforms
@@ -99,15 +99,15 @@ export function SocialAccountsCard() {
 
                 {/* Name + handle */}
                 <div>
-                  <p className="text-sm font-medium" style={{ color: "#FBF5ED" }}>
+                  <p className="text-base font-medium" style={{ color: "#FBF5ED" }}>
                     {platform.name}
                   </p>
                   {platform.connected && platform.handle ? (
-                    <p className="text-xs" style={{ color: "#C4A882" }}>
+                    <p className="text-sm" style={{ color: "#C4A882" }}>
                       {platform.handle}
                     </p>
                   ) : (
-                    <p className="text-xs" style={{ color: "#C4A882" }}>
+                    <p className="text-sm" style={{ color: "#C4A882" }}>
                       Not connected
                     </p>
                   )}
@@ -121,13 +121,13 @@ export function SocialAccountsCard() {
                     className="w-1.5 h-1.5 rounded-full"
                     style={{ background: "#7DAF7D" }}
                   />
-                  <span className="text-xs" style={{ color: "#7DAF7D" }}>
+                  <span className="text-sm" style={{ color: "#7DAF7D" }}>
                     Active
                   </span>
                 </div>
               ) : (
                 <button
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium tracking-wide transition-all active:scale-95"
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium tracking-wide transition-all active:scale-95"
                   style={{
                     background: "transparent",
                     border: "1px solid #4A3728",

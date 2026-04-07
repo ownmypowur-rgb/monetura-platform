@@ -104,7 +104,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
             >
               <span>{item.icon}</span>
               <span
-                className="text-sm"
+                className="text-base"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
                 {item.label}
@@ -158,7 +158,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
           style={{ color: "#E8DCCB" }}
         >
           <SettingsIcon size={18} />
-          <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
+          <span className="text-base" style={{ fontFamily: "var(--font-heading)" }}>
             Settings
           </span>
         </button>
@@ -171,7 +171,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
           onMouseLeave={(e) => { e.currentTarget.style.color = "#E8DCCB"; }}
         >
           <LogOutIcon size={18} />
-          <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
+          <span className="text-base" style={{ fontFamily: "var(--font-heading)" }}>
             Sign Out
           </span>
         </button>
@@ -188,7 +188,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
             Membership
           </p>
           <p
-            className="text-sm font-semibold tracking-widest"
+            className="text-base font-semibold tracking-widest"
             style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
           >
             {(memberTier ?? "free").toUpperCase()}

@@ -40,12 +40,12 @@ export function TopBar({ user }: TopBarProps) {
     >
       {/* Left: greeting + badge */}
       <div>
-        <p className="text-xs tracking-[0.18em] uppercase mb-1" style={{ color: "#C4A882" }}>
+        <p className="text-sm tracking-[0.18em] uppercase mb-1" style={{ color: "#C4A882" }}>
           {greeting}
         </p>
         <div className="flex items-center gap-2.5">
           <h1
-            className="text-2xl lg:text-3xl font-light"
+            className="text-3xl lg:text-4xl font-light"
             style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
           >
             {firstName}

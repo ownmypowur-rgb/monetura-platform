@@ -11,5 +11,6 @@
 @layer base {
   body {
     @apply bg-monetura-cream text-monetura-charcoal font-garet;
+    font-size: 15px;
   }
 }

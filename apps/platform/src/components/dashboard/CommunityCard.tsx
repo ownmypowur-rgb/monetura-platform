@@ -23,11 +23,11 @@ export function CommunityCard() {
       <div className="p-5">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-xs tracking-[0.15em] uppercase mb-1.5" style={{ color: "#C4A882" }}>
+            <p className="text-sm tracking-[0.15em] uppercase mb-1.5" style={{ color: "#C4A882" }}>
               Active Challenge
             </p>
             <h2
-              className="text-xl font-light leading-snug"
+              className="text-2xl font-light leading-snug"
               style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
             >
               April Adventure
@@ -51,16 +51,16 @@ export function CommunityCard() {
             className="rounded-xl p-3"
             style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
           >
-            <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#C4A882" }}>
+            <p className="text-xs uppercase tracking-wider mb-1" style={{ color: "#C4A882" }}>
               Prize
             </p>
             <p
-              className="text-xl font-light"
+              className="text-2xl font-light"
               style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
             >
               $500
             </p>
-            <p className="text-[10px]" style={{ color: "#C4A882" }}>
+            <p className="text-xs" style={{ color: "#C4A882" }}>
               CAD + Featured
             </p>
           </div>
@@ -68,16 +68,16 @@ export function CommunityCard() {
             className="rounded-xl p-3"
             style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
           >
-            <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#C4A882" }}>
+            <p className="text-xs uppercase tracking-wider mb-1" style={{ color: "#C4A882" }}>
               Remaining
             </p>
             <p
-              className="text-xl font-light"
+              className="text-2xl font-light"
               style={{ color: "#C17A4A", fontFamily: "var(--font-heading)" }}
             >
               24
             </p>
-            <p className="text-[10px]" style={{ color: "#C4A882" }}>
+            <p className="text-xs" style={{ color: "#C4A882" }}>
               days left
             </p>
           </div>
@@ -86,7 +86,7 @@ export function CommunityCard() {
         {/* Entry progress */}
         <div className="mb-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs" style={{ color: "#E8DCCB" }}>
+            <span className="text-sm" style={{ color: "#E8DCCB" }}>
               Community entries
             </span>
             <span
@@ -112,7 +112,7 @@ export function CommunityCard() {
 
         {/* CTA */}
         <button
-          className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.98]"
+          className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-base font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.98]"
           style={{
             background: "linear-gradient(135deg, #C17A4A 0%, #D4A853 100%)",
             color: "#2C2420",

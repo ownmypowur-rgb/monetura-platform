@@ -74,18 +74,18 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
       <div className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs tracking-[0.15em] uppercase mb-1" style={{ color: "#C4A882" }}>
+            <p className="text-sm tracking-[0.15em] uppercase mb-1" style={{ color: "#C4A882" }}>
               Performance
             </p>
             <h2
-              className="text-xl font-light"
+              className="text-2xl font-light"
               style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
             >
               Recent Posts
             </h2>
           </div>
           <button
-            className="flex items-center gap-1.5 text-xs font-medium"
+            className="flex items-center gap-1.5 text-sm font-medium"
             style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
           >
             View all <ArrowRightIcon size={12} />
@@ -108,7 +108,7 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
                   {/* Rank */}
                   <div className="flex items-center gap-2 mb-1">
                     <span
-                      className="text-[10px] tracking-widest"
+                      className="text-xs tracking-widest"
                       style={{ color: "#C4A882" }}
                     >
                       #{i + 1}
@@ -119,12 +119,12 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
                         <PlatformIcon key={p} platform={p} />
                       ))}
                     </div>
-                    <span className="text-[10px]" style={{ color: "#C4A882" }}>
+                    <span className="text-xs" style={{ color: "#C4A882" }}>
                       {post.platforms.join(" + ")}
                     </span>
                   </div>
                   <p
-                    className="text-sm font-medium truncate"
+                    className="text-base font-medium truncate"
                     style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
                   >
                     {post.title}
@@ -134,7 +134,7 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
                 {/* Earned */}
                 <div className="text-right ml-3 flex-shrink-0">
                   <p
-                    className="text-lg font-light leading-none"
+                    className="text-xl font-light leading-none"
                     style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
                   >
                     {post.earned}
@@ -148,11 +148,11 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
               {/* Reach + progress bar */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px]" style={{ color: "#C4A882" }}>
+                  <span className="text-xs" style={{ color: "#C4A882" }}>
                     Reach
                   </span>
                   <span
-                    className="text-[11px] font-medium"
+                    className="text-sm font-medium"
                     style={{ color: "#E8DCCB" }}
                   >
                     {post.reach}

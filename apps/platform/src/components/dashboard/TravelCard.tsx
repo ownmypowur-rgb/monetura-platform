@@ -24,13 +24,13 @@ export function TravelCard() {
         <div className="flex items-start justify-between mb-3">
           <div>
             <p
-              className="text-xs tracking-[0.15em] uppercase mb-1.5"
+              className="text-sm tracking-[0.15em] uppercase mb-1.5"
               style={{ color: "#C4A882" }}
             >
               Member Benefit
             </p>
             <h2
-              className="text-xl font-light"
+              className="text-2xl font-light"
               style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
             >
               Member Travel Rates
@@ -44,7 +44,7 @@ export function TravelCard() {
           </div>
         </div>
 
-        <p className="text-sm leading-relaxed" style={{ color: "#E8DCCB" }}>
+        <p className="text-base leading-relaxed" style={{ color: "#E8DCCB" }}>
           Exclusive rates on flights, hotels and experiences through your Arrivia membership.
         </p>
       </div>
@@ -87,12 +87,12 @@ export function TravelCard() {
               style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
             >
               <div
-                className="text-sm font-semibold"
+                className="text-base font-semibold"
                 style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
               >
                 {dest.discount}
               </div>
-              <div className="text-[10px] mt-0.5" style={{ color: "#C4A882" }}>
+              <div className="text-xs mt-0.5" style={{ color: "#C4A882" }}>
                 {dest.city}
               </div>
             </div>
@@ -101,7 +101,7 @@ export function TravelCard() {
 
         {/* CTA */}
         <button
-          className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm font-medium tracking-[0.08em] transition-all active:scale-[0.98]"
+          className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-base font-medium tracking-[0.08em] transition-all active:scale-[0.98]"
           style={{
             background: "transparent",
             border: "1px solid #D4A853",
