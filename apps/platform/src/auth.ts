@@ -93,21 +93,48 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 
   callbacks: {
-    jwt({ token, user }) {
+    // jwt() fires on every request. `user` is only present on the initial sign-in.
+    // On subsequent requests only `token` is available.
+    // We re-fetch memberTier from the DB when it is missing so that stale JWTs
+    // (created before this field was added) still produce a correct session.
+    // DB column: membership_tier → Drizzle field: membershipTier (camelCase)
+    jwt: async ({ token, user }) => {
       if (user) {
+        // Fresh sign-in: populate from the authorize() result
         token.memberId = user.memberId;
         token.memberTier = user.memberTier;
         token.founderNumber = user.founderNumber;
       }
+
+      // Stale-token fallback: if memberId is known but memberTier is missing,
+      // re-read membership_tier (→ Drizzle field: membershipTier) from the DB.
+      const staleMemberId: number | undefined = token.memberId as number | undefined;
+      if (staleMemberId && !token.memberTier) {
+        const rows = await getDb()
+          .select({
+            membershipTier: moneturaMembers.membershipTier,
+            founderNumber: moneturaMembers.founderNumber,
+          })
+          .from(moneturaMembers)
+          .where(eq(moneturaMembers.id, staleMemberId))
+          .limit(1);
+
+        if (rows[0]) {
+          token.memberTier = rows[0].membershipTier as MemberTier;
+          token.founderNumber = rows[0].founderNumber ?? null;
+        }
+      }
+
       return token;
     },
 
     session({ session, token }) {
       session.user.id = token.sub ?? "";
-      // token fields are typed via next-auth/jwt JWT augmentation in types/next-auth.d.ts
-      session.user.memberId = token.memberId as number;
-      session.user.memberTier = token.memberTier as MemberTier;
-      session.user.founderNumber = token.founderNumber as number | null;
+      // Use nullish coalescing so an undefined field (stale JWT) never
+      // reaches the client as undefined — it falls back to "free".
+      session.user.memberId = (token.memberId ?? 0) as number;
+      session.user.memberTier = (token.memberTier ?? "free") as MemberTier;
+      session.user.founderNumber = (token.founderNumber ?? null) as number | null;
       return session;
     },
   },

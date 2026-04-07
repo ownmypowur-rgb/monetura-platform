@@ -26,8 +26,10 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
   interface JWT {
-    memberId: number;
-    memberTier: MemberTier;
-    founderNumber: number | null;
+    // Optional: stale JWTs created before these fields were added won't have them.
+    // The jwt() callback re-fetches from DB when memberTier is missing.
+    memberId?: number;
+    memberTier?: MemberTier;
+    founderNumber?: number | null;
   }
 }
