@@ -52,7 +52,7 @@ export function SocialAccountsCard() {
       className="rounded-2xl overflow-hidden"
       style={{
         background: "#2C2420",
-        border: "1px solid #3D2E26",
+        border: "1px solid #4A3728",
         boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
       }}
     >
@@ -62,7 +62,7 @@ export function SocialAccountsCard() {
       />
 
       <div className="p-5">
-        <p className="text-xs tracking-[0.15em] uppercase mb-1.5" style={{ color: "#8B6E52" }}>
+        <p className="text-xs tracking-[0.15em] uppercase mb-1.5" style={{ color: "#C4A882" }}>
           Connected Accounts
         </p>
         <h2
@@ -79,7 +79,7 @@ export function SocialAccountsCard() {
               className="flex items-center justify-between rounded-xl px-3.5 py-3"
               style={{
                 background: "#1A0F0A",
-                border: `1px solid ${platform.connected ? "rgba(212,168,83,0.2)" : "#3D2E26"}`,
+                border: `1px solid ${platform.connected ? "rgba(212,168,83,0.2)" : "#4A3728"}`,
               }}
             >
               <div className="flex items-center gap-3">
@@ -90,8 +90,8 @@ export function SocialAccountsCard() {
                     background: platform.connected
                       ? `${platform.color}15`
                       : "#2C2420",
-                    border: `1px solid ${platform.connected ? `${platform.color}30` : "#3D2E26"}`,
-                    color: platform.connected ? platform.color : "#4A3728",
+                    border: `1px solid ${platform.connected ? `${platform.color}30` : "#4A3728"}`,
+                    color: platform.connected ? platform.color : "#8B6E52",
                   }}
                 >
                   {platform.icon}
@@ -99,15 +99,15 @@ export function SocialAccountsCard() {
 
                 {/* Name + handle */}
                 <div>
-                  <p className="text-sm font-medium" style={{ color: "#E8DCCB" }}>
+                  <p className="text-sm font-medium" style={{ color: "#FBF5ED" }}>
                     {platform.name}
                   </p>
                   {platform.connected && platform.handle ? (
-                    <p className="text-xs" style={{ color: "#8B6E52" }}>
+                    <p className="text-xs" style={{ color: "#C4A882" }}>
                       {platform.handle}
                     </p>
                   ) : (
-                    <p className="text-xs" style={{ color: "#4A3728" }}>
+                    <p className="text-xs" style={{ color: "#C4A882" }}>
                       Not connected
                     </p>
                   )}
@@ -131,7 +131,7 @@ export function SocialAccountsCard() {
                   style={{
                     background: "transparent",
                     border: "1px solid #4A3728",
-                    color: "#8B6E52",
+                    color: "#C4A882",
                   }}
                 >
                   Connect

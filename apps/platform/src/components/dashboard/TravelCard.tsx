@@ -8,7 +8,7 @@ export function TravelCard() {
       className="rounded-2xl overflow-hidden"
       style={{
         background: "#2C2420",
-        border: "1px solid #3D2E26",
+        border: "1px solid #4A3728",
         boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
       }}
     >
@@ -18,14 +18,14 @@ export function TravelCard() {
         style={{
           background:
             "linear-gradient(135deg, #1A0F0A 0%, #2C1A0E 50%, #2C2420 100%)",
-          borderBottom: "1px solid #3D2E26",
+          borderBottom: "1px solid #4A3728",
         }}
       >
         <div className="flex items-start justify-between mb-3">
           <div>
             <p
               className="text-xs tracking-[0.15em] uppercase mb-1.5"
-              style={{ color: "#8B6E52" }}
+              style={{ color: "#C4A882" }}
             >
               Member Benefit
             </p>
@@ -44,7 +44,7 @@ export function TravelCard() {
           </div>
         </div>
 
-        <p className="text-sm leading-relaxed" style={{ color: "#8B6E52" }}>
+        <p className="text-sm leading-relaxed" style={{ color: "#E8DCCB" }}>
           Exclusive rates on flights, hotels and experiences through your Arrivia membership.
         </p>
       </div>
@@ -84,7 +84,7 @@ export function TravelCard() {
             <div
               key={dest.city}
               className="rounded-xl p-2.5 text-center"
-              style={{ background: "#1A0F0A", border: "1px solid #3D2E26" }}
+              style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
             >
               <div
                 className="text-sm font-semibold"
@@ -92,7 +92,7 @@ export function TravelCard() {
               >
                 {dest.discount}
               </div>
-              <div className="text-[10px] mt-0.5" style={{ color: "#8B6E52" }}>
+              <div className="text-[10px] mt-0.5" style={{ color: "#C4A882" }}>
                 {dest.city}
               </div>
             </div>

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --text-primary: #FBF5ED;
+  --text-secondary: #E8DCCB;
+  --text-muted: #C4A882;
+}
+
 @layer base {
   body {
     @apply bg-monetura-cream text-monetura-charcoal font-garet;

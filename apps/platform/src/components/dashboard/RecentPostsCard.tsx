@@ -39,7 +39,7 @@ const POSTS: Post[] = [
 ];
 
 function PlatformIcon({ platform }: { platform: string }) {
-  const props = { size: 14 as const, style: { color: "#8B6E52" as const } };
+  const props = { size: 14 as const, style: { color: "#C4A882" as const } };
   switch (platform) {
     case "Instagram":
       return <InstagramIcon {...props} />;
@@ -62,7 +62,7 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
       className={`rounded-2xl overflow-hidden ${className}`}
       style={{
         background: "#2C2420",
-        border: "1px solid #3D2E26",
+        border: "1px solid #4A3728",
         boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
       }}
     >
@@ -74,7 +74,7 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
       <div className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs tracking-[0.15em] uppercase mb-1" style={{ color: "#8B6E52" }}>
+            <p className="text-xs tracking-[0.15em] uppercase mb-1" style={{ color: "#C4A882" }}>
               Performance
             </p>
             <h2
@@ -99,7 +99,7 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
               className="rounded-xl p-4"
               style={{
                 background: "#1A0F0A",
-                border: "1px solid #3D2E26",
+                border: "1px solid #4A3728",
               }}
             >
               {/* Post header row */}
@@ -109,7 +109,7 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
                   <div className="flex items-center gap-2 mb-1">
                     <span
                       className="text-[10px] tracking-widest"
-                      style={{ color: "#4A3728" }}
+                      style={{ color: "#C4A882" }}
                     >
                       #{i + 1}
                     </span>
@@ -119,13 +119,13 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
                         <PlatformIcon key={p} platform={p} />
                       ))}
                     </div>
-                    <span className="text-[10px]" style={{ color: "#4A3728" }}>
+                    <span className="text-[10px]" style={{ color: "#C4A882" }}>
                       {post.platforms.join(" + ")}
                     </span>
                   </div>
                   <p
                     className="text-sm font-medium truncate"
-                    style={{ color: "#E8DCCB", fontFamily: "var(--font-heading)" }}
+                    style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
                   >
                     {post.title}
                   </p>
@@ -139,7 +139,7 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
                   >
                     {post.earned}
                   </p>
-                  <p className="text-[10px]" style={{ color: "#8B6E52" }}>
+                  <p className="text-[10px]" style={{ color: "#C4A882" }}>
                     {post.earnedLabel}
                   </p>
                 </div>
@@ -148,7 +148,7 @@ export function RecentPostsCard({ className = "" }: RecentPostsCardProps) {
               {/* Reach + progress bar */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px]" style={{ color: "#8B6E52" }}>
+                  <span className="text-[11px]" style={{ color: "#C4A882" }}>
                     Reach
                   </span>
                   <span

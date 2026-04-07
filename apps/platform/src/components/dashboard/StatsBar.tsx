@@ -60,16 +60,16 @@ export function StatsBar({ creditsRemaining, creditsTotal }: StatsBarProps) {
             className="rounded-2xl p-4 flex flex-col justify-between"
             style={{
               background: "#2C2420",
-              border: "1px solid #3D2E26",
+              border: "1px solid #4A3728",
               boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
               minHeight: "110px",
             }}
           >
             <div className="flex items-start justify-between mb-3">
-              <span className="text-xs tracking-[0.12em] uppercase" style={{ color: "#8B6E52" }}>
+              <span className="text-xs tracking-[0.12em] uppercase" style={{ color: "#C4A882" }}>
                 {stat.label}
               </span>
-              <span className="text-base" style={{ color: "#4A3728" }}>
+              <span className="text-base" style={{ color: "#8B6E52" }}>
                 {stat.icon}
               </span>
             </div>
@@ -77,13 +77,13 @@ export function StatsBar({ creditsRemaining, creditsTotal }: StatsBarProps) {
             <div>
               <div
                 className="text-3xl font-light leading-none mb-1.5"
-                style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
+                style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
               >
                 {stat.value}
               </div>
               <div
                 className="flex items-center gap-1 text-[11px]"
-                style={{ color: stat.positive ? "#7DAF7D" : "#8B6E52" }}
+                style={{ color: stat.positive ? "#7DAF7D" : "#C4A882" }}
               >
                 {stat.positive && stat.sub.startsWith("+") && (
                   <span>↑</span>

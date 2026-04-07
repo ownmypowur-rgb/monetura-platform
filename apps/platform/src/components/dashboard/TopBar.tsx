@@ -40,7 +40,7 @@ export function TopBar({ user }: TopBarProps) {
     >
       {/* Left: greeting + badge */}
       <div>
-        <p className="text-xs tracking-[0.18em] uppercase mb-1" style={{ color: "#8B6E52" }}>
+        <p className="text-xs tracking-[0.18em] uppercase mb-1" style={{ color: "#C4A882" }}>
           {greeting}
         </p>
         <div className="flex items-center gap-2.5">
@@ -68,7 +68,7 @@ export function TopBar({ user }: TopBarProps) {
       <div className="flex items-center gap-3">
         <button
           className="relative flex items-center justify-center w-10 h-10 rounded-full transition-colors"
-          style={{ background: "#2C2420", color: "#8B6E52" }}
+          style={{ background: "#2C2420", color: "#C4A882" }}
           aria-label="Notifications"
         >
           <BellIcon size={18} />

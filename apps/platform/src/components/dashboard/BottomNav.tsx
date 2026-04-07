@@ -34,7 +34,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
       style={{
         background: "rgba(26, 15, 10, 0.95)",
         backdropFilter: "blur(20px)",
-        borderTop: "1px solid #3D2E26",
+        borderTop: "1px solid #4A3728",
       }}
     >
       {/* Thin gold line at very top of nav */}
@@ -54,7 +54,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className="flex-1 flex flex-col items-center justify-center gap-1 py-3 transition-all active:scale-95"
-              style={{ color: isActive ? "#D4A853" : "#4A3728" }}
+              style={{ color: isActive ? "#D4A853" : "#E8DCCB" }}
               aria-label={tab.label}
             >
               {/* Active indicator dot */}
@@ -68,7 +68,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               <span
                 className="text-[10px] tracking-wide"
                 style={{
-                  color: isActive ? "#D4A853" : "#4A3728",
+                  color: isActive ? "#D4A853" : "#E8DCCB",
                   fontFamily: "var(--font-heading)",
                 }}
               >

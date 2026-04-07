@@ -67,11 +67,11 @@ const LOADING_MESSAGES = [
 const C = {
   bg: "#130D0A",
   card: "#2C2420",
-  cardBorder: "#3D2E26",
+  cardBorder: "#4A3728",   // brighter borders for readability
   gold: "#D4A853",
   goldDark: "#C4973D",
-  mocha: "#4A3728",
-  canyon: "#8B6E52",
+  mocha: "#C4A882",        // muted text — was #4A3728 (too dark)
+  canyon: "#E8DCCB",       // secondary text — was #8B6E52 (too dark)
   cream: "#FBF5ED",
   sidebar: "#1A0F0A",
   terracotta: "#C17A4A",

@@ -10,7 +10,7 @@ export function CommunityCard() {
       className="rounded-2xl overflow-hidden"
       style={{
         background: "#2C2420",
-        border: "1px solid #3D2E26",
+        border: "1px solid #4A3728",
         boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
       }}
     >
@@ -23,7 +23,7 @@ export function CommunityCard() {
       <div className="p-5">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-xs tracking-[0.15em] uppercase mb-1.5" style={{ color: "#8B6E52" }}>
+            <p className="text-xs tracking-[0.15em] uppercase mb-1.5" style={{ color: "#C4A882" }}>
               Active Challenge
             </p>
             <h2
@@ -49,9 +49,9 @@ export function CommunityCard() {
         <div className="grid grid-cols-2 gap-3 mb-5">
           <div
             className="rounded-xl p-3"
-            style={{ background: "#1A0F0A", border: "1px solid #3D2E26" }}
+            style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
           >
-            <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#8B6E52" }}>
+            <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#C4A882" }}>
               Prize
             </p>
             <p
@@ -60,15 +60,15 @@ export function CommunityCard() {
             >
               $500
             </p>
-            <p className="text-[10px]" style={{ color: "#8B6E52" }}>
+            <p className="text-[10px]" style={{ color: "#C4A882" }}>
               CAD + Featured
             </p>
           </div>
           <div
             className="rounded-xl p-3"
-            style={{ background: "#1A0F0A", border: "1px solid #3D2E26" }}
+            style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
           >
-            <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#8B6E52" }}>
+            <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#C4A882" }}>
               Remaining
             </p>
             <p
@@ -77,7 +77,7 @@ export function CommunityCard() {
             >
               24
             </p>
-            <p className="text-[10px]" style={{ color: "#8B6E52" }}>
+            <p className="text-[10px]" style={{ color: "#C4A882" }}>
               days left
             </p>
           </div>

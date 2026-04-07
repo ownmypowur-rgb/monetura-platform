@@ -55,11 +55,11 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
       className="hidden lg:flex flex-col w-60 flex-shrink-0 h-screen sticky top-0"
       style={{
         background: "#1A0F0A",
-        borderRight: "1px solid #3D2E26",
+        borderRight: "1px solid #4A3728",
       }}
     >
       {/* Logo */}
-      <div className="px-6 pt-8 pb-8" style={{ borderBottom: "1px solid #3D2E26" }}>
+      <div className="px-6 pt-8 pb-8" style={{ borderBottom: "1px solid #4A3728" }}>
         <div className="flex items-center gap-2.5">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -85,7 +85,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
       <nav className="flex-1 px-3 py-5 space-y-1">
         <p
           className="px-3 mb-3 text-[10px] tracking-[0.2em] uppercase"
-          style={{ color: "#4A3728" }}
+          style={{ color: "#C4A882" }}
         >
           Navigation
         </p>
@@ -99,7 +99,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
               style={{
                 background: isActive ? "rgba(212,168,83,0.08)" : "transparent",
                 border: isActive ? "1px solid rgba(212,168,83,0.15)" : "1px solid transparent",
-                color: isActive ? "#D4A853" : "#8B6E52",
+                color: isActive ? "#D4A853" : "#E8DCCB",
               }}
             >
               <span>{item.icon}</span>
@@ -122,10 +122,10 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
 
       {/* Admin section — owner only */}
       {memberTier === "admin" && (
-        <div className="px-3 pb-2" style={{ borderTop: "1px solid #3D2E26", paddingTop: "12px" }}>
+        <div className="px-3 pb-2" style={{ borderTop: "1px solid #4A3728", paddingTop: "12px" }}>
           <p
             className="px-3 mb-2 text-[10px] tracking-[0.2em] uppercase"
-            style={{ color: "#4A3728" }}
+            style={{ color: "#C4A882" }}
           >
             Admin
           </p>
@@ -135,7 +135,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
             style={{
               background: activeTab === "admin" ? "rgba(212,168,83,0.08)" : "transparent",
               border: activeTab === "admin" ? "1px solid rgba(212,168,83,0.15)" : "1px solid transparent",
-              color: activeTab === "admin" ? "#D4A853" : "#8B6E52",
+              color: activeTab === "admin" ? "#D4A853" : "#E8DCCB",
               textDecoration: "none",
               display: "flex",
             }}
@@ -152,10 +152,10 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
       )}
 
       {/* Bottom: settings + sign out + membership tier */}
-      <div className="px-3 pb-6" style={{ borderTop: "1px solid #3D2E26", paddingTop: "16px" }}>
+      <div className="px-3 pb-6" style={{ borderTop: "1px solid #4A3728", paddingTop: "16px" }}>
         <button
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
-          style={{ color: "#8B6E52" }}
+          style={{ color: "#E8DCCB" }}
         >
           <SettingsIcon size={18} />
           <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
@@ -166,9 +166,9 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
-          style={{ color: "#8B6E52" }}
+          style={{ color: "#E8DCCB" }}
           onMouseEnter={(e) => { e.currentTarget.style.color = "#C17A4A"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = "#8B6E52"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = "#E8DCCB"; }}
         >
           <LogOutIcon size={18} />
           <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
@@ -184,7 +184,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
             border: "1px solid rgba(212,168,83,0.15)",
           }}
         >
-          <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#8B6E52" }}>
+          <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#C4A882" }}>
             Membership
           </p>
           <p
