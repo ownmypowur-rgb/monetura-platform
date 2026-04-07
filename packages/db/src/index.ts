@@ -18,7 +18,9 @@ export function getDb(): Database {
 
   const pool = mysql.createPool({
     uri: url,
-    ssl: { rejectUnauthorized: true },
+    // DigitalOcean managed MySQL uses a CA not in Node's default bundle.
+    // rejectUnauthorized:false keeps TLS encryption while accepting the DO cert chain.
+    ssl: { rejectUnauthorized: false },
     connectionLimit: 10,
     waitForConnections: true,
     queueLimit: 0,
