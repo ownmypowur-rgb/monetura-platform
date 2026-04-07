@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import type { MemberTier } from "@/types/next-auth";
-import { UploadZone } from "@/components/create/UploadZone";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -121,8 +120,6 @@ interface Step1Props {
   memberNotes: string;
   setMemberNotes: (v: string) => void;
   creditsRemaining: number;
-  mediaUploadIds: number[];
-  setMediaUploadIds: (ids: number[]) => void;
   onGenerate: () => void;
 }
 
@@ -134,32 +131,84 @@ function Step1Input({
   memberNotes,
   setMemberNotes,
   creditsRemaining,
-  mediaUploadIds,
-  setMediaUploadIds,
   onGenerate,
 }: Step1Props) {
   const canGenerate = !!experienceType && memberNotes.trim().length >= 10 && creditsRemaining > 0;
+  const [photoCount, setPhotoCount] = useState(0);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
-      {/* Photos upload */}
+      {/* ── Photos upload ────────────────────────────────────────────── */}
       <div>
         <p
-          className="text-sm tracking-[0.15em] uppercase mb-1"
-          style={{ color: "#E8DCCB" }}
+          className="text-xs tracking-[0.2em] uppercase mb-1"
+          style={{ color: C.gold, fontFamily: "var(--font-heading)" }}
         >
           Your Photos
         </p>
-        <p className="text-xs mb-3" style={{ color: "#C4A882" }}>
-          Upload photos from your experience{" "}
-          <span style={{ color: "#C4A882" }}>(optional but recommended)</span>
+        <p className="text-xs mb-3" style={{ color: C.mocha }}>
+          Upload photos from your experience (optional)
         </p>
-        <UploadZone onMediaUploadIds={setMediaUploadIds} />
-        {mediaUploadIds.length > 0 && (
-          <p className="text-xs mt-1" style={{ color: "#D4A853" }}>
-            {mediaUploadIds.length} photo{mediaUploadIds.length !== 1 ? "s" : ""} ready
-          </p>
-        )}
+
+        {/* Dashed upload box */}
+        <div
+          onClick={() => photoInputRef.current?.click()}
+          className="flex flex-col items-center gap-3 py-7 px-4 rounded-xl cursor-pointer transition-all"
+          style={{
+            border: "2px dashed rgba(212,168,83,0.45)",
+            background: "rgba(212,168,83,0.03)",
+          }}
+        >
+          {/* Camera icon */}
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#D4A853"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+
+          {photoCount > 0 ? (
+            <p className="text-sm" style={{ color: C.gold, fontFamily: "var(--font-heading)" }}>
+              {photoCount} photo{photoCount !== 1 ? "s" : ""} selected
+            </p>
+          ) : (
+            <p className="text-sm" style={{ color: C.canyon }}>
+              Tap to add photos
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); photoInputRef.current?.click(); }}
+            className="px-5 py-2 rounded-xl text-sm font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.97]"
+            style={{
+              background: `linear-gradient(135deg, ${C.gold} 0%, ${C.goldDark} 100%)`,
+              color: "#2C2420",
+              fontFamily: "var(--font-heading)",
+            }}
+          >
+            Add Photos
+          </button>
+
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="sr-only"
+            onChange={(e) => setPhotoCount(e.target.files?.length ?? 0)}
+            aria-label="Upload photos"
+          />
+        </div>
       </div>
 
       {/* Experience type */}
@@ -669,7 +718,6 @@ export function CreateWizard({ initialCredits }: CreateWizardProps) {
   const [experienceType, setExperienceType] = useState<ExperienceType | null>(null);
   const [locationName, setLocationName] = useState("");
   const [memberNotes, setMemberNotes] = useState("");
-  const [mediaUploadIds, setMediaUploadIds] = useState<number[]>([]);
 
   // Step 3 state
   const [content, setContent] = useState<GeneratedContent | null>(null);
@@ -700,7 +748,6 @@ export function CreateWizard({ initialCredits }: CreateWizardProps) {
           memberNotes,
           experienceType,
           locationName,
-          mediaUploadIds: mediaUploadIds.length > 0 ? mediaUploadIds : undefined,
         }),
       });
       const data = (await res.json()) as {
@@ -825,8 +872,6 @@ export function CreateWizard({ initialCredits }: CreateWizardProps) {
           memberNotes={memberNotes}
           setMemberNotes={setMemberNotes}
           creditsRemaining={creditsRemaining}
-          mediaUploadIds={mediaUploadIds}
-          setMediaUploadIds={setMediaUploadIds}
           onGenerate={handleGenerate}
         />
       )}
