@@ -28,13 +28,16 @@ function sanitizeFileName(name: string): string {
 }
 
 export async function POST(request: Request) {
+  console.log("[presign] POST called");
   // ── Auth ──────────────────────────────────────────────────────────────────
   const session = await auth();
   if (!session?.user?.memberId) {
+    console.log("[presign] Unauthorized — no session");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { memberId, id: userId } = session.user;
+  console.log("[presign] memberId:", memberId);
 
   // ── Parse body ────────────────────────────────────────────────────────────
   let body: z.infer<typeof bodySchema>;
@@ -115,6 +118,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
 
+  console.log("[presign] Success — mediaUploadId:", mediaUploadId, "key:", s3Key);
   return NextResponse.json({
     uploadUrl,
     s3Key,

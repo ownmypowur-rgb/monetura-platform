@@ -4,6 +4,67 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import type { MemberTier } from "@/types/next-auth";
 
+// ── Upload helpers ────────────────────────────────────────────────────────────
+
+const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"] as const;
+type AllowedMimeType = (typeof ALLOWED_MIME_TYPES)[number];
+
+function isAllowedMimeType(type: string): type is AllowedMimeType {
+  return (ALLOWED_MIME_TYPES as readonly string[]).includes(type);
+}
+
+interface PresignResponse {
+  uploadUrl: string;
+  mediaUploadId: number;
+  publicUrl: string;
+}
+
+interface ConfirmResponse {
+  success: boolean;
+  publicUrl: string;
+}
+
+async function uploadFile(file: File): Promise<string> {
+  if (!isAllowedMimeType(file.type)) {
+    throw new Error(`Unsupported type: ${file.type}. Use JPEG, PNG, or WebP.`);
+  }
+
+  // 1. Get presigned URL
+  const presignRes = await fetch("/api/upload/presign", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fileName: file.name, fileType: file.type, fileSize: file.size }),
+  });
+  if (!presignRes.ok) {
+    const err = (await presignRes.json()) as { error?: string };
+    throw new Error(err.error ?? "Failed to get upload URL");
+  }
+  const { uploadUrl, mediaUploadId, publicUrl } = (await presignRes.json()) as PresignResponse;
+
+  // 2. PUT file directly to S3
+  const putRes = await fetch(uploadUrl, {
+    method: "PUT",
+    body: file,
+    headers: { "Content-Type": file.type },
+  });
+  if (!putRes.ok) {
+    throw new Error("Failed to upload to storage");
+  }
+
+  // 3. Confirm upload
+  const confirmRes = await fetch("/api/upload/confirm", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mediaUploadId }),
+  });
+  if (!confirmRes.ok) {
+    throw new Error("Failed to confirm upload");
+  }
+  (await confirmRes.json()) as ConfirmResponse;
+
+  return publicUrl;
+}
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type ExperienceType =
@@ -655,6 +716,7 @@ interface Step1Props {
   setMemberNotes: (v: string) => void;
   creditsRemaining: number;
   onGenerate: () => void;
+  onPhotosUploaded: (publicUrls: string[]) => void;
 }
 
 function Step1Input({
@@ -666,10 +728,38 @@ function Step1Input({
   setMemberNotes,
   creditsRemaining,
   onGenerate,
+  onPhotosUploaded,
 }: Step1Props) {
   const canGenerate = !!experienceType && memberNotes.trim().length >= 10 && creditsRemaining > 0;
-  const [photoCount, setPhotoCount] = useState(0);
   const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const [thumbnails, setThumbnails] = useState<string[]>([]);
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  async function handleFilesSelected(files: FileList) {
+    const fileArray = Array.from(files);
+    if (fileArray.length === 0) return;
+
+    // Show thumbnails immediately via object URLs
+    const objectUrls = fileArray.map((f) => URL.createObjectURL(f));
+    setThumbnails(objectUrls);
+    setUploadStatus("uploading");
+    setUploadError(null);
+
+    try {
+      const publicUrls: string[] = [];
+      for (const file of fileArray) {
+        const url = await uploadFile(file);
+        publicUrls.push(url);
+      }
+      setUploadStatus("done");
+      onPhotosUploaded(publicUrls);
+    } catch (err) {
+      setUploadStatus("error");
+      setUploadError(err instanceof Error ? err.message : "Upload failed. Please try again.");
+    }
+  }
 
   return (
     <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
@@ -687,11 +777,12 @@ function Step1Input({
 
         {/* Dashed upload box */}
         <div
-          onClick={() => photoInputRef.current?.click()}
-          className="flex flex-col items-center gap-3 py-7 px-4 rounded-xl cursor-pointer transition-all"
+          onClick={() => uploadStatus !== "uploading" && photoInputRef.current?.click()}
+          className="flex flex-col items-center gap-3 py-7 px-4 rounded-xl transition-all"
           style={{
             border: "2px dashed rgba(212,168,83,0.45)",
             background: "rgba(212,168,83,0.03)",
+            cursor: uploadStatus === "uploading" ? "not-allowed" : "pointer",
           }}
         >
           {/* Camera icon */}
@@ -710,9 +801,9 @@ function Step1Input({
             <circle cx="12" cy="13" r="4" />
           </svg>
 
-          {photoCount > 0 ? (
+          {thumbnails.length > 0 ? (
             <p className="text-sm" style={{ color: C.gold, fontFamily: "var(--font-heading)" }}>
-              {photoCount} photo{photoCount !== 1 ? "s" : ""} selected
+              {thumbnails.length} photo{thumbnails.length !== 1 ? "s" : ""} selected
             </p>
           ) : (
             <p className="text-sm" style={{ color: C.canyon }}>
@@ -722,27 +813,112 @@ function Step1Input({
 
           <button
             type="button"
+            disabled={uploadStatus === "uploading"}
             onClick={(e) => { e.stopPropagation(); photoInputRef.current?.click(); }}
             className="px-5 py-2 rounded-xl text-sm font-semibold tracking-[0.1em] uppercase transition-all active:scale-[0.97]"
             style={{
-              background: `linear-gradient(135deg, ${C.gold} 0%, ${C.goldDark} 100%)`,
-              color: "#2C2420",
+              background: uploadStatus === "uploading"
+                ? C.card
+                : `linear-gradient(135deg, ${C.gold} 0%, ${C.goldDark} 100%)`,
+              color: uploadStatus === "uploading" ? C.mocha : "#2C2420",
+              border: uploadStatus === "uploading" ? `1px solid ${C.cardBorder}` : "none",
               fontFamily: "var(--font-heading)",
+              cursor: uploadStatus === "uploading" ? "not-allowed" : "pointer",
             }}
           >
-            Add Photos
+            {thumbnails.length > 0 ? "Change Photos" : "Add Photos"}
           </button>
 
           <input
             ref={photoInputRef}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/heic"
             multiple
             className="sr-only"
-            onChange={(e) => setPhotoCount(e.target.files?.length ?? 0)}
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                void handleFilesSelected(e.target.files);
+              }
+            }}
             aria-label="Upload photos"
           />
         </div>
+
+        {/* Upload status badge */}
+        {uploadStatus === "uploading" && (
+          <div
+            className="flex items-center gap-2 mt-3 px-3 py-2 rounded-lg text-sm"
+            style={{ background: "rgba(212,168,83,0.08)", border: `1px solid rgba(212,168,83,0.2)`, color: C.gold }}
+          >
+            <div
+              className="w-3.5 h-3.5 rounded-full border border-current border-t-transparent animate-spin flex-shrink-0"
+            />
+            <span style={{ fontFamily: "var(--font-heading)" }}>Uploading...</span>
+          </div>
+        )}
+        {uploadStatus === "done" && (
+          <div
+            className="flex items-center gap-2 mt-3 px-3 py-2 rounded-lg text-sm"
+            style={{ background: "rgba(212,168,83,0.08)", border: `1px solid rgba(212,168,83,0.2)`, color: C.gold }}
+          >
+            <span>✓</span>
+            <span style={{ fontFamily: "var(--font-heading)" }}>Upload complete</span>
+          </div>
+        )}
+        {uploadStatus === "error" && (
+          <div
+            className="mt-3 px-3 py-2 rounded-lg text-sm"
+            style={{ background: "rgba(193,122,74,0.1)", border: "1px solid rgba(193,122,74,0.3)", color: C.terracotta }}
+          >
+            {uploadError}
+          </div>
+        )}
+
+        {/* Thumbnail row */}
+        {thumbnails.length > 0 && (
+          <div className="flex gap-2 mt-3 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+            {thumbnails.map((src, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 rounded-lg overflow-hidden"
+                style={{
+                  width: 72,
+                  height: 72,
+                  border: `1px solid ${C.cardBorder}`,
+                  position: "relative",
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src}
+                  alt={`Photo ${i + 1}`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+                {uploadStatus === "done" && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: 3,
+                      right: 3,
+                      width: 16,
+                      height: 16,
+                      borderRadius: "50%",
+                      background: C.gold,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 9,
+                      color: "#2C2420",
+                      fontWeight: 700,
+                    }}
+                  >
+                    ✓
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Experience type */}
@@ -1351,7 +1527,6 @@ export function CreateWizard({ initialCredits, memberName }: CreateWizardProps) 
         content?: GeneratedContent;
         slug?: string;
         creditsRemaining?: number;
-        mediaUploadIds?: string[];
         error?: string;
       };
       clearInterval(interval);
@@ -1363,7 +1538,7 @@ export function CreateWizard({ initialCredits, memberName }: CreateWizardProps) 
       setContent(data.content!);
       setSlug(data.slug!);
       setCreditsRemaining(data.creditsRemaining!);
-      setMediaUploadIds(data.mediaUploadIds ?? []);
+      // mediaUploadIds is set by onPhotosUploaded — do not overwrite here
       setStep(3);
     } catch {
       clearInterval(interval);
@@ -1469,6 +1644,7 @@ export function CreateWizard({ initialCredits, memberName }: CreateWizardProps) 
           setMemberNotes={setMemberNotes}
           creditsRemaining={creditsRemaining}
           onGenerate={handleGenerate}
+          onPhotosUploaded={(urls) => setMediaUploadIds(urls)}
         />
       )}
 
