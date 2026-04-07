@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   HomeIcon,
   CreateIcon,
@@ -8,6 +9,14 @@ import {
   CommunityIcon,
   SettingsIcon,
 } from "./icons";
+
+function ShieldIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
 
 interface NavItem {
   id: string;
@@ -26,9 +35,10 @@ const NAV_ITEMS: NavItem[] = [
 interface SidebarNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  memberTier?: string;
 }
 
-export function SidebarNav({ activeTab, onTabChange }: SidebarNavProps) {
+export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavProps) {
   return (
     <aside
       className="hidden lg:flex flex-col w-60 flex-shrink-0 h-screen sticky top-0"
@@ -99,8 +109,39 @@ export function SidebarNav({ activeTab, onTabChange }: SidebarNavProps) {
         })}
       </nav>
 
+      {/* Admin section — owner only */}
+      {memberTier === "admin" && (
+        <div className="px-3 pb-2" style={{ borderTop: "1px solid #3D2E26", paddingTop: "12px" }}>
+          <p
+            className="px-3 mb-2 text-[10px] tracking-[0.2em] uppercase"
+            style={{ color: "#4A3728" }}
+          >
+            Admin
+          </p>
+          <Link
+            href="/admin/founders"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+            style={{
+              background: activeTab === "admin" ? "rgba(212,168,83,0.08)" : "transparent",
+              border: activeTab === "admin" ? "1px solid rgba(212,168,83,0.15)" : "1px solid transparent",
+              color: activeTab === "admin" ? "#D4A853" : "#8B6E52",
+              textDecoration: "none",
+              display: "flex",
+            }}
+          >
+            <span><ShieldIcon size={18} /></span>
+            <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
+              Founders
+            </span>
+            {activeTab === "admin" && (
+              <span className="ml-auto w-1 h-1 rounded-full" style={{ background: "#D4A853" }} />
+            )}
+          </Link>
+        </div>
+      )}
+
       {/* Bottom: settings + membership tier */}
-      <div className="px-3 pb-6" style={{ borderTop: "1px solid #3D2E26", paddingTop: "16px" }}>
+      <div className="px-3 pb-6" style={{ borderTop: memberTier === "admin" ? "none" : "1px solid #3D2E26", paddingTop: "16px" }}>
         <button
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
           style={{ color: "#8B6E52" }}

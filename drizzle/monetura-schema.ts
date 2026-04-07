@@ -33,6 +33,7 @@ export const moneturaMembers = mysqlTable(
       "community",
       "software",
       "founder",
+      "admin",
     ])
       .notNull()
       .default("free"),
@@ -41,13 +42,23 @@ export const moneturaMembers = mysqlTable(
       "active",
       "suspended",
       "cancelled",
+      "awaiting_payment",
     ])
       .notNull()
       .default("pending"),
     country: varchar("country", { length: 100 }),
+    province: varchar("province", { length: 100 }),
     city: varchar("city", { length: 100 }),
     bio: text("bio"),
     avatarUrl: varchar("avatar_url", { length: 500 }),
+    tierInterest: mysqlEnum("tier_interest", [
+      "entry",
+      "core",
+      "elite",
+      "platinum",
+    ]),
+    heardAbout: varchar("heard_about", { length: 500 }),
+    founderNumber: int("founder_number"),
     stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),

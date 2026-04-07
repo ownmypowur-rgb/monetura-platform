@@ -28,7 +28,7 @@ export function DashboardShell({ user }: DashboardShellProps) {
       {/* Desktop layout: sidebar + main */}
       <div className="lg:flex lg:h-screen">
         {/* Sidebar (desktop only) */}
-        <SidebarNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <SidebarNav activeTab={activeTab} onTabChange={setActiveTab} memberTier={user.memberTier} />
 
         {/* Main content column */}
         <div className="flex-1 flex flex-col lg:overflow-hidden">

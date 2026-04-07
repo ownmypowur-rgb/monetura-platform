@@ -1,4 +1,4 @@
-export type MemberTier = "free" | "community" | "software" | "founder";
+export type MemberTier = "free" | "community" | "software" | "founder" | "admin";
 
 export interface DashboardUser {
   name: string;

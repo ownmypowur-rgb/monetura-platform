@@ -3,7 +3,7 @@
 
 import type { DefaultSession } from "next-auth";
 
-export type MemberTier = "free" | "community" | "software" | "founder";
+export type MemberTier = "free" | "community" | "software" | "founder" | "admin";
 
 declare module "next-auth" {
   interface Session {
