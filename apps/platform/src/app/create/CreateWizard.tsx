@@ -26,41 +26,67 @@ interface ConfirmResponse {
 
 async function uploadFile(file: File): Promise<string> {
   if (!isAllowedMimeType(file.type)) {
-    throw new Error(`Unsupported type: ${file.type}. Use JPEG, PNG, or WebP.`);
+    throw new Error(`Unsupported file type: ${file.type || "(unknown)"}. Use JPEG, PNG, or WebP.`);
   }
 
-  // 1. Get presigned URL
-  const presignRes = await fetch("/api/upload/presign", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fileName: file.name, fileType: file.type, fileSize: file.size }),
-  });
-  if (!presignRes.ok) {
-    const err = (await presignRes.json()) as { error?: string };
-    throw new Error(err.error ?? "Failed to get upload URL");
+  // 1. Get presigned URL from our API
+  let presignRes: Response;
+  try {
+    presignRes = await fetch("/api/upload/presign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName: file.name, fileType: file.type, fileSize: file.size }),
+    });
+  } catch {
+    throw new Error("Network error — could not reach upload service. Check your connection.");
   }
+
+  if (!presignRes.ok) {
+    let message = `Upload service error (${presignRes.status})`;
+    try {
+      const err = (await presignRes.json()) as { error?: string };
+      if (err.error) message = err.error;
+    } catch { /* ignore json parse failure */ }
+    throw new Error(message);
+  }
+
   const { uploadUrl, mediaUploadId, publicUrl } = (await presignRes.json()) as PresignResponse;
 
-  // 2. PUT file directly to S3
-  const putRes = await fetch(uploadUrl, {
-    method: "PUT",
-    body: file,
-    headers: { "Content-Type": file.type },
-  });
-  if (!putRes.ok) {
-    throw new Error("Failed to upload to storage");
+  // 2. PUT file directly to S3 via presigned URL
+  let putRes: Response;
+  try {
+    putRes = await fetch(uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type },
+    });
+  } catch {
+    // Network-level failure — almost always a CORS block when hitting S3 directly
+    throw new Error(
+      "Photo upload was blocked — S3 CORS may not be configured for this domain. " +
+      "Run scripts/set-s3-cors.mjs to fix."
+    );
   }
 
-  // 3. Confirm upload
-  const confirmRes = await fetch("/api/upload/confirm", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ mediaUploadId }),
-  });
-  if (!confirmRes.ok) {
-    throw new Error("Failed to confirm upload");
+  if (!putRes.ok) {
+    throw new Error(`S3 upload failed (HTTP ${putRes.status}). Check bucket permissions.`);
   }
-  (await confirmRes.json()) as ConfirmResponse;
+
+  // 3. Confirm upload in our DB
+  let confirmRes: Response;
+  try {
+    confirmRes = await fetch("/api/upload/confirm", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mediaUploadId }),
+    });
+  } catch {
+    throw new Error("Network error confirming upload. Photo was uploaded but may not be saved.");
+  }
+
+  if (!confirmRes.ok) {
+    throw new Error("Failed to confirm upload — please try again.");
+  }
 
   return publicUrl;
 }
