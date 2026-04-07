@@ -11,6 +11,7 @@ import { CommunityCard } from "./CommunityCard";
 import { RecentPostsCard } from "./RecentPostsCard";
 import { BottomNav } from "./BottomNav";
 import { SidebarNav } from "./SidebarNav";
+import { ConciergeWidget } from "@/components/concierge/ConciergeWidget";
 import type { DashboardUser } from "./types";
 
 interface DashboardShellProps {
@@ -58,6 +59,9 @@ export function DashboardShell({ user }: DashboardShellProps) {
 
       {/* Bottom nav (mobile only) */}
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* AI Concierge — floats on every dashboard page */}
+      <ConciergeWidget memberName={user.name} memberTier={user.memberTier} />
     </div>
   );
 }
