@@ -12,7 +12,7 @@ import "server-only";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { db, moneturaMembers, moneturaFounderKeys } from "@monetura/db";
+import { getDb, moneturaMembers, moneturaFounderKeys } from "@monetura/db";
 import { apexcrmUsers } from "@/lib/apexcrm-users";
 import { eq } from "drizzle-orm";
 import type { MemberTier } from "@/types/next-auth";
@@ -36,7 +36,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const password = credentials.password;
 
         // Step 1: Query ApexCRM users table — read-only, never write
-        const users = await db
+        const users = await getDb()
           .select()
           .from(apexcrmUsers)
           .where(eq(apexcrmUsers.email, email))
@@ -50,7 +50,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!isValid) return null;
 
         // Step 3: Confirm an active Monetura member record exists
-        const members = await db
+        const members = await getDb()
           .select()
           .from(moneturaMembers)
           .where(eq(moneturaMembers.email, email))
@@ -62,7 +62,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Step 4: Fetch founder number for founder-tier members
         let founderNumber: number | null = null;
         if (member.membershipTier === "founder") {
-          const founderKeys = await db
+          const founderKeys = await getDb()
             .select()
             .from(moneturaFounderKeys)
             .where(eq(moneturaFounderKeys.memberId, member.id))
