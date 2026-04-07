@@ -174,9 +174,9 @@ export default function HomePage() {
             <div className="max-w-[19rem] sm:max-w-[42rem]">
               <p className="editorial-label">Monetura</p>
               <h1 className="lux-heading max-w-[18rem] text-[2.38rem] text-monetura-cream sm:max-w-[32rem] sm:text-[3.4rem] lg:max-w-[37rem] lg:text-[4.3rem] xl:text-[4.55rem]">
-                Passion becomes creation.
+                Passion .
                 <span className="mt-3 block text-monetura-champagne">
-                  Creation becomes freedom.
+                  Creation . Freedom
                 </span>
               </h1>
               <p className="lux-body mt-7 max-w-[20rem] text-[14px] leading-7 text-monetura-cream/78 sm:mt-8 sm:max-w-[32rem] sm:text-[15px] sm:leading-8 lg:mt-9 lg:max-w-[34rem] lg:text-[15.5px]">
