@@ -1,19 +1,23 @@
-import { auth } from "@/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 const PUBLIC_PATHS = new Set(["/login", "/forgot-password"]);
 const API_AUTH_PREFIX = "/api/auth";
 
-export default auth((req) => {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const isAuthenticated = !!req.auth?.user;
 
   // Always allow NextAuth API routes
-  if (pathname.startsWith(API_AUTH_PREFIX)) {
-    return NextResponse.next();
-  }
+  if (pathname.startsWith(API_AUTH_PREFIX)) return NextResponse.next();
 
-  // Redirect authenticated users away from auth pages to dashboard
+  // NextAuth v5 sets one of these two cookie names depending on HTTPS
+  const sessionToken =
+    req.cookies.get("__Secure-authjs.session-token") ??
+    req.cookies.get("authjs.session-token");
+
+  const isAuthenticated = !!sessionToken;
+
+  // Redirect authenticated users away from auth pages
   if (isAuthenticated && PUBLIC_PATHS.has(pathname)) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
@@ -26,7 +30,7 @@ export default auth((req) => {
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [
