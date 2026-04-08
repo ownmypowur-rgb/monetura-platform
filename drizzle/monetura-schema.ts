@@ -502,6 +502,26 @@ export const moneturaEmailSequences = mysqlTable(
 );
 
 // ---------------------------------------------------------------------------
+// monetura_bundle_teams
+// ---------------------------------------------------------------------------
+export const moneturaBundleTeams = mysqlTable(
+  "monetura_bundle_teams",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    memberId: bigint("member_id", { mode: "number", unsigned: true })
+      .notNull()
+      .unique(),
+    bundleTeamId: varchar("bundle_team_id", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    memberIdx: uniqueIndex("idx_bundle_teams_member").on(t.memberId),
+  })
+);
+
+// ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
 export const moneturaMembersRelations = relations(
@@ -519,6 +539,10 @@ export const moneturaMembersRelations = relations(
     challengeEntries: many(moneturaChallengeEntries),
     travelBookings: many(moneturaTravelBookings),
     socialAccounts: many(moneturaSocialAccounts),
+    bundleTeam: one(moneturaBundleTeams, {
+      fields: [moneturaMembers.id],
+      references: [moneturaBundleTeams.memberId],
+    }),
     stripeCustomer: one(moneturaStripeCustomers, {
       fields: [moneturaMembers.id],
       references: [moneturaStripeCustomers.memberId],
@@ -659,6 +683,16 @@ export const moneturaEmailSequencesRelations = relations(
   ({ one }) => ({
     member: one(moneturaMembers, {
       fields: [moneturaEmailSequences.memberId],
+      references: [moneturaMembers.id],
+    }),
+  })
+);
+
+export const moneturaBundleTeamsRelations = relations(
+  moneturaBundleTeams,
+  ({ one }) => ({
+    member: one(moneturaMembers, {
+      fields: [moneturaBundleTeams.memberId],
       references: [moneturaMembers.id],
     }),
   })

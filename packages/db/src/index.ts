@@ -38,3 +38,6 @@ export * from "./credits";
 
 // Re-export affiliate helpers
 export * from "./affiliates";
+
+// Re-export bundle.social helpers
+export * from "./social";
