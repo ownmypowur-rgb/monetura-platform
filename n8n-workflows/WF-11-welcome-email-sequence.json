@@ -1,0 +1,261 @@
+{
+  "id": "c3f4e5d6-a7b8-9012-cdef-123456780011",
+  "name": "WF-11 — Welcome Email Sequence",
+  "nodes": [
+    {
+      "id": "wf11-node-01",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "wf11-webhook-monetura-start-onboarding",
+      "parameters": {
+        "path": "monetura/start-onboarding",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "responseData": "noData"
+      }
+    },
+    {
+      "id": "wf11-node-02",
+      "name": "Wait 1 Day",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [500, 300],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 1,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "wf11-node-03",
+      "name": "Day 1 — Connect Social Accounts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [750, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.RESEND_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  from: 'Darryl White <darryl@monetura.com>',\n  to: [$('Webhook').item.json.body.email],\n  subject: 'Connect your social accounts to start earning',\n  html: `<h1>Hi ${$('Webhook').item.json.body.name},</h1><p>Your Monetura dashboard is waiting for you — and your first step to earning is connecting your social accounts.</p><p>Connect Instagram, Facebook, LinkedIn, and TikTok in under 2 minutes. Once connected, every post you create gets published automatically across all platforms.</p><p style='margin:24px 0'><a href='https://app.monetura.com/settings/social' style='display:inline-block;padding:12px 24px;background:#D4A853;color:#2C2420;text-decoration:none;border-radius:8px;font-weight:bold'>Connect Your Accounts</a></p><p>It only takes one click — we handle the rest.</p><p>— Darryl</p>`\n}) }}"
+      }
+    },
+    {
+      "id": "wf11-node-04",
+      "name": "Wait 2 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1000, 300],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 2,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "wf11-node-05",
+      "name": "Day 3 — Create First Post",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1250, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.RESEND_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  from: 'Darryl White <darryl@monetura.com>',\n  to: [$('Webhook').item.json.body.email],\n  subject: 'Create your first post in 3 minutes',\n  html: `<h1>Hi ${$('Webhook').item.json.body.name},</h1><p>Creating your first post on Monetura takes 3 minutes — here's all you do:</p><ol><li>Upload a photo or video</li><li>Write one sentence about it</li><li>Let the AI write your captions for Instagram, Facebook, LinkedIn, and TikTok</li><li>Hit publish — it goes everywhere at once</li></ol><p>That's it. Your content is live across every platform while you move on with your day.</p><p style='margin:24px 0'><a href='https://app.monetura.com/create' style='display:inline-block;padding:12px 24px;background:#D4A853;color:#2C2420;text-decoration:none;border-radius:8px;font-weight:bold'>Create Your First Post</a></p><p>— Darryl</p>`\n}) }}"
+      }
+    },
+    {
+      "id": "wf11-node-06",
+      "name": "Wait 4 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1500, 300],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 4,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "wf11-node-07",
+      "name": "Day 7 — Share and Earn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1750, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.RESEND_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  from: 'Darryl White <darryl@monetura.com>',\n  to: [$('Webhook').item.json.body.email],\n  subject: 'Share Monetura and earn your first commission',\n  html: `<h1>Hi ${$('Webhook').item.json.body.name},</h1><p>You have a personal affiliate link in your dashboard right now. Every person who joins Monetura through your link earns you a commission — automatically, every month.</p><p>Here's how it works:</p><ul><li>Share your affiliate link anywhere — social media, text, email</li><li>When someone joins through your link, you earn a commission on their subscription</li><li>Commissions are tracked in real-time in your Earnings Hub</li></ul><p style='margin:24px 0'><a href='https://app.monetura.com/dashboard' style='display:inline-block;padding:12px 24px;background:#D4A853;color:#2C2420;text-decoration:none;border-radius:8px;font-weight:bold'>See Your Affiliate Link</a></p><p>The best part? Your content is already promoting Monetura. Now it can pay you for it too.</p><p>— Darryl</p>`\n}) }}"
+      }
+    },
+    {
+      "id": "wf11-node-08",
+      "name": "Wait 7 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [2000, 300],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 7,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "wf11-node-09",
+      "name": "Day 14 — Tips for Earning More",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2250, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.RESEND_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  from: 'Darryl White <darryl@monetura.com>',\n  to: [$('Webhook').item.json.body.email],\n  subject: 'How top Monetura members earn $500+ per month',\n  html: `<h1>Hi ${$('Webhook').item.json.body.name},</h1><p>Two weeks in — here's what the top earning members do differently:</p><ol><li><strong>Post consistently.</strong> Members who post 3+ times per week earn 4x more in affiliate commissions. Your content keeps working after you stop.</li><li><strong>Use LinkedIn.</strong> LinkedIn posts drive the highest-value referrals — professionals who are ready to invest in themselves.</li><li><strong>Tell your story.</strong> The most-shared posts are personal wins: a booking, a sale, a goal hit. The AI helps you write it — you just need to share the moment.</li><li><strong>Share your link everywhere.</strong> Your bio, your email signature, your stories. Every touchpoint is a potential commission.</li></ol><p style='margin:24px 0'><a href='https://app.monetura.com/create' style='display:inline-block;padding:12px 24px;background:#D4A853;color:#2C2420;text-decoration:none;border-radius:8px;font-weight:bold'>Create a Post Now</a></p><p>You're a founder. This platform was built for people like you.</p><p>— Darryl</p>`\n}) }}"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 Day": {
+      "main": [
+        [
+          {
+            "node": "Day 1 — Connect Social Accounts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Day 1 — Connect Social Accounts": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 Days": {
+      "main": [
+        [
+          {
+            "node": "Day 3 — Create First Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Day 3 — Create First Post": {
+      "main": [
+        [
+          {
+            "node": "Wait 4 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 4 Days": {
+      "main": [
+        [
+          {
+            "node": "Day 7 — Share and Earn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Day 7 — Share and Earn": {
+      "main": [
+        [
+          {
+            "node": "Wait 7 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 7 Days": {
+      "main": [
+        [
+          {
+            "node": "Day 14 — Tips for Earning More",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["monetura"],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-08T00:00:00.000Z",
+  "versionId": "wf11-v1"
+}

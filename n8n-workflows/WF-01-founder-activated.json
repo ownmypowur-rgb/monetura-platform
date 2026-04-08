@@ -1,0 +1,129 @@
+{
+  "id": "a1f2e3d4-b5c6-7890-abcd-ef1234560001",
+  "name": "WF-01 — Founder Activated",
+  "nodes": [
+    {
+      "id": "wf01-node-01",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "wf01-webhook-monetura-founder-activated",
+      "parameters": {
+        "path": "monetura/founder-activated",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "responseData": "noData"
+      }
+    },
+    {
+      "id": "wf01-node-02",
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [500, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.RESEND_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  from: 'Darryl White <darryl@monetura.com>',\n  to: [$json.body.email],\n  subject: `Welcome to Monetura — You're Founder #${$json.body.founderNumber}`,\n  html: `<h1>Welcome ${$json.body.name}!</h1><p>Your Monetura founder account is now active.</p><p>You are Founder #${$json.body.founderNumber} — one of only 200 founding members.</p><p>Sign in now and start creating content:</p><a href='https://app.monetura.com/login' style='display:inline-block;padding:12px 24px;background:#D4A853;color:#2C2420;text-decoration:none;border-radius:8px;font-weight:bold'>Access Your Dashboard</a><p>Your affiliate link will be ready in your dashboard.</p><p>Welcome to the family,<br>Darryl &amp; The Monetura Team</p>`\n}) }}"
+      }
+    },
+    {
+      "id": "wf01-node-03",
+      "name": "Send Admin Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [750, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.RESEND_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  from: 'Monetura System <noreply@monetura.com>',\n  to: ['moneturamedia@gmail.com'],\n  subject: `Founder Activated — #${$('Webhook').item.json.body.founderNumber} ${$('Webhook').item.json.body.name}`,\n  html: `<p>Founder #${$('Webhook').item.json.body.founderNumber} has been activated.</p><p>Name: ${$('Webhook').item.json.body.name}</p><p>Email: ${$('Webhook').item.json.body.email}</p><p>Tier: ${$('Webhook').item.json.body.founderTier}</p>`\n}) }}"
+      }
+    },
+    {
+      "id": "wf01-node-04",
+      "name": "Log to Database",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2,
+      "position": [1000, 300],
+      "credentials": {
+        "mySql": {
+          "id": "monetura-mysql",
+          "name": "Monetura MySQL"
+        }
+      },
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO n8n_webhook_log (workflow_name, payload, status, created_at) VALUES ('WF-01-founder-activated', '{{ JSON.stringify($('Webhook').item.json.body).replace(/'/g, \"''\") }}', 'success', NOW())"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Send Admin Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Admin Notification": {
+      "main": [
+        [
+          {
+            "node": "Log to Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["monetura"],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-08T00:00:00.000Z",
+  "versionId": "wf01-v1"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "b2f3e4d5-c6a7-8901-bcde-f12345670004",
+  "name": "WF-04 — Content Publish",
+  "nodes": [
+    {
+      "id": "wf04-node-01",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "wf04-webhook-monetura-publish-content",
+      "parameters": {
+        "path": "monetura/publish-content",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "responseData": "noData"
+      }
+    },
+    {
+      "id": "wf04-node-02",
+      "name": "Post to bundle.social",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [500, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.bundle.social/api/v1/post",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $env.BUNDLE_SOCIAL_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  teamId: $json.body.bundleTeamId,\n  platforms: $json.body.selectedPlatforms,\n  content: $json.body.content.instagram || $json.body.content.text || '',\n  mediaUrls: $json.body.content.mediaUrls || []\n}) }}"
+      }
+    },
+    {
+      "id": "wf04-node-03",
+      "name": "Update Post Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [750, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.monetura.com/api/content/publish-status",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-n8n-secret",
+              "value": "={{ $env.N8N_WEBHOOK_SECRET }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  contentPostId: $('Webhook').item.json.body.contentPostId,\n  status: 'published',\n  publishedAt: new Date().toISOString(),\n  bundleResponse: $json\n}) }}"
+      }
+    },
+    {
+      "id": "wf04-node-04",
+      "name": "Log to Database",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2,
+      "position": [1000, 300],
+      "credentials": {
+        "mySql": {
+          "id": "monetura-mysql",
+          "name": "Monetura MySQL"
+        }
+      },
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO n8n_webhook_log (workflow_name, payload, status, created_at) VALUES ('WF-04-content-publish', '{{ JSON.stringify($('Webhook').item.json.body).replace(/'/g, \"''\") }}', 'success', NOW())"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Post to bundle.social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to bundle.social": {
+      "main": [
+        [
+          {
+            "node": "Update Post Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Post Status": {
+      "main": [
+        [
+          {
+            "node": "Log to Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["monetura"],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-08T00:00:00.000Z",
+  "versionId": "wf04-v1"
+}
