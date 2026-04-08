@@ -178,15 +178,16 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
 
       {/* Bottom: settings + sign out + membership tier */}
       <div className="px-3 pb-6" style={{ borderTop: "1px solid #4A3728", paddingTop: "16px" }}>
-        <button
+        <Link
+          href="/settings/social"
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
-          style={{ color: "#E8DCCB" }}
+          style={{ color: "#E8DCCB", textDecoration: "none" }}
         >
           <SettingsIcon size={18} />
           <span className="text-base" style={{ fontFamily: "var(--font-heading)" }}>
             Settings
           </span>
-        </button>
+        </Link>
 
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
