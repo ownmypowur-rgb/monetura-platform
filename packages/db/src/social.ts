@@ -2,13 +2,13 @@ import "server-only";
 import { eq } from "drizzle-orm";
 import { getDb, moneturaBundleTeams } from "./index";
 
-const BUNDLE_API = "https://app.bundle.social/api/v1";
+const BUNDLE_API = "https://api.bundle.social/api/v1";
 
 function getBundleHeaders(): Record<string, string> {
   const key = process.env["BUNDLE_SOCIAL_API_KEY"];
   if (!key) throw new Error("BUNDLE_SOCIAL_API_KEY environment variable is required");
   return {
-    Authorization: `Bearer ${key}`,
+    "x-api-key": key,
     "Content-Type": "application/json",
   };
 }
@@ -28,7 +28,7 @@ export async function getOrCreateBundleTeam(memberId: number): Promise<string> {
 
   if (existing[0]) return existing[0].bundleTeamId;
 
-  const response = await fetch(`${BUNDLE_API}/teams`, {
+  const response = await fetch(`${BUNDLE_API}/team/`, {
     method: "POST",
     headers: getBundleHeaders(),
     body: JSON.stringify({ name: `Member ${memberId}` }),
