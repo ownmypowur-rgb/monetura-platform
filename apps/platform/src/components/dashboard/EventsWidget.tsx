@@ -1,58 +1,87 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
 import { CalendarDaysIcon, ArrowRightIcon } from "./icons";
+import { EVENTS, type EventType } from "@/lib/events-data";
 
-type EventType = "Member Meetup" | "Curated Experience" | "Travel Experience" | "Adventure";
+// ---------------------------------------------------------------------------
+// EventRow — hover state per row
+// ---------------------------------------------------------------------------
 
-interface Event {
-  title: string;
-  date: string;
-  type: EventType;
-  location: string;
-  description?: string;
+function EventRow({
+  event,
+  isLast,
+}: {
+  event: EventType;
+  isLast: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  // Short date: "May 15, 2026" → "May 15"
+  const shortDate = event.date.split(",")[0] ?? event.date;
+
+  return (
+    <div>
+      <Link
+        href={`/events/${event.slug}`}
+        style={{ display: "block", textDecoration: "none" }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div
+          className="flex items-start gap-3 py-4 rounded-lg transition-all"
+          style={{
+            // always reserve 2px left border width to prevent layout shift
+            borderLeft: `2px solid ${hovered ? "#D4A853" : "transparent"}`,
+            background: hovered ? "rgba(212,168,83,0.04)" : "transparent",
+            paddingLeft: "0.5rem",
+            transition: "background 0.15s, border-color 0.15s",
+          }}
+        >
+          {/* Type dot */}
+          <span
+            className="mt-1.5 w-2.5 h-2.5 rounded-full flex-shrink-0"
+            style={{ background: event.typeDot }}
+          />
+
+          {/* Event info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <p
+                className="text-base font-semibold leading-snug"
+                style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
+              >
+                {event.title}
+              </p>
+              <span
+                className="text-sm font-semibold whitespace-nowrap flex-shrink-0"
+                style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
+              >
+                {shortDate}
+              </span>
+            </div>
+            <p className="text-sm mt-0.5" style={{ color: "#8B6E52" }}>
+              {event.location}
+            </p>
+            {"description" in event && typeof event.description === "string" && (
+              <p className="text-sm mt-0.5 italic line-clamp-1" style={{ color: "#6B5442" }}>
+                {event.tagline}
+              </p>
+            )}
+          </div>
+        </div>
+      </Link>
+
+      {/* Divider — not after last item */}
+      {!isLast && <div className="h-px" style={{ background: "#3D2E26" }} />}
+    </div>
+  );
 }
 
-const EVENTS: Event[] = [
-  {
-    title: "Founders Meetup — Calgary",
-    date: "May 15",
-    type: "Member Meetup",
-    location: "Calgary, AB",
-  },
-  {
-    title: "Wellness & Growth Retreat",
-    date: "May 28",
-    type: "Curated Experience",
-    location: "Tulum, Mexico",
-    description: "Coaching and business development in paradise",
-  },
-  {
-    title: "Santorini Curated Experience",
-    date: "June 8",
-    type: "Travel Experience",
-    location: "Santorini, Greece",
-  },
-  {
-    title: "Safari Photography Adventure",
-    date: "June 22",
-    type: "Adventure",
-    location: "Botswana, Africa",
-    description: "Learn how to capture stunning nature shots on safari",
-  },
-  {
-    title: "Banff Weekend Retreat",
-    date: "July 12",
-    type: "Member Meetup",
-    location: "Banff, AB",
-  },
-];
-
-const TYPE_COLORS: Record<EventType, string> = {
-  "Member Meetup": "#FBF5ED",
-  "Curated Experience": "#7BAE8A",
-  "Travel Experience": "#D4A853",
-  "Adventure": "#C4704F",
-};
+// ---------------------------------------------------------------------------
+// EventsWidget
+// ---------------------------------------------------------------------------
 
 export function EventsWidget() {
   return (
@@ -67,13 +96,19 @@ export function EventsWidget() {
       {/* Accent bar */}
       <div
         className="h-px w-full"
-        style={{ background: "linear-gradient(90deg, #C17A4A 0%, #D4A853 40%, transparent 100%)" }}
+        style={{
+          background:
+            "linear-gradient(90deg, #C17A4A 0%, #D4A853 40%, transparent 100%)",
+        }}
       />
 
       <div className="p-5">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
-          <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#C4A882" }}>
+          <p
+            className="text-xs font-bold tracking-widest uppercase"
+            style={{ color: "#C4A882" }}
+          >
             Upcoming Events
           </p>
           <div
@@ -90,46 +125,11 @@ export function EventsWidget() {
         {/* Event list */}
         <div className="mb-5">
           {EVENTS.map((event, i) => (
-            <div key={event.title}>
-              <div className="flex items-start gap-3 py-4">
-                {/* Type dot */}
-                <span
-                  className="mt-1.5 w-2.5 h-2.5 rounded-full flex-shrink-0"
-                  style={{ background: TYPE_COLORS[event.type] }}
-                />
-
-                {/* Event info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <p
-                      className="text-base font-semibold leading-snug"
-                      style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
-                    >
-                      {event.title}
-                    </p>
-                    <span
-                      className="text-sm font-semibold whitespace-nowrap flex-shrink-0"
-                      style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
-                    >
-                      {event.date}
-                    </span>
-                  </div>
-                  <p className="text-sm mt-0.5" style={{ color: "#8B6E52" }}>
-                    {event.location}
-                  </p>
-                  {event.description && (
-                    <p className="text-sm mt-0.5 italic" style={{ color: "#6B5442" }}>
-                      {event.description}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Divider — not after last item */}
-              {i < EVENTS.length - 1 && (
-                <div className="h-px" style={{ background: "#3D2E26" }} />
-              )}
-            </div>
+            <EventRow
+              key={event.slug}
+              event={event}
+              isLast={i === EVENTS.length - 1}
+            />
           ))}
         </div>
 
