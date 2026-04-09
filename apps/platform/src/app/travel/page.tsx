@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 const PORTAL_URL = "https://members.monetura.com/";
