@@ -100,18 +100,22 @@ export function TravelCard() {
         </div>
 
         {/* CTA */}
-        <button
+        <a
+          href="https://members.monetura.com/"
+          target="_blank"
+          rel="noopener noreferrer"
           className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-base font-medium tracking-[0.08em] transition-all active:scale-[0.98]"
           style={{
             background: "transparent",
             border: "1px solid #D4A853",
             color: "#D4A853",
             fontFamily: "var(--font-heading)",
+            textDecoration: "none",
           }}
         >
           Browse Travel Deals
           <ArrowRightIcon size={14} />
-        </button>
+        </a>
       </div>
     </div>
   );

@@ -91,12 +91,12 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
         </p>
         {NAV_ITEMS.map((item) => {
           const isActive = activeTab === item.id;
-          // Earnings navigates to its own page
-          if (item.id === "earnings") {
+          // Travel and Earnings navigate to their own pages
+          if (item.id === "travel" || item.id === "earnings") {
             return (
               <Link
                 key={item.id}
-                href="/earnings"
+                href={item.id === "earnings" ? "/earnings" : "/travel"}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                 style={{
                   background: "transparent",

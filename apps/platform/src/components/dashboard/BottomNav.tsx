@@ -20,7 +20,7 @@ const TABS: NavTab[] = [
   { id: "home", label: "Home", icon: <HomeIcon size={22} /> },
   { id: "create", label: "Create", icon: <CreateIcon size={22} /> },
   { id: "earnings", label: "Earnings", icon: <EarningsIcon size={22} />, href: "/earnings" },
-  { id: "travel", label: "Travel", icon: <TravelIcon size={22} /> },
+  { id: "travel", label: "Travel", icon: <TravelIcon size={22} />, href: "/travel" },
   { id: "community", label: "Community", icon: <CommunityIcon size={22} /> },
 ];
 
