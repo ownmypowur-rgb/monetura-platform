@@ -9,6 +9,7 @@ import {
   TravelIcon,
   CommunityIcon,
   CalendarDaysIcon,
+  ShoppingBagIcon,
   SettingsIcon,
 } from "./icons";
 
@@ -43,6 +44,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "travel", label: "Travel", icon: <TravelIcon size={18} /> },
   { id: "community", label: "Community", icon: <CommunityIcon size={18} /> },
   { id: "events", label: "Events", icon: <CalendarDaysIcon size={18} /> },
+  { id: "marketplace", label: "Marketplace", icon: <ShoppingBagIcon size={18} /> },
 ];
 
 interface SidebarNavProps {
@@ -99,6 +101,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
             earnings: "/earnings",
             travel: "/travel",
             events: "/events",
+            marketplace: "/marketplace",
           };
           if (item.id in PAGE_HREFS) {
             return (
