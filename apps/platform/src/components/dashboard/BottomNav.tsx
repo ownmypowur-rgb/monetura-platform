@@ -9,17 +9,6 @@ import {
   CommunityIcon,
 } from "./icons";
 
-function PostsIcon({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-      <polyline points="14,2 14,8 20,8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-    </svg>
-  );
-}
-
 interface NavTab {
   id: string;
   label: string;
@@ -30,7 +19,7 @@ interface NavTab {
 const TABS: NavTab[] = [
   { id: "home", label: "Home", icon: <HomeIcon size={22} /> },
   { id: "create", label: "Create", icon: <CreateIcon size={22} /> },
-  { id: "posts", label: "Posts", icon: <PostsIcon size={22} />, href: "/posts" },
+  { id: "earnings", label: "Earnings", icon: <EarningsIcon size={22} />, href: "/earnings" },
   { id: "travel", label: "Travel", icon: <TravelIcon size={22} /> },
   { id: "community", label: "Community", icon: <CommunityIcon size={22} /> },
 ];

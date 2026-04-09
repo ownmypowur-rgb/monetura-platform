@@ -41,3 +41,6 @@ export * from "./affiliates";
 
 // Re-export bundle.social helpers
 export * from "./social";
+
+// Re-export commission helpers
+export * from "./commissions";

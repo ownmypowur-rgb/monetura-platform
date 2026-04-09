@@ -91,6 +91,27 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
         </p>
         {NAV_ITEMS.map((item) => {
           const isActive = activeTab === item.id;
+          // Earnings navigates to its own page
+          if (item.id === "earnings") {
+            return (
+              <Link
+                key={item.id}
+                href="/earnings"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                style={{
+                  background: "transparent",
+                  border: "1px solid transparent",
+                  color: "#E8DCCB",
+                  textDecoration: "none",
+                }}
+              >
+                <span>{item.icon}</span>
+                <span className="text-base" style={{ fontFamily: "var(--font-heading)" }}>
+                  {item.label}
+                </span>
+              </Link>
+            );
+          }
           return (
             <button
               key={item.id}
