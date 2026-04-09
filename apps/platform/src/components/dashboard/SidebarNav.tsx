@@ -91,12 +91,17 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
         </p>
         {NAV_ITEMS.map((item) => {
           const isActive = activeTab === item.id;
-          // Travel and Earnings navigate to their own pages
-          if (item.id === "travel" || item.id === "earnings") {
+          // Create, Travel, and Earnings navigate to their own pages
+          const PAGE_HREFS: Partial<Record<string, string>> = {
+            create: "/create",
+            earnings: "/earnings",
+            travel: "/travel",
+          };
+          if (item.id in PAGE_HREFS) {
             return (
               <Link
                 key={item.id}
-                href={item.id === "earnings" ? "/earnings" : "/travel"}
+                href={PAGE_HREFS[item.id]!}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                 style={{
                   background: "transparent",
