@@ -73,7 +73,7 @@ export function EventsWidget() {
       <div className="p-5">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
-          <p className="text-sm tracking-[0.15em] uppercase" style={{ color: "#C4A882" }}>
+          <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#C4A882" }}>
             Upcoming Events
           </p>
           <div
@@ -91,10 +91,10 @@ export function EventsWidget() {
         <div className="mb-5">
           {EVENTS.map((event, i) => (
             <div key={event.title}>
-              <div className="flex items-start gap-3 py-3">
+              <div className="flex items-start gap-3 py-4">
                 {/* Type dot */}
                 <span
-                  className="mt-1.5 w-2 h-2 rounded-full flex-shrink-0"
+                  className="mt-1.5 w-2.5 h-2.5 rounded-full flex-shrink-0"
                   style={{ background: TYPE_COLORS[event.type] }}
                 />
 
@@ -102,23 +102,23 @@ export function EventsWidget() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <p
-                      className="text-sm font-medium leading-snug"
+                      className="text-base font-semibold leading-snug"
                       style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
                     >
                       {event.title}
                     </p>
                     <span
-                      className="text-xs font-semibold whitespace-nowrap flex-shrink-0"
+                      className="text-sm font-semibold whitespace-nowrap flex-shrink-0"
                       style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
                     >
                       {event.date}
                     </span>
                   </div>
-                  <p className="text-xs mt-0.5" style={{ color: "#8B6E52" }}>
+                  <p className="text-sm mt-0.5" style={{ color: "#8B6E52" }}>
                     {event.location}
                   </p>
                   {event.description && (
-                    <p className="text-xs mt-0.5 italic" style={{ color: "#6B5442" }}>
+                    <p className="text-sm mt-0.5 italic" style={{ color: "#6B5442" }}>
                       {event.description}
                     </p>
                   )}
