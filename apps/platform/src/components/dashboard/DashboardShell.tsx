@@ -12,6 +12,7 @@ import { RecentPostsCard } from "./RecentPostsCard";
 import { BottomNav } from "./BottomNav";
 import { SidebarNav } from "./SidebarNav";
 import { EventsWidget } from "./EventsWidget";
+import { TripSavingsCalculator } from "./TripSavingsCalculator";
 import { ConciergeWidget } from "@/components/concierge/ConciergeWidget";
 import type { DashboardUser } from "./types";
 
@@ -53,6 +54,7 @@ export function DashboardShell({ user }: DashboardShellProps) {
               <SocialAccountsCard />
               <CommunityCard />
               <EventsWidget />
+              <TripSavingsCalculator />
               <RecentPostsCard className="lg:col-span-2 xl:col-span-3" />
             </div>
           </main>
