@@ -53,9 +53,32 @@ function hasAnyInput(inputs: TripInputs): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Sub-components
+// Shared styles
 // ---------------------------------------------------------------------------
 
+// Section headers: ACCOMMODATION SAVINGS, TOTAL TRIP COST, TAX INFORMATION
+const sectionLabelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "0.75rem",   // text-xs
+  fontWeight: 700,       // font-bold
+  letterSpacing: "0.1em", // tracking-widest
+  textTransform: "uppercase" as const,
+  color: "#C4A882",
+  marginBottom: "0.6rem",
+};
+
+// Input field labels: HIGHEST TAX BRACKET, ENTERTAINMENT, etc.
+const fieldLabelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "0.75rem",   // text-xs
+  fontWeight: 600,       // font-semibold
+  letterSpacing: "0.08em", // tracking-wider
+  textTransform: "uppercase" as const,
+  color: "#8B6E52",
+  marginBottom: "0.35rem",
+};
+
+// Input fields: text-base
 const inputStyle: React.CSSProperties = {
   width: "100%",
   background: "#1A100C",
@@ -63,20 +86,14 @@ const inputStyle: React.CSSProperties = {
   borderRadius: "0.5rem",
   color: "#FBF5ED",
   padding: "0.5rem 0.75rem",
-  fontSize: "0.9rem",
+  fontSize: "1rem",      // text-base
   outline: "none",
   transition: "border-color 0.15s",
 };
 
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  fontSize: "0.7rem",
-  fontWeight: 700,
-  letterSpacing: "0.12em",
-  textTransform: "uppercase" as const,
-  color: "#8B6E52",
-  marginBottom: "0.35rem",
-};
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
 
 function NumberInput({
   label,
@@ -92,7 +109,7 @@ function NumberInput({
   const [focused, setFocused] = useState(false);
   return (
     <div>
-      <label style={labelStyle}>{label}</label>
+      <label style={fieldLabelStyle}>{label}</label>
       <input
         type="number"
         min={0}
@@ -111,6 +128,7 @@ function NumberInput({
   );
 }
 
+// Line item rows — label text-base, value text-base font-semibold
 function ResultRow({
   label,
   value,
@@ -127,12 +145,12 @@ function ResultRow({
   return (
     <div
       className="flex items-baseline justify-between"
-      style={{ marginBottom: small ? "0.1rem" : "0.35rem" }}
+      style={{ marginBottom: small ? "0.1rem" : "0.4rem" }}
     >
       <span
         style={{
           color: color ?? "#8B6E52",
-          fontSize: small ? "0.78rem" : "0.88rem",
+          fontSize: small ? "0.78rem" : "1rem",  // text-base
           fontStyle: small ? "italic" : undefined,
         }}
       >
@@ -142,8 +160,8 @@ function ResultRow({
         <span
           style={{
             color: color ?? "#FBF5ED",
-            fontSize: small ? "0.78rem" : "0.88rem",
-            fontWeight: bold ? 700 : 400,
+            fontSize: small ? "0.78rem" : "1rem",  // text-base
+            fontWeight: bold ? 700 : 600,           // font-semibold minimum
           }}
         >
           {value}
@@ -187,8 +205,9 @@ export function TripSavingsCalculator() {
   const accommodationSavingsPercent =
     publicPrice > 0 ? (accommodationSavings / publicPrice) * 100 : 0;
 
+  // Total trip cost uses member (actual) accommodation price, not public price
   const totalTripCost =
-    airlines + transportation + food + entertainment + publicPrice;
+    airlines + transportation + food + entertainment + memberPrice;
 
   const taxSavings = inputs.isBusiness
     ? totalTripCost * (taxBracket / 100)
@@ -265,14 +284,7 @@ export function TripSavingsCalculator() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
           {/* Left: Accommodation */}
           <div className="space-y-3">
-            <p
-              style={{
-                ...labelStyle,
-                color: "#C4A882",
-                fontSize: "0.65rem",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <p style={{ ...sectionLabelStyle, marginBottom: "0.5rem" }}>
               Accommodation
             </p>
             <NumberInput
@@ -291,14 +303,7 @@ export function TripSavingsCalculator() {
 
           {/* Right: Trip Expenses */}
           <div className="space-y-3">
-            <p
-              style={{
-                ...labelStyle,
-                color: "#C4A882",
-                fontSize: "0.65rem",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <p style={{ ...sectionLabelStyle, marginBottom: "0.5rem" }}>
               Trip Expenses
             </p>
             <NumberInput
@@ -333,15 +338,7 @@ export function TripSavingsCalculator() {
 
         {/* Tax Information */}
         <div className="mb-5 space-y-4">
-          <p
-            style={{
-              ...labelStyle,
-              color: "#C4A882",
-              fontSize: "0.65rem",
-            }}
-          >
-            Tax Information
-          </p>
+          <p style={sectionLabelStyle}>Tax Information</p>
 
           {/* Tax bracket + currency row */}
           <div className="flex items-end gap-3">
@@ -369,12 +366,8 @@ export function TripSavingsCalculator() {
                     border: "1px solid",
                     cursor: "pointer",
                     transition: "all 0.15s",
-                    background:
-                      inputs.currency === c
-                        ? "#D4A853"
-                        : "transparent",
-                    borderColor:
-                      inputs.currency === c ? "#D4A853" : "#3D2E26",
+                    background: inputs.currency === c ? "#D4A853" : "transparent",
+                    borderColor: inputs.currency === c ? "#D4A853" : "#3D2E26",
                     color: inputs.currency === c ? "#2C2420" : "#8B6E52",
                   }}
                 >
@@ -430,9 +423,11 @@ export function TripSavingsCalculator() {
                   }}
                 />
               </div>
+              {/* text-base font-medium */}
               <span
                 style={{
-                  fontSize: "0.88rem",
+                  fontSize: "1rem",
+                  fontWeight: 500,
                   color: inputs.isBusiness ? "#FBF5ED" : "#8B6E52",
                   transition: "color 0.15s",
                 }}
@@ -465,18 +460,9 @@ export function TripSavingsCalculator() {
           <>
             <div className="mb-5 h-px" style={{ background: "#3D2E26" }} />
 
-            {/* Accommodation Savings */}
+            {/* Accommodation Savings — comparison stays unchanged (uses public vs member) */}
             <div className="mb-4">
-              <p
-                style={{
-                  ...labelStyle,
-                  color: "#C4A882",
-                  fontSize: "0.65rem",
-                  marginBottom: "0.6rem",
-                }}
-              >
-                Accommodation Savings
-              </p>
+              <p style={sectionLabelStyle}>Accommodation Savings</p>
               <ResultRow
                 label="Public rate"
                 value={`${fmt(publicPrice, cur)} ${cur}`}
@@ -485,17 +471,18 @@ export function TripSavingsCalculator() {
                 label="Member rate"
                 value={`${fmt(memberPrice, cur)} ${cur}`}
               />
+              {/* "You save" — text-lg font-bold */}
               <div
                 className="flex items-baseline justify-between mt-1 pt-2"
                 style={{ borderTop: "1px solid #3D2E26" }}
               >
-                <span style={{ color: "#D4A853", fontSize: "0.9rem", fontWeight: 700 }}>
+                <span style={{ color: "#D4A853", fontSize: "1.125rem", fontWeight: 700 }}>
                   You save
                 </span>
-                <span style={{ color: "#D4A853", fontSize: "0.9rem", fontWeight: 700 }}>
+                <span style={{ color: "#D4A853", fontSize: "1.125rem", fontWeight: 700 }}>
                   {fmt(accommodationSavings, cur)} {cur}
                   {publicPrice > 0 && (
-                    <span style={{ fontSize: "0.78rem", fontWeight: 400, marginLeft: "0.35rem" }}>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 400, marginLeft: "0.35rem" }}>
                       ({accommodationSavingsPercent.toFixed(0)}%)
                     </span>
                   )}
@@ -506,18 +493,9 @@ export function TripSavingsCalculator() {
             {/* Divider */}
             <div className="mb-4 h-px" style={{ background: "#3D2E26" }} />
 
-            {/* Total Trip Cost */}
+            {/* Total Trip Cost — uses member accommodation rate */}
             <div className="mb-4">
-              <p
-                style={{
-                  ...labelStyle,
-                  color: "#C4A882",
-                  fontSize: "0.65rem",
-                  marginBottom: "0.6rem",
-                }}
-              >
-                Total Trip Cost
-              </p>
+              <p style={sectionLabelStyle}>Total Trip Cost</p>
               {airlines > 0 && (
                 <ResultRow label="Airline tickets" value={`${fmt(airlines, cur)} ${cur}`} />
               )}
@@ -530,17 +508,18 @@ export function TripSavingsCalculator() {
               {entertainment > 0 && (
                 <ResultRow label="Entertainment" value={`${fmt(entertainment, cur)} ${cur}`} />
               )}
-              {publicPrice > 0 && (
-                <ResultRow label="Accommodation (public)" value={`${fmt(publicPrice, cur)} ${cur}`} />
+              {memberPrice > 0 && (
+                <ResultRow label="Accommodation (member rate)" value={`${fmt(memberPrice, cur)} ${cur}`} />
               )}
+              {/* Subtotal — text-lg font-semibold */}
               <div
                 className="flex items-baseline justify-between mt-1 pt-2"
                 style={{ borderTop: "1px solid #3D2E26" }}
               >
-                <span style={{ color: "#FBF5ED", fontSize: "0.88rem", fontWeight: 600 }}>
+                <span style={{ color: "#FBF5ED", fontSize: "1.125rem", fontWeight: 600 }}>
                   Subtotal
                 </span>
-                <span style={{ color: "#FBF5ED", fontSize: "0.88rem", fontWeight: 600 }}>
+                <span style={{ color: "#FBF5ED", fontSize: "1.125rem", fontWeight: 600 }}>
                   {fmt(totalTripCost, cur)} {cur}
                 </span>
               </div>
@@ -560,11 +539,11 @@ export function TripSavingsCalculator() {
                   className="flex items-baseline justify-between mt-1 pt-2"
                   style={{ borderTop: "1px solid #3D2E26" }}
                 >
-                  <span style={{ color: "#FBF5ED", fontSize: "0.9rem", fontWeight: 600 }}>
+                  <span style={{ color: "#FBF5ED", fontSize: "1.125rem", fontWeight: 600 }}>
                     Grand total with member rates
                   </span>
-                  <span style={{ color: "#FBF5ED", fontSize: "0.9rem", fontWeight: 600 }}>
-                    {fmt(totalTripCost - accommodationSavings, cur)} {cur}
+                  <span style={{ color: "#FBF5ED", fontSize: "1.125rem", fontWeight: 600 }}>
+                    {fmt(totalTripCost, cur)} {cur}
                   </span>
                 </div>
                 <p style={{ fontSize: "0.73rem", color: "#6B5442", fontStyle: "italic", marginTop: "0.4rem" }}>
@@ -581,24 +560,24 @@ export function TripSavingsCalculator() {
                   label="Tax deductible expenses"
                   value={`${fmt(totalTripCost, cur)} ${cur}`}
                 />
-                <div
-                  className="flex items-baseline justify-between pt-1"
-                >
-                  <span style={{ color: "#C17A4A", fontSize: "0.9rem", fontWeight: 700 }}>
+                {/* Tax savings — text-lg font-bold, terracotta */}
+                <div className="flex items-baseline justify-between pt-1">
+                  <span style={{ color: "#C17A4A", fontSize: "1.125rem", fontWeight: 700 }}>
                     Tax savings at {taxBracket}%
                   </span>
-                  <span style={{ color: "#C17A4A", fontSize: "0.9rem", fontWeight: 700 }}>
+                  <span style={{ color: "#C17A4A", fontSize: "1.125rem", fontWeight: 700 }}>
                     {fmt(taxSavings, cur)} {cur}
                   </span>
                 </div>
+                {/* Grand total benefit — text-xl font-bold, champagne gold */}
                 <div
                   className="flex items-baseline justify-between pt-2 mt-1"
                   style={{ borderTop: "1px solid #3D2E26" }}
                 >
-                  <span style={{ color: "#D4A853", fontSize: "0.95rem", fontWeight: 700 }}>
+                  <span style={{ color: "#D4A853", fontSize: "1.25rem", fontWeight: 700 }}>
                     Grand total benefit
                   </span>
-                  <span style={{ color: "#D4A853", fontSize: "0.95rem", fontWeight: 700 }}>
+                  <span style={{ color: "#D4A853", fontSize: "1.25rem", fontWeight: 700 }}>
                     {fmt(grandTotalBenefit, cur)} {cur}
                   </span>
                 </div>
