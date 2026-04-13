@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 const stats = [
@@ -9,17 +8,23 @@ const stats = [
 export default function HeroSection() {
   return (
     <section className="relative isolate min-h-screen">
-      <div className="absolute inset-0">
-        <Image
-          src="/images/monetura-hero-reference.jpg"
-          alt="Luxury yacht lifestyle at golden hour"
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,20,18,0.88)_0%,rgba(25,20,18,0.64)_42%,rgba(25,20,18,0.28)_72%,rgba(25,20,18,0.58)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(44,36,32,0.58)_0%,rgba(44,36,32,0.2)_34%,rgba(44,36,32,0.74)_100%)]" />
+      <div className="absolute inset-0 overflow-hidden">
+        <video
+          className="h-full w-full object-cover object-center"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/images/monetura-hero-reference.jpg"
+        >
+          <source
+            src="/videos/monetura-hero-preview-01-slower-smoother.mp4"
+            type="video/mp4"
+          />
+        </video>
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,20,18,0.94)_0%,rgba(25,20,18,0.76)_36%,rgba(25,20,18,0.44)_68%,rgba(25,20,18,0.7)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(44,36,32,0.72)_0%,rgba(44,36,32,0.34)_34%,rgba(44,36,32,0.84)_100%)]" />
       </div>
 
       <div className="page-shell relative z-10 flex min-h-screen items-end pb-8 pt-28 sm:pb-16 sm:pt-32 lg:pt-36">
