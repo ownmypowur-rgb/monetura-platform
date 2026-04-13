@@ -19,7 +19,7 @@ export default function HeroSection() {
           poster="/images/monetura-hero-reference.jpg"
         >
           <source
-            src="/videos/monetura-hero-preview-01-slower-smoother.mp4"
+            src="/videos/monetura-hero-preview-01-halfspeed.mp4"
             type="video/mp4"
           />
         </video>
