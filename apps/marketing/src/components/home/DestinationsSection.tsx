@@ -1,33 +1,47 @@
+import Image from "next/image";
+
 const destinations = [
   {
     name: "Santorini",
     region: "Greece",
     body: "Whitewashed walls. Infinite blue. Content that stops every scroll.",
+    image: "/images/monetura-tropical.jpg",
+    alt: "Luxury coastal destination inspired by the Mediterranean",
   },
   {
     name: "Kyoto",
     region: "Japan",
     body: "Ancient temples. Cherry blossoms. Stories that write themselves.",
+    image: "/images/monetura-rooftop.jpg",
+    alt: "Elegant travel scene with quiet editorial atmosphere",
   },
   {
     name: "Amalfi Coast",
     region: "Italy",
     body: "Clifftop villages. Lemon groves. The kind of views people ask about for years.",
+    image: "/images/monetura-hero-reference.jpg",
+    alt: "Luxury yacht travel image with warm Mediterranean feeling",
   },
   {
     name: "Patagonia",
     region: "Chile",
     body: "The end of the world. The beginning of your best content.",
+    image: "/images/monetura-mountain.jpg",
+    alt: "Mountain retreat landscape with cinematic light",
   },
   {
     name: "Bali",
     region: "Indonesia",
     body: "Rice terraces. Temple gates. A lifestyle that practically documents itself.",
+    image: "/images/monetura-tropical.jpg",
+    alt: "Tropical destination travel lifestyle scene",
   },
   {
     name: "Iceland",
     region: "Nordic",
     body: "Northern lights. Black sand beaches. The trip that changes what you think travel can be.",
+    image: "/images/monetura-dining.jpg",
+    alt: "Warm luxury travel mood contrasting with a Nordic editorial theme",
   },
 ];
 
@@ -50,20 +64,30 @@ export default function DestinationsSection() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {destinations.map(({ name, region, body }) => (
+          {destinations.map(({ name, region, body, image, alt }) => (
             <article
               key={name}
-              className="rounded-[1.75rem] border border-monetura-sand p-8 transition-all duration-300 hover:border-monetura-champagne hover:shadow-[0_0_40px_rgba(212,168,83,0.08)] lg:p-10"
+              className="group relative min-h-[25rem] overflow-hidden rounded-[1.85rem] border border-monetura-sand/70 transition-all duration-500 hover:border-monetura-champagne hover:shadow-[0_0_50px_rgba(212,168,83,0.16)]"
             >
-              <h3 className="font-serif text-3xl leading-tight text-monetura-champagne md:text-4xl">
-                {name}
-              </h3>
-              <p className="mt-3 text-xs uppercase tracking-[0.32em] text-monetura-earth">
-                {region}
-              </p>
-              <p className="mt-6 text-sm leading-relaxed text-monetura-cream md:text-base">
-                {body}
-              </p>
+              <Image
+                src={image}
+                alt={alt}
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(44,36,32,0.12)_0%,rgba(44,36,32,0.26)_38%,rgba(44,36,32,0.9)_100%)]" />
+              <div className="absolute inset-x-0 bottom-0 p-8 lg:p-10">
+                <h3 className="font-serif text-3xl leading-tight text-monetura-champagne md:text-4xl">
+                  {name}
+                </h3>
+                <p className="mt-3 text-xs uppercase tracking-[0.32em] text-monetura-earth">
+                  {region}
+                </p>
+                <p className="mt-6 max-w-[17rem] text-sm leading-relaxed text-monetura-cream md:text-base">
+                  {body}
+                </p>
+              </div>
             </article>
           ))}
         </div>
