@@ -22,12 +22,12 @@ const tiers = [
     currency: "CAD",
     tagline: "The inner circle",
     description:
-      "Everything in Explorer, plus priority introductions and access to in-person events across Canada.",
+      "Everything in Explorer, plus priority introductions and access to in-person events designed for deeper founder relationships.",
     features: [
       "Everything in Explorer",
       "Priority curated introductions",
       "In-person event access",
-      "City meetup priority seating",
+      "Priority seating at meetups",
       "Early access to new features",
     ],
     highlight: false,
@@ -59,7 +59,7 @@ const tiers = [
       "The complete Monetura experience. Annual retreat, 1:1 introductions, advisory opportunities, and the deepest level of founder relationships.",
     features: [
       "Everything in Pioneer",
-      "Annual Canadian founder retreat",
+      "Annual founder retreat",
       "1:1 founder introduction calls",
       "Advisory seat opportunities",
       "Founding member recognition",
@@ -72,84 +72,85 @@ const tiers = [
 export default function TiersSection() {
   return (
     <section className="bg-monetura-charcoal py-32 lg:py-40">
-      <div className="max-w-6xl mx-auto px-6 lg:px-12">
-        {/* Section label */}
-        <p className="text-monetura-champagne text-xs tracking-[0.3em] uppercase font-garet mb-12">
+      <div className="mx-auto max-w-6xl px-6 lg:px-12">
+        <p className="mb-12 text-xs uppercase tracking-[0.3em] text-monetura-champagne font-garet">
           The Founders Club
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end mb-20">
-          <h2 className="font-garet font-bold text-3xl md:text-4xl lg:text-5xl text-monetura-cream leading-[1.15]">
+        <div className="mb-20 grid grid-cols-1 items-end gap-12 lg:grid-cols-2">
+          <h2 className="font-garet text-3xl leading-[1.15] text-monetura-cream md:text-4xl lg:text-5xl">
             Be part of the
             <br />
             founding chapter.
             <br />
-            <span className="text-monetura-champagne">One payment. Lifetime access.</span>
+            <span className="text-monetura-champagne">
+              One payment. Lifetime access.
+            </span>
           </h2>
           <div className="space-y-4">
-            <p className="text-monetura-cream/50 text-base md:text-lg leading-relaxed">
+            <p className="text-base leading-relaxed text-monetura-cream/50 md:text-lg">
               This is not a course. This is not a mastermind. This is a
               platform, a business model, and a community — built around the
               life you already want to live.
             </p>
-            <p className="text-monetura-cream/30 text-sm leading-relaxed">
-              All tiers paid once via e-transfer or wire to ATB Bank. We review
-              every application personally.
+            <p className="text-sm leading-relaxed text-monetura-cream/30">
+              All tiers paid once via e-transfer or wire to ATB Bank. Canada-
+              first founder payments are being handled manually while every
+              application is reviewed personally.
             </p>
           </div>
         </div>
 
-        {/* Tier cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-monetura-sand/10">
+        <div className="grid grid-cols-1 gap-px bg-monetura-sand/10 md:grid-cols-2 lg:grid-cols-4">
           {tiers.map(
             ({ name, price, currency, tagline, description, features, highlight, cta }) => (
               <div
                 key={name}
-                className={`relative p-8 lg:p-10 flex flex-col ${
+                className={`relative flex flex-col p-8 lg:p-10 ${
                   highlight
-                    ? "bg-monetura-mocha border border-monetura-champagne/30"
-                    : "bg-monetura-charcoal border border-monetura-sand/10"
+                    ? "border border-monetura-champagne/30 bg-monetura-mocha"
+                    : "border border-monetura-sand/10 bg-monetura-charcoal"
                 }`}
               >
                 {highlight && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-monetura-champagne text-monetura-charcoal text-[10px] tracking-[0.2em] uppercase font-garet font-bold px-4 py-1.5 whitespace-nowrap">
+                    <span className="whitespace-nowrap bg-monetura-champagne px-4 py-1.5 text-[10px] uppercase tracking-[0.2em] text-monetura-charcoal font-garet">
                       Most Popular
                     </span>
                   </div>
                 )}
 
                 <div className="mb-6">
-                  <p className="text-monetura-champagne text-xs tracking-[0.3em] uppercase font-garet mb-3">
+                  <p className="mb-3 text-xs uppercase tracking-[0.3em] text-monetura-champagne font-garet">
                     {tagline}
                   </p>
-                  <h3 className="font-garet font-bold text-xl text-monetura-cream mb-4">
+                  <h3 className="mb-4 font-garet text-xl text-monetura-cream">
                     {name}
                   </h3>
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="font-garet font-bold text-3xl text-monetura-cream">
+                  <div className="mb-2 flex items-baseline gap-2">
+                    <span className="font-garet text-3xl text-monetura-cream">
                       {price}
                     </span>
-                    <span className="text-monetura-cream/40 text-sm">
+                    <span className="text-sm text-monetura-cream/40">
                       {currency}
                     </span>
                   </div>
-                  <p className="text-monetura-cream/40 text-xs tracking-[0.1em] uppercase">
+                  <p className="text-xs uppercase tracking-[0.1em] text-monetura-cream/40">
                     One-time payment
                   </p>
                 </div>
 
-                <p className="text-monetura-cream/50 text-sm leading-relaxed mb-6">
+                <p className="mb-6 text-sm leading-relaxed text-monetura-cream/50">
                   {description}
                 </p>
 
-                <ul className="space-y-3 mb-8 flex-1">
+                <ul className="mb-8 flex-1 space-y-3">
                   {features.map((feature) => (
                     <li
                       key={feature}
                       className="flex items-start gap-3 text-sm text-monetura-cream/70"
                     >
-                      <span className="text-monetura-champagne mt-0.5 text-xs flex-shrink-0">
+                      <span className="mt-0.5 flex-shrink-0 text-xs text-monetura-champagne">
                         ✦
                       </span>
                       {feature}
@@ -159,10 +160,10 @@ export default function TiersSection() {
 
                 <a
                   href="/founders/apply"
-                  className={`text-center text-xs tracking-[0.15em] uppercase py-4 px-4 border transition-all duration-300 font-garet ${
+                  className={`px-4 py-4 text-center text-xs uppercase tracking-[0.15em] font-garet transition-all duration-300 ${
                     highlight
-                      ? "border-monetura-champagne bg-monetura-champagne text-monetura-charcoal hover:bg-transparent hover:text-monetura-champagne"
-                      : "border-monetura-cream/20 text-monetura-cream/70 hover:border-monetura-champagne hover:text-monetura-champagne"
+                      ? "border border-monetura-champagne bg-monetura-champagne text-monetura-charcoal hover:bg-transparent hover:text-monetura-champagne"
+                      : "border border-monetura-cream/20 text-monetura-cream/70 hover:border-monetura-champagne hover:text-monetura-champagne"
                   }`}
                 >
                   {cta}
@@ -172,9 +173,10 @@ export default function TiersSection() {
           )}
         </div>
 
-        <p className="text-center text-monetura-cream/25 text-xs tracking-wide mt-8">
-          Payment via e-transfer or wire — ATB Bank. Not processed through
-          Stripe. We review every application personally.
+        <p className="mt-8 text-center text-xs tracking-wide text-monetura-cream/25">
+          Payment via e-transfer or wire — ATB Bank. Canada-first founder
+          payments are currently handled manually while applications are
+          reviewed personally.
         </p>
       </div>
     </section>

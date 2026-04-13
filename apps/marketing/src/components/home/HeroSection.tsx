@@ -1,79 +1,82 @@
+import Image from "next/image";
+import Link from "next/link";
+
+const stats = [
+  { value: "200", label: "Total founders" },
+  { value: "Lifetime", label: "Access" },
+];
+
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-      {/* Video background */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-        poster="/images/hero-poster.jpg"
-      >
-        <source src="/videos/hero.mp4" type="video/mp4" />
-      </video>
+    <section className="relative isolate min-h-screen">
+      <div className="absolute inset-0">
+        <Image
+          src="/images/monetura-hero-reference.jpg"
+          alt="Luxury yacht lifestyle at golden hour"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,20,18,0.88)_0%,rgba(25,20,18,0.64)_42%,rgba(25,20,18,0.28)_72%,rgba(25,20,18,0.58)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(44,36,32,0.58)_0%,rgba(44,36,32,0.2)_34%,rgba(44,36,32,0.74)_100%)]" />
+      </div>
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-monetura-charcoal/80 via-monetura-charcoal/60 to-monetura-charcoal/90" />
-      <div className="absolute inset-0 bg-monetura-charcoal/40" />
+      <div className="page-shell relative z-10 flex min-h-screen items-end pb-8 pt-28 sm:pb-16 sm:pt-32 lg:pt-36">
+        <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,680px)_1fr] lg:items-end xl:gap-12">
+          <div className="max-w-[19rem] sm:max-w-[42rem]">
+            <p className="editorial-label">Monetura</p>
+            <h1 className="lux-heading max-w-[18rem] text-[2.3rem] text-monetura-cream sm:max-w-[32rem] sm:text-[3.25rem] lg:max-w-[36rem] lg:text-[4.15rem] xl:text-[4.4rem]">
+              Passion becomes creation.
+              <span className="mt-3 block text-monetura-champagne">
+                Creation becomes freedom.
+              </span>
+            </h1>
+            <p className="lux-body mt-7 max-w-[20rem] text-[14px] leading-7 text-monetura-cream/78 sm:mt-8 sm:max-w-[32rem] sm:text-[15px] sm:leading-8 lg:mt-9 lg:max-w-[34rem] lg:text-[15.5px]">
+              Monetura is the AI-powered platform that helps travellers turn every
+              trip into content, every post into income, and every experience
+              into something worth sharing.
+            </p>
 
-      {/* Fallback gradient if no video */}
-      <div className="absolute inset-0 bg-gradient-to-br from-monetura-charcoal via-monetura-mocha/80 to-monetura-charcoal -z-10" />
+            <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4 lg:mt-11">
+              <Link href="/founders/apply" className="btn-primary">
+                Apply for Founder Access
+              </Link>
+              <Link href="#the-origin" className="btn-secondary">
+                Discover Monetura
+              </Link>
+            </div>
+          </div>
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-        {/* Wordmark */}
-        <p className="text-monetura-champagne font-garet font-bold text-2xl md:text-3xl tracking-[0.3em] uppercase mb-16">
-          Monetura
-        </p>
-
-        {/* Headline */}
-        <h1 className="font-garet font-bold text-4xl md:text-6xl lg:text-7xl text-monetura-cream leading-[1.1] tracking-tight mb-8">
-          Passion becomes creation.
-          <br />
-          <span className="text-monetura-champagne">Creation becomes freedom.</span>
-        </h1>
-
-        {/* Subheadline */}
-        <p className="text-monetura-cream/60 text-base md:text-lg leading-relaxed mb-16 max-w-2xl mx-auto">
-          Monetura is the AI-powered platform that helps travellers turn every
-          trip into content, every post into income, and every experience into
-          something worth sharing.
-        </p>
-
-        {/* CTA */}
-        <a href="/founders/apply" className="btn-champagne">
-          Apply for Founder Access
-        </a>
-
-        {/* Stats */}
-        <div className="mt-20 flex flex-col sm:flex-row items-center justify-center gap-12 sm:gap-16">
-          <Stat value="200" label="Total Founders" />
-          <div className="hidden sm:block w-px h-10 bg-monetura-sand/20" />
-          <Stat value="Canada" label="Exclusively" />
-          <div className="hidden sm:block w-px h-10 bg-monetura-sand/20" />
-          <Stat value="Lifetime" label="Access" />
+          <div className="self-end lg:max-w-[18rem] lg:justify-self-end xl:max-w-[20rem]">
+            <div className="lux-panel rounded-[1.5rem] p-5 sm:rounded-[1.75rem] sm:p-8">
+              <p className="text-[11px] uppercase tracking-[0.42em] text-monetura-champagne/90">
+                Editorial notes
+              </p>
+              <div className="hairline my-5" />
+              <p className="text-sm leading-7 text-monetura-cream/72">
+                A premium travel-and-creation membership designed for founders who
+                want their experiences to become content, community, and income.
+              </p>
+              <div className="mt-7 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4">
+                {stats.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="border-l border-monetura-sand/12 pl-4 first:border-l-0 first:pl-0"
+                  >
+                    <p className="text-lg tracking-[0.12em] text-monetura-champagne sm:text-2xl">
+                      {stat.value}
+                    </p>
+                    <p className="mt-2 text-[9px] uppercase tracking-[0.28em] text-monetura-cream/48 sm:text-[10px] sm:tracking-[0.3em]">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-        <div className="w-px h-10 bg-monetura-champagne/40" />
-        <div className="w-1.5 h-1.5 rounded-full bg-monetura-champagne/40" />
-      </div>
     </section>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="text-center">
-      <p className="text-monetura-champagne font-garet font-bold text-2xl md:text-3xl tracking-wide mb-1">
-        {value}
-      </p>
-      <p className="text-monetura-cream/40 text-xs tracking-[0.2em] uppercase">
-        {label}
-      </p>
-    </div>
   );
 }

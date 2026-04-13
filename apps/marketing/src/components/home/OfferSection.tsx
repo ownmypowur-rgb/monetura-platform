@@ -26,49 +26,47 @@ const perks = [
   },
   {
     icon: "◈",
-    title: "Canada First",
-    body: "Monetura is launching exclusively in Canada. We're building the most connected, most aligned travel creator network this country has ever had.",
+    title: "Global Lifestyle Platform",
+    body: "Monetura is built for travellers everywhere. Your content, your income, and your membership move with you wherever you go.",
   },
 ];
 
 export default function OfferSection() {
   return (
     <section className="bg-monetura-cream py-32 lg:py-40">
-      <div className="max-w-6xl mx-auto px-6 lg:px-12">
-        {/* Section label */}
-        <p className="text-monetura-sunset text-xs tracking-[0.3em] uppercase font-garet mb-12">
+      <div className="mx-auto max-w-6xl px-6 lg:px-12">
+        <p className="mb-12 text-xs uppercase tracking-[0.3em] text-monetura-sunset font-garet">
           Why Founders
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-end mb-20">
-          <h2 className="font-garet font-bold text-3xl md:text-4xl lg:text-5xl text-monetura-charcoal leading-[1.15]">
+        <div className="mb-20 grid grid-cols-1 items-end gap-16 lg:grid-cols-2">
+          <h2 className="font-garet text-3xl leading-[1.15] text-monetura-charcoal md:text-4xl lg:text-5xl">
             Be part of the
             <br />
             founding chapter.
             <br />
-            <span className="text-monetura-terracotta">The terms never get better.</span>
+            <span className="text-monetura-terracotta">
+              The terms never get better.
+            </span>
           </h2>
-          <p className="text-monetura-earth text-base md:text-lg leading-relaxed">
+          <p className="text-base leading-relaxed text-monetura-earth md:text-lg">
             Monetura is launching with a limited Founders Club — the first 200
             members who shape what this platform becomes. One payment. Lifetime
             access. No price increases. Ever.
           </p>
         </div>
 
-        {/* Perks grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-monetura-sand">
+        <div className="grid grid-cols-1 gap-px bg-monetura-sand sm:grid-cols-2 lg:grid-cols-3">
           {perks.map(({ icon, title, body }) => (
             <div
               key={title}
-              className="bg-monetura-cream p-10 hover:bg-white transition-colors duration-300"
+              className="bg-monetura-cream p-10 transition-colors duration-300 hover:bg-white"
             >
-              <p className="text-monetura-champagne text-xl mb-5">{icon}</p>
-              <h3 className="font-garet font-bold text-base text-monetura-charcoal mb-3 leading-snug">
+              <p className="mb-5 text-xl text-monetura-champagne">{icon}</p>
+              <h3 className="mb-3 font-garet text-base leading-snug text-monetura-charcoal">
                 {title}
               </h3>
-              <p className="text-monetura-earth text-sm leading-relaxed">
-                {body}
-              </p>
+              <p className="text-sm leading-relaxed text-monetura-earth">{body}</p>
             </div>
           ))}
         </div>
