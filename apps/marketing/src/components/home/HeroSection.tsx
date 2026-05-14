@@ -51,9 +51,30 @@ export default function HeroSection() {
                 Discover Monetura
               </Link>
             </div>
+
+            <div className="lux-panel mt-5 max-w-[20rem] rounded-[1.3rem] p-4 lg:hidden">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-monetura-champagne/88">
+                Founders edition
+              </p>
+              <p className="mt-3 text-sm leading-6 text-monetura-cream/72">
+                A premium travel-and-creation membership for founders who want their experiences to become content and income.
+              </p>
+              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-monetura-sand/10 pt-4">
+                {stats.map((stat) => (
+                  <div key={stat.label}>
+                    <p className="text-lg tracking-[0.08em] text-monetura-champagne">
+                      {stat.value}
+                    </p>
+                    <p className="mt-1 text-[9px] uppercase tracking-[0.18em] text-monetura-cream/44">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <div className="max-w-[21rem] self-end lg:max-w-[18rem] lg:justify-self-end xl:max-w-[20rem]">
+          <div className="hidden self-end lg:block lg:max-w-[18rem] lg:justify-self-end xl:max-w-[20rem]">
             <div className="lux-panel rounded-[1.4rem] p-4 sm:rounded-[1.75rem] sm:p-8">
               <p className="text-[10px] uppercase tracking-[0.28em] text-monetura-champagne/90 sm:text-[11px] sm:tracking-[0.42em]">
                 Editorial notes
