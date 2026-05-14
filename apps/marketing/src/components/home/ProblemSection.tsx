@@ -23,15 +23,15 @@ const points = [
 
 export default function ProblemSection() {
   return (
-    <section className="bg-monetura-mocha py-32 lg:py-40">
+    <section className="bg-monetura-mocha py-20 sm:py-24 lg:py-40">
       <div className="max-w-6xl mx-auto px-6 lg:px-12">
         {/* Section label */}
-        <p className="text-monetura-champagne text-xs tracking-[0.3em] uppercase font-garet mb-12">
+        <p className="mb-8 text-monetura-champagne text-xs uppercase tracking-[0.24em] font-garet sm:mb-12 sm:tracking-[0.3em]">
           Who This Is For
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-end mb-20">
-          <h2 className="font-garet font-bold text-3xl md:text-4xl lg:text-5xl text-monetura-cream leading-[1.15]">
+        <div className="mb-12 grid grid-cols-1 items-end gap-8 sm:mb-16 sm:gap-10 lg:mb-20 lg:grid-cols-2 lg:gap-16">
+          <h2 className="font-garet text-3xl text-monetura-cream leading-[1.15] md:text-4xl lg:text-5xl">
             Built for people who
             <br />
             <span className="text-monetura-champagne">
@@ -50,12 +50,12 @@ export default function ProblemSection() {
           {points.map(({ number, title, body }) => (
             <div
               key={number}
-              className="bg-monetura-mocha p-10 lg:p-12 border border-monetura-sand/10 hover:border-monetura-champagne/20 transition-colors duration-300"
+              className="border border-monetura-sand/10 bg-monetura-mocha p-6 transition-colors duration-300 hover:border-monetura-champagne/20 sm:p-8 lg:p-12"
             >
-              <p className="text-monetura-champagne/40 font-garet font-bold text-4xl mb-6 leading-none">
+              <p className="mb-5 font-garet text-3xl leading-none text-monetura-champagne/40 sm:mb-6 sm:text-4xl">
                 {number}
               </p>
-              <h3 className="font-garet font-bold text-lg text-monetura-cream mb-4 leading-snug">
+              <h3 className="mb-3 font-garet text-lg leading-snug text-monetura-cream sm:mb-4">
                 {title}
               </h3>
               <p className="text-monetura-cream/50 text-sm leading-relaxed">

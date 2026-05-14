@@ -56,7 +56,7 @@
 
 @layer components {
   .page-shell {
-    @apply mx-auto w-full max-w-[1440px] px-5 sm:px-6 lg:px-10;
+    @apply mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10;
   }
 
   .section-padding {
@@ -64,7 +64,7 @@
   }
 
   .editorial-label {
-    @apply mb-5 inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.42em] text-monetura-champagne;
+    @apply mb-4 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-monetura-champagne sm:mb-5 sm:gap-3 sm:text-[11px] sm:tracking-[0.42em];
     font-family: var(--font-garet);
   }
 
@@ -90,7 +90,7 @@
   }
 
   .lux-body {
-    @apply text-[15px] leading-7 sm:text-base sm:leading-8;
+    @apply text-[14px] leading-6 sm:text-base sm:leading-8;
   }
 
   .lux-panel {
@@ -107,7 +107,7 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg px-6 py-4 text-[11px] uppercase tracking-[0.34em] transition-all duration-300 sm:px-8;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center rounded-lg px-5 py-3.5 text-[10px] uppercase tracking-[0.24em] transition-all duration-300 sm:w-auto sm:px-8 sm:py-4 sm:text-[11px] sm:tracking-[0.34em];
     background: var(--monetura-champagne);
     color: var(--monetura-charcoal);
     border: 1px solid rgba(212, 168, 83, 0.75);
@@ -121,7 +121,7 @@
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg px-6 py-4 text-[11px] uppercase tracking-[0.34em] transition-all duration-300 sm:px-8;
+    @apply inline-flex min-h-[52px] w-full items-center justify-center rounded-lg px-5 py-3.5 text-[10px] uppercase tracking-[0.24em] transition-all duration-300 sm:w-auto sm:px-8 sm:py-4 sm:text-[11px] sm:tracking-[0.34em];
     border: 1px solid rgba(212, 168, 83, 0.6);
     color: var(--monetura-champagne);
     background: transparent;

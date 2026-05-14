@@ -40,10 +40,10 @@ export default function Navbar() {
           : "bg-gradient-to-b from-monetura-charcoal/60 to-transparent"
       }`}
     >
-      <div className="page-shell flex h-20 items-center justify-between gap-6">
+      <div className="page-shell flex h-16 items-center justify-between gap-4 sm:h-20 sm:gap-6">
         <Link
           href="/"
-          className="text-[0.95rem] uppercase tracking-[0.45em] text-monetura-champagne transition-opacity duration-300 hover:opacity-80 sm:text-[1rem]"
+          className="text-[0.8rem] uppercase tracking-[0.32em] text-monetura-champagne transition-opacity duration-300 hover:opacity-80 sm:text-[1rem] sm:tracking-[0.45em]"
         >
           Monetura
         </Link>
@@ -65,7 +65,7 @@ export default function Navbar() {
 
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-monetura-sand/15 bg-monetura-charcoal/25 md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-monetura-sand/15 bg-monetura-charcoal/35 backdrop-blur md:hidden"
           onClick={() => setMenuOpen((value) => !value)}
           aria-label="Toggle menu"
           aria-expanded={menuOpen}
@@ -95,13 +95,13 @@ export default function Navbar() {
           menuOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="page-shell flex flex-col gap-6 py-8">
+        <div className="page-shell flex flex-col gap-5 py-6">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="text-sm uppercase tracking-[0.3em] text-monetura-cream/78 transition-colors duration-300 hover:text-monetura-champagne"
+              className="text-xs uppercase tracking-[0.24em] text-monetura-cream/78 transition-colors duration-300 hover:text-monetura-champagne sm:text-sm sm:tracking-[0.3em]"
             >
               {link.label}
             </Link>

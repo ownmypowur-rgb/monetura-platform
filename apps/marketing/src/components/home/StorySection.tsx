@@ -1,9 +1,9 @@
 export default function StorySection() {
   return (
-    <section className="bg-monetura-cream py-32 lg:py-40">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-16 px-6 lg:grid-cols-2 lg:gap-24 lg:px-12">
+    <section className="bg-monetura-cream py-20 sm:py-24 lg:py-40">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 sm:gap-14 lg:grid-cols-2 lg:gap-24 lg:px-12">
         <div>
-          <p className="mb-12 text-xs uppercase tracking-[0.3em] text-monetura-sunset font-garet">
+          <p className="mb-8 text-xs uppercase tracking-[0.24em] text-monetura-sunset font-garet sm:mb-12 sm:tracking-[0.3em]">
             The Origin
           </p>
 
@@ -11,7 +11,7 @@ export default function StorySection() {
             I stopped building a life I was supposed to want.
           </h2>
 
-          <div className="mt-10 space-y-6 text-base leading-[1.9] text-monetura-earth md:text-lg">
+          <div className="mt-8 space-y-5 text-[15px] leading-8 text-monetura-earth sm:mt-10 sm:space-y-6 sm:text-base sm:leading-[1.9] md:text-lg">
             <p>
               In 2024 I had the most successful year of my life. I built a
               company from nothing to $2.3 million in 13 months. The kind of
@@ -37,8 +37,8 @@ export default function StorySection() {
         </div>
 
         <div className="lg:pt-16">
-          <blockquote className="border-l-4 border-monetura-champagne pl-8 py-2">
-            <p className="mb-8 font-garet text-xl italic leading-[1.6] text-monetura-charcoal md:text-2xl">
+          <blockquote className="border-l-[3px] border-monetura-champagne py-1 pl-5 sm:border-l-4 sm:py-2 sm:pl-8">
+            <p className="mb-6 font-garet text-lg italic leading-[1.6] text-monetura-charcoal sm:mb-8 sm:text-xl md:text-2xl">
               &ldquo;Passion becomes creation. Creation becomes freedom.&rdquo;
             </p>
             <footer className="flex items-center gap-4">

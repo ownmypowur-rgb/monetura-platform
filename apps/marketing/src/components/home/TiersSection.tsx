@@ -71,13 +71,13 @@ const tiers = [
 
 export default function TiersSection() {
   return (
-    <section className="bg-monetura-charcoal py-32 lg:py-40">
+    <section className="bg-monetura-charcoal py-20 sm:py-24 lg:py-40">
       <div className="mx-auto max-w-6xl px-6 lg:px-12">
-        <p className="mb-12 text-xs uppercase tracking-[0.3em] text-monetura-champagne font-garet">
+        <p className="mb-8 text-xs uppercase tracking-[0.24em] text-monetura-champagne font-garet sm:mb-12 sm:tracking-[0.3em]">
           The Founders Club
         </p>
 
-        <div className="mb-20 grid grid-cols-1 items-end gap-12 lg:grid-cols-2">
+        <div className="mb-12 grid grid-cols-1 items-end gap-8 sm:mb-16 sm:gap-10 lg:mb-20 lg:grid-cols-2">
           <h2 className="font-garet text-3xl leading-[1.15] text-monetura-cream md:text-4xl lg:text-5xl">
             Be part of the
             <br />
@@ -101,30 +101,30 @@ export default function TiersSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-px bg-monetura-sand/10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-px lg:bg-monetura-sand/10">
           {tiers.map(
             ({ name, price, currency, tagline, description, features, highlight, cta }) => (
               <div
                 key={name}
-                className={`relative flex flex-col p-8 lg:p-10 ${
+                  className={`relative flex flex-col rounded-[1.6rem] p-6 sm:p-8 lg:rounded-none lg:p-10 ${
                   highlight
                     ? "border border-monetura-champagne/30 bg-monetura-mocha"
                     : "border border-monetura-sand/10 bg-monetura-charcoal"
                 }`}
               >
                 {highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="whitespace-nowrap bg-monetura-champagne px-4 py-1.5 text-[10px] uppercase tracking-[0.2em] text-monetura-charcoal font-garet">
+                  <div className="absolute left-6 top-5 sm:left-1/2 sm:-top-3 sm:-translate-x-1/2">
+                    <span className="whitespace-nowrap rounded-full bg-monetura-champagne px-3 py-1 text-[9px] uppercase tracking-[0.16em] text-monetura-charcoal font-garet sm:px-4 sm:py-1.5 sm:text-[10px] sm:tracking-[0.2em]">
                       Most Popular
                     </span>
                   </div>
                 )}
 
-                <div className="mb-6">
+                <div className="mb-5 pt-6 sm:mb-6 sm:pt-0">
                   <p className="mb-3 text-xs uppercase tracking-[0.3em] text-monetura-champagne font-garet">
                     {tagline}
                   </p>
-                  <h3 className="mb-4 font-garet text-xl text-monetura-cream">
+                  <h3 className="mb-3 font-garet text-xl text-monetura-cream sm:mb-4">
                     {name}
                   </h3>
                   <div className="mb-2 flex items-baseline gap-2">
@@ -140,11 +140,11 @@ export default function TiersSection() {
                   </p>
                 </div>
 
-                <p className="mb-6 text-sm leading-relaxed text-monetura-cream/50">
+                <p className="mb-5 text-sm leading-relaxed text-monetura-cream/50 sm:mb-6">
                   {description}
                 </p>
 
-                <ul className="mb-8 flex-1 space-y-3">
+                <ul className="mb-6 flex-1 space-y-3 sm:mb-8">
                   {features.map((feature) => (
                     <li
                       key={feature}
@@ -160,7 +160,7 @@ export default function TiersSection() {
 
                 <a
                   href="/founders/apply"
-                  className={`px-4 py-4 text-center text-xs uppercase tracking-[0.15em] font-garet transition-all duration-300 ${
+                  className={`min-h-[52px] px-4 py-4 text-center text-[10px] uppercase tracking-[0.12em] font-garet transition-all duration-300 sm:text-xs sm:tracking-[0.15em] ${
                     highlight
                       ? "border border-monetura-champagne bg-monetura-champagne text-monetura-charcoal hover:bg-transparent hover:text-monetura-champagne"
                       : "border border-monetura-cream/20 text-monetura-cream/70 hover:border-monetura-champagne hover:text-monetura-champagne"
@@ -173,7 +173,7 @@ export default function TiersSection() {
           )}
         </div>
 
-        <p className="mt-8 text-center text-xs tracking-wide text-monetura-cream/25">
+        <p className="mt-6 text-center text-[11px] leading-6 tracking-wide text-monetura-cream/25 sm:mt-8 sm:text-xs">
           Payment via e-transfer or wire — ATB Bank. Canada-first founder
           payments are currently handled manually while applications are
           reviewed personally.
