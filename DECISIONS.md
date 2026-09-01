@@ -28,3 +28,17 @@ Format per entry:
 - Decision made: (b); and if token creation itself fails, the welcome email still sends with a "Go to Your Dashboard" login-page button instead of blocking activation.
 - Reasoning: activation is an admin-facing money-moment; it should not 500 on a missing auxiliary row. Creating a `users` row is already the established pattern (register, apply, seeds do it).
 - Reversible? yes — behaviour is localized to the activate route.
+
+## [Sprint 2] Snapshot repair: consolidated regeneration instead of drizzle-kit up
+- Context: migration 0003 (bundle_teams) was hand-written with no `meta/0003_snapshot.json`, and Sprint 1's 0004 (password_tokens) was also hand-written, so `drizzle-kit generate` diffed against snapshot 0002 and would re-create existing tables.
+- Options considered: (a) `drizzle-kit up` (only upgrades snapshot *format versions*, cannot fabricate missing snapshots); (b) hand-author the missing snapshot JSONs (error-prone, unverifiable); (c) delete the two hand-written migrations + their journal entries and run `drizzle-kit generate` once, letting it produce a single properly-snapshotted migration for the full delta from 0002 → current schema.
+- Decision made: (c). Result: `0003_small_millenium_guard.sql` containing exactly CREATE monetura_bundle_teams, CREATE monetura_password_tokens, ADD monetura_media_uploads.status (+ its index). A second `drizzle-kit generate` now reports "No schema changes" — snapshots and schema agree. Verified every object in that migration already exists on the live DB (including `idx_media_uploads_status`, created additively where missing), so the migration must NOT be re-run against production; it is the source-of-truth DDL record.
+- Reasoning: only (c) yields snapshots that drizzle-kit itself vouches for; the sprint's "media_uploads.status migration" requirement is satisfied inside the consolidated migration.
+- Reversible? yes — migration files and journal are plain files in git from this sprint onward.
+
+## [Sprint 2] Local `drizzle-kit migrate` must not run against the live DB (documented, not "fixed")
+- Context: the live `__drizzle_migrations` table holds 9 applied entries (dated up to ~June 2026, e.g. hash "0002_many_onslaught") that do not correspond to this repo's 3-entry journal — the DB was migrated from a different checkout that is not in this repository.
+- Options considered: (a) rewrite/truncate the live migrations bookkeeping table to match the local journal (violates the "never delete or rewrite data" guardrail); (b) leave live bookkeeping untouched, treat the repo journal as the forward-only DDL record, and apply future changes with idempotent additive scripts until the histories are reconciled by a human.
+- Decision made: (b). Future sprints apply schema additions with `CREATE TABLE IF NOT EXISTS` / guarded `ALTER TABLE` scripts and commit the matching generated migration.
+- Reasoning: reconciling migration bookkeeping requires knowing what the other checkout's migrations contained; guessing risks data loss. Additive idempotent DDL is safe either way.
+- Reversible? yes — once the histories are reconciled, `drizzle-kit migrate` can take over.

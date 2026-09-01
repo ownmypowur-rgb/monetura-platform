@@ -65,19 +65,23 @@ async function seed(): Promise<void> {
     console.log("Hashing password (12 rounds)…");
     const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 12);
 
-    // ── 3. Insert into ApexCRM users table ────────────────────────────────
+    // ── 3. Insert into ApexCRM users table (Drizzle, no raw SQL) ──────────
     console.log("Inserting into ApexCRM users table…");
-    await connection.execute(
-      `INSERT INTO users (openId, email, name, passwordHash, loginMethod, role)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [ADMIN_OPEN_ID, ADMIN_EMAIL, ADMIN_NAME, passwordHash, "credentials", "admin"]
-    );
+    await db.insert(apexcrmUsers).values({
+      openId: ADMIN_OPEN_ID,
+      email: ADMIN_EMAIL,
+      name: ADMIN_NAME,
+      passwordHash,
+      loginMethod: "credentials",
+      role: "admin",
+    });
 
-    const [userRows] = await connection.execute<mysql.RowDataPacket[]>(
-      `SELECT id FROM users WHERE email = ? LIMIT 1`,
-      [ADMIN_EMAIL]
-    );
-    const apexUserId = (userRows[0] as { id: number } | undefined)?.id;
+    const userRows = await db
+      .select({ id: apexcrmUsers.id })
+      .from(apexcrmUsers)
+      .where(eq(apexcrmUsers.email, ADMIN_EMAIL))
+      .limit(1);
+    const apexUserId = userRows[0]?.id;
     if (!apexUserId) throw new Error("Failed to retrieve inserted user id");
     console.log(`  ✓ ApexCRM user inserted  (id = ${apexUserId})`);
 

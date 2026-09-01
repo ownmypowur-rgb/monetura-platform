@@ -26,7 +26,12 @@ Goal: activated founders receive a set-password email, can set a password, can l
 ---
 
 ## SPRINT 2 — DATABASE UNDER CONTROL
-STATUS: PENDING
+STATUS: COMPLETE
+> Summary: drizzle/migrations un-gitignored and committed (0000-0003 + meta). Hand-written snapshot-less 0003/0004 consolidated into a single
+> drizzle-kit-generated `0003_small_millenium_guard.sql` (bundle_teams + password_tokens + media_uploads.status/index) with a real snapshot —
+> `drizzle-kit generate` now reports "No schema changes". ApexCRM `./drizzle/schema.ts` removed from drizzle.config.ts sources. Both seed
+> scripts' raw `INSERT INTO users` converted to Drizzle. Live DB verified to already contain every object in the migration (nothing was run
+> against production). Live migration-bookkeeping mismatch documented in DECISIONS.md. Typecheck: 6/6 green.
 
 Goal: migrations in git, schema and migrations agree. See audit §4 "Migrations vs schema" and Recommendation 2.
 - Remove drizzle/migrations from .gitignore and commit all migration files including meta/.
@@ -39,7 +44,7 @@ Goal: migrations in git, schema and migrations agree. See audit §4 "Migrations 
 ---
 
 ## SPRINT 3 — AFFILIATE TRACKING REACHABLE + AUTH HARDENING
-STATUS: PENDING
+STATUS: IN PROGRESS
 
 Goal: public affiliate clicks record; auth endpoints hardened. See audit §1.1 middleware, §5.3, §7 weaknesses, Tech Debt 1-3, 8.
 - Middleware: restructure to an explicit public allowlist that includes /api/affiliate/track plus everything already public; keep everything else protected. Add tier check for /admin paths in middleware as defense-in-depth (pages keep their own checks).

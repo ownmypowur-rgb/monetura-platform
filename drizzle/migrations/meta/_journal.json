@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1775487659942,
+      "tag": "0000_fresh_kate_bishop",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1775529331297,
+      "tag": "0001_bent_sage",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1775533543143,
+      "tag": "0002_whole_tony_stark",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1788303933659,
+      "tag": "0003_small_millenium_guard",
+      "breakpoints": true
+    }
+  ]
+}
