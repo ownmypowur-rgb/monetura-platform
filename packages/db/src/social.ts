@@ -94,6 +94,118 @@ export interface BundleAccount {
   status: string;
 }
 
+// ── Publishing ───────────────────────────────────────────────────────────────
+
+export type BundleSocialPlatform =
+  | "instagram"
+  | "facebook"
+  | "linkedin"
+  | "tiktok";
+
+const BUNDLE_TYPE_MAP: Record<BundleSocialPlatform, string> = {
+  instagram: "INSTAGRAM",
+  facebook: "FACEBOOK",
+  linkedin: "LINKEDIN",
+  tiktok: "TIKTOK",
+};
+
+export interface BundlePublishInput {
+  memberId: number;
+  title: string;
+  /** Per-platform caption/text. Only platforms present are published. */
+  content: Partial<Record<BundleSocialPlatform, string>>;
+  /** When set, the post is scheduled for this time; otherwise published now. */
+  scheduleAt?: Date | null;
+}
+
+export type BundlePublishResult =
+  | { ok: true; bundlePostId: string | null }
+  | { ok: false; error: string };
+
+/**
+ * Creates a post on bundle.social for the member's team.
+ *
+ * Contract per bundle.social API reference (POST /api/v1/post/):
+ *   { teamId, title, postDate (ISO), status: "SCHEDULED", socialAccountTypes,
+ *     data: { INSTAGRAM: { type: "POST", text }, FACEBOOK: { text }, … } }
+ * An immediate publish is a SCHEDULED post dated now. See DECISIONS.md
+ * [Sprint 4] for what still needs a live-key verification pass.
+ */
+export async function publishBundlePost(
+  input: BundlePublishInput
+): Promise<BundlePublishResult> {
+  const db = getDb();
+
+  const rows = await db
+    .select({ bundleTeamId: moneturaBundleTeams.bundleTeamId })
+    .from(moneturaBundleTeams)
+    .where(eq(moneturaBundleTeams.memberId, input.memberId))
+    .limit(1);
+
+  if (!rows[0]) {
+    return {
+      ok: false,
+      error:
+        "No connected social accounts. Connect your accounts in Settings → Social first.",
+    };
+  }
+
+  const platforms = (
+    Object.keys(input.content) as BundleSocialPlatform[]
+  ).filter((p) => Boolean(input.content[p]));
+
+  if (platforms.length === 0) {
+    return { ok: false, error: "No social platform content to publish." };
+  }
+
+  const data: Record<string, { type?: string; text: string }> = {};
+  for (const platform of platforms) {
+    const text = input.content[platform] ?? "";
+    if (platform === "instagram") {
+      data[BUNDLE_TYPE_MAP[platform]] = { type: "POST", text };
+    } else {
+      data[BUNDLE_TYPE_MAP[platform]] = { text };
+    }
+  }
+
+  const postDate = (input.scheduleAt ?? new Date()).toISOString();
+
+  let response: Response;
+  try {
+    response = await fetch(`${BUNDLE_API}/post/`, {
+      method: "POST",
+      headers: getBundleHeaders(),
+      body: JSON.stringify({
+        teamId: rows[0].bundleTeamId,
+        title: input.title,
+        postDate,
+        status: "SCHEDULED",
+        socialAccountTypes: platforms.map((p) => BUNDLE_TYPE_MAP[p]),
+        data,
+      }),
+    });
+  } catch (err) {
+    return {
+      ok: false,
+      error: `bundle.social unreachable: ${err instanceof Error ? err.message : "network error"}`,
+    };
+  }
+
+  if (!response.ok) {
+    const text = await response.text();
+    return {
+      ok: false,
+      error: `bundle.social post creation failed: ${response.status} ${text.slice(0, 500)}`,
+    };
+  }
+
+  const result = (await response.json().catch(() => null)) as {
+    id?: string;
+  } | null;
+
+  return { ok: true, bundlePostId: result?.id ?? null };
+}
+
 const PLATFORM_MAP: Record<string, string> = {
   INSTAGRAM: "instagram",
   FACEBOOK: "facebook",

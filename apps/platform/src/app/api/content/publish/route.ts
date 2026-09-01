@@ -3,13 +3,27 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { auth } from "@/auth";
-import { getDb, moneturaContentPosts } from "@monetura/db";
+import {
+  getDb,
+  moneturaContentPosts,
+  publishBundlePost,
+  type BundleSocialPlatform,
+} from "@monetura/db";
+
+const SOCIAL_PLATFORMS = [
+  "instagram",
+  "facebook",
+  "linkedin",
+  "tiktok",
+] as const;
 
 const bodySchema = z.object({
   slug: z.string().min(1),
-  platforms: z.array(
-    z.enum(["instagram", "facebook", "linkedin", "tiktok", "blog", "magazine"])
-  ).min(1),
+  platforms: z
+    .array(
+      z.enum(["instagram", "facebook", "linkedin", "tiktok", "blog", "magazine"])
+    )
+    .min(1),
   scheduleAt: z.string().datetime().optional(),
 });
 
@@ -28,11 +42,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
+  const db = getDb();
+
   // ── Verify post belongs to this member ────────────────────────────────────
-  const posts = await getDb()
+  const posts = await db
     .select({
       id: moneturaContentPosts.id,
       authorId: moneturaContentPosts.authorId,
+      title: moneturaContentPosts.title,
+      instagramCaption: moneturaContentPosts.instagramCaption,
+      instagramHashtags: moneturaContentPosts.instagramHashtags,
+      facebookCaption: moneturaContentPosts.facebookCaption,
+      linkedinCaption: moneturaContentPosts.linkedinCaption,
+      tiktokCaption: moneturaContentPosts.tiktokCaption,
     })
     .from(moneturaContentPosts)
     .where(eq(moneturaContentPosts.slug, body.slug))
@@ -46,29 +68,82 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // ── Update status to publishing ───────────────────────────────────────────
-  await getDb()
-    .update(moneturaContentPosts)
-    .set({ status: "published" })
-    .where(eq(moneturaContentPosts.slug, body.slug));
+  const scheduleAt = body.scheduleAt ? new Date(body.scheduleAt) : null;
 
-  // ── Fire n8n webhook (fire-and-forget) ────────────────────────────────────
-  const n8nUrl = process.env["N8N_WEBHOOK_URL"];
-  if (n8nUrl) {
-    fetch(`${n8nUrl}/webhook/publish-content`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        postId: post.id,
-        slug: body.slug,
-        platforms: body.platforms,
-        scheduleAt: body.scheduleAt ?? null,
-        memberId: session.user.memberId,
-      }),
-    }).catch((err: unknown) =>
-      console.error("n8n publish webhook error:", err)
+  // ── Build per-platform content for the requested SOCIAL platforms ─────────
+  const content: Partial<Record<BundleSocialPlatform, string>> = {};
+  for (const platform of SOCIAL_PLATFORMS) {
+    if (!body.platforms.includes(platform)) continue;
+    if (platform === "instagram") {
+      const tags = ((post.instagramHashtags as string[] | null) ?? [])
+        .map((t) => `#${t.replace(/^#/, "")}`)
+        .join(" ");
+      const text = [post.instagramCaption, tags].filter(Boolean).join("\n\n");
+      if (text) content.instagram = text;
+    } else {
+      const caption =
+        platform === "facebook"
+          ? post.facebookCaption
+          : platform === "linkedin"
+            ? post.linkedinCaption
+            : post.tiktokCaption;
+      if (caption) content[platform] = caption;
+    }
+  }
+
+  const hasSocial = Object.keys(content).length > 0;
+
+  // Blog/magazine are published on Monetura itself — no external call needed.
+  if (!hasSocial) {
+    await db
+      .update(moneturaContentPosts)
+      .set({
+        status: "published",
+        publishedAt: scheduleAt ?? new Date(),
+        publishError: null,
+      })
+      .where(eq(moneturaContentPosts.id, post.id));
+
+    return NextResponse.json({ success: true, slug: body.slug });
+  }
+
+  // ── Social publish: publishing → published / failed ───────────────────────
+  await db
+    .update(moneturaContentPosts)
+    .set({ status: "publishing", publishError: null })
+    .where(eq(moneturaContentPosts.id, post.id));
+
+  const result = await publishBundlePost({
+    memberId: session.user.memberId,
+    title: post.title,
+    content,
+    scheduleAt,
+  });
+
+  if (!result.ok) {
+    console.error("[content/publish] bundle.social error:", result.error);
+    await db
+      .update(moneturaContentPosts)
+      .set({ status: "failed", publishError: result.error })
+      .where(eq(moneturaContentPosts.id, post.id));
+
+    return NextResponse.json(
+      {
+        error:
+          "Publishing failed — we're on it. Your post is safe and you can retry any time.",
+      },
+      { status: 502 }
     );
   }
+
+  await db
+    .update(moneturaContentPosts)
+    .set({
+      status: "published",
+      publishedAt: scheduleAt ?? new Date(),
+      publishError: null,
+    })
+    .where(eq(moneturaContentPosts.id, post.id));
 
   return NextResponse.json({ success: true, slug: body.slug });
 }

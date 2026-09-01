@@ -39,7 +39,9 @@ export default async function PostDetailPage({ params }: PageProps) {
       post={{
         id: post.id,
         title: post.title,
+        slug: post.slug,
         status: post.status,
+        publishError: post.publishError ?? null,
         contentType: post.contentType,
         aiCreditsUsed: post.aiCreditsUsed,
         createdAt: post.createdAt.toISOString(),

@@ -134,9 +134,16 @@ export const moneturaContentPosts = mysqlTable(
     body: text("body"),
     excerpt: text("excerpt"),
     coverImageUrl: varchar("cover_image_url", { length: 500 }),
-    status: mysqlEnum("status", ["draft", "published", "archived"])
+    status: mysqlEnum("status", [
+      "draft",
+      "publishing",
+      "published",
+      "failed",
+      "archived",
+    ])
       .notNull()
       .default("draft"),
+    publishError: text("publish_error"),
     contentType: mysqlEnum("content_type", [
       "article",
       "update",

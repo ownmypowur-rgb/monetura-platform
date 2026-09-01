@@ -63,3 +63,24 @@ Format per entry:
 - Decision made: packages/db/src/rate-limit.ts, fixed-window per key. Limits (per IP unless noted): forgot-password 5/15min; set-password 10/15min; register 5/hour; founders/apply 5/hour; concierge 30/5min per member. 429 + Retry-After on excess.
 - Reasoning: fixed window is a few lines and good enough against scripted abuse; the audit flagged duplication as debt, so one shared copy. Known limitation (documented in the file): per-serverless-instance state, so effective limits are a multiple of configured ones — acceptable for v1.
 - Reversible? yes — limits are constants at each call site; the store can be swapped for Redis behind the same function signature.
+
+## [Sprint 4] bundle.social publish contract — implemented to documented shape; NEEDS A LIVE-KEY TEST
+- Context: the official docs pages 404 publicly (docs.bundle.social → info.bundle.social → 404), so the contract was assembled from bundle.social's own marketing/API pages and their Node SDK repo (github.com/bundleglobal/bundlesocial-node), which agree on: `POST https://api.bundle.social/api/v1/post/` with `x-api-key`, body `{ teamId, title, postDate (ISO), status: "SCHEDULED", socialAccountTypes: ["INSTAGRAM", …], data: { INSTAGRAM: { type: "POST", text }, FACEBOOK: { text }, LINKEDIN: { text }, TIKTOK: { text } } }`. (WF-04's n8n payload `{ teamId, platforms, content, mediaUrls }` matches NO documented shape and was discarded.)
+- What needs verification with a live BUNDLE_SOCIAL_API_KEY (none is configured in this environment):
+  1. trailing slash on `/post/` (team creation in this repo uses `/team/`; accounts fetch uses `/social-accounts`);
+  2. whether "publish now" is `status: "SCHEDULED"` + `postDate: now` (implemented) or a distinct status value;
+  3. exact per-platform `data` field names, esp. Instagram's `type: "POST"`;
+  4. Instagram/TikTok almost certainly REQUIRE media (`uploadIds`) — this codebase never links uploads to posts (audit §6), so those two platforms may fail at bundle.social until media wiring lands; the failure path is graceful (status `failed`, member sees "Publishing failed — we're on it", Retry available).
+- Decision made: implement to the documented best understanding with a hard, stored failure path rather than block the sprint.
+- Reversible? yes — the contract lives in one function (`publishBundlePost`).
+
+## [Sprint 4] Blog/magazine platforms publish on-platform, not via bundle.social
+- Context: the publish endpoint accepts "blog" and "magazine", which are Monetura-native formats with no bundle.social equivalent.
+- Decision made: a publish request whose only platforms are blog/magazine marks the post published directly (no external call); social platforms in the same request go through bundle.social and gate the final status.
+- Reasoning: sending non-social formats to a social API can only fail; the member's mental model ("my blog post is live on Monetura") is served by the status flip.
+- Reversible? yes.
+
+## [Sprint 4] "failed" posts return to a retryable state, not literally to "draft"
+- Context: the spec says "post returns to draft" on failure, but a distinct `failed` status (added to the enum alongside `publishing`) preserves the error (`publish_error` column), lets the UI show "Retry Publish", and keeps drafts semantically clean.
+- Decision made: publishing → failed (with stored error) → retry; the post's content is untouched, exactly as a draft would be.
+- Reversible? yes — statuses are data; a one-line UPDATE maps failed → draft.

@@ -61,7 +61,12 @@ Goal: public affiliate clicks record; auth endpoints hardened. See audit §1.1 m
 ---
 
 ## SPRINT 4 — PUBLISH BECOMES REAL
-STATUS: PENDING
+STATUS: COMPLETE
+> Summary: publish route now calls bundle.social directly via new publishBundlePost() in packages/db/src/social.ts (POST /api/v1/post/ with
+> teamId/title/postDate/status:SCHEDULED/socialAccountTypes/data blocks; scheduleAt honoured via postDate). Status flow draft → publishing →
+> published / failed with publish_error stored (enum + column added additively, live DB altered, migration 0004 generated). Blog/magazine
+> publish on-platform without an external call. PostDetail Publish button wired with loading/failed/retry states; posts list shows the new
+> statuses. n8n fire-and-forget removed from the route. Contract caveats needing a live-key test are in DECISIONS.md. Typecheck: 6/6 green.
 
 Goal: clicking Publish actually posts via bundle.social. See audit §6 bundle.social row and Recommendation 4.
 - In api/content/publish: replace the n8n fire-and-forget with a direct bundle.social call using the existing client in packages/db/src/social.ts (extend it with a createPost/upload function per bundle.social API docs, base https://api.bundle.social/api/v1, x-api-key header).

@@ -1,0 +1,2 @@
+ALTER TABLE `monetura_content_posts` MODIFY COLUMN `status` enum('draft','publishing','published','failed','archived') NOT NULL DEFAULT 'draft';--> statement-breakpoint
+ALTER TABLE `monetura_content_posts` ADD `publish_error` text;

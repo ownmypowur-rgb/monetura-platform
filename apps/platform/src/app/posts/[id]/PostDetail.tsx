@@ -6,12 +6,14 @@ import Link from "next/link";
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type Platform = "instagram" | "facebook" | "linkedin" | "tiktok" | "blog" | "magazine";
-type PostStatus = "draft" | "published" | "archived";
+type PostStatus = "draft" | "publishing" | "published" | "failed" | "archived";
 
 export interface PostDetailData {
   id: number;
   title: string;
+  slug: string;
   status: PostStatus;
+  publishError: string | null;
   contentType: string;
   aiCreditsUsed: number;
   createdAt: string;
@@ -48,7 +50,9 @@ const C = {
 function statusBadge(status: PostStatus) {
   const map: Record<PostStatus, { label: string; bg: string; color: string }> = {
     draft: { label: "Draft", bg: "rgba(212,168,83,0.15)", color: C.gold },
+    publishing: { label: "Publishing…", bg: "rgba(212,168,83,0.15)", color: C.gold },
     published: { label: "Published", bg: "rgba(74,181,74,0.15)", color: "#6FCF6F" },
+    failed: { label: "Failed", bg: "rgba(220,38,38,0.12)", color: "#FCA5A5" },
     archived: { label: "Archived", bg: "rgba(139,110,82,0.2)", color: C.mid },
   };
   return map[status];
@@ -75,8 +79,54 @@ const PLATFORMS: { id: Platform; label: string }[] = [
 
 export function PostDetail({ post }: { post: PostDetailData }) {
   const [activeTab, setActiveTab] = useState<Platform>("instagram");
-  const badge = statusBadge(post.status);
-  const isPublished = post.status === "published";
+  const [status, setStatus] = useState<PostStatus>(post.status);
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(
+    post.status === "failed"
+      ? "Publishing failed — we're on it. Your post is safe and you can retry any time."
+      : null
+  );
+  const badge = statusBadge(status);
+  const isPublished = status === "published";
+
+  async function handlePublish() {
+    if (publishing) return;
+    setPublishing(true);
+    setPublishError(null);
+    setStatus("publishing");
+
+    const platforms = PLATFORMS.filter((p) => platformHasContent(p.id)).map(
+      (p) => p.id
+    );
+
+    try {
+      const res = await fetch("/api/content/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: post.slug, platforms }),
+      });
+
+      if (res.ok) {
+        setStatus("published");
+      } else {
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        setStatus("failed");
+        setPublishError(
+          data?.error ??
+            "Publishing failed — we're on it. Your post is safe and you can retry any time."
+        );
+      }
+    } catch {
+      setStatus("failed");
+      setPublishError(
+        "Publishing failed — we're on it. Your post is safe and you can retry any time."
+      );
+    } finally {
+      setPublishing(false);
+    }
+  }
 
   function getPlatformContent(platform: Platform): string {
     switch (platform) {
@@ -255,6 +305,20 @@ export function PostDetail({ post }: { post: PostDetailData }) {
           </div>
         </div>
 
+        {/* Publish error */}
+        {status === "failed" && publishError && (
+          <div
+            className="px-4 py-3 rounded-lg text-sm"
+            style={{
+              background: "rgba(220, 38, 38, 0.08)",
+              border: "1px solid rgba(220, 38, 38, 0.2)",
+              color: "#FCA5A5",
+            }}
+          >
+            {publishError}
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex gap-3">
           <Link
@@ -273,8 +337,10 @@ export function PostDetail({ post }: { post: PostDetailData }) {
           >
             Re-generate
           </Link>
-          {post.status !== "published" && (
+          {status !== "published" && (
             <button
+              onClick={handlePublish}
+              disabled={publishing}
               style={{
                 flex: 1,
                 padding: "12px",
@@ -285,10 +351,15 @@ export function PostDetail({ post }: { post: PostDetailData }) {
                 fontFamily: "var(--font-heading)",
                 fontWeight: 600,
                 fontSize: 14,
-                cursor: "pointer",
+                cursor: publishing ? "default" : "pointer",
+                opacity: publishing ? 0.6 : 1,
               }}
             >
-              Publish
+              {publishing
+                ? "Publishing…"
+                : status === "failed"
+                  ? "Retry Publish"
+                  : "Publish"}
             </button>
           )}
         </div>

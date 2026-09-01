@@ -24,7 +24,7 @@ const C = {
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type StatusFilter = "all" | "draft" | "published" | "archived";
-type PostStatus = "draft" | "published" | "archived";
+type PostStatus = "draft" | "publishing" | "published" | "failed" | "archived";
 
 const VALID_STATUSES: StatusFilter[] = ["all", "draft", "published", "archived"];
 
@@ -35,7 +35,9 @@ const PAGE_SIZE = 20;
 function statusBadge(status: PostStatus) {
   const map: Record<PostStatus, { label: string; bg: string; color: string }> = {
     draft: { label: "Draft", bg: "rgba(212,168,83,0.15)", color: C.gold },
+    publishing: { label: "Publishing…", bg: "rgba(212,168,83,0.15)", color: C.gold },
     published: { label: "Published", bg: "rgba(74,181,74,0.15)", color: "#6FCF6F" },
+    failed: { label: "Failed", bg: "rgba(220,38,38,0.12)", color: "#FCA5A5" },
     archived: { label: "Archived", bg: "rgba(139,110,82,0.2)", color: C.mid },
   };
   return map[status] ?? map.draft;
