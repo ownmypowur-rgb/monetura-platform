@@ -9,6 +9,7 @@ import {
 } from "@monetura/db";
 import { apexcrmUsers } from "@/lib/apexcrm-users";
 import { eq } from "drizzle-orm";
+import { founderTierById, formatTierPrice } from "@monetura/config/src/tiers";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +20,7 @@ const schema = z.object({
   province: z.enum([
     "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT",
   ]),
-  tier: z.enum([
-    "Entry Founder",
-    "Core Founder",
-    "Elite Founder",
-    "Platinum Founder",
-  ]),
+  tier: z.enum(["explorer", "trailblazer", "pioneer", "luminary"]),
   referral: z.string().max(500).trim().optional(),
 });
 
@@ -67,6 +63,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .where(eq(moneturaMembers.email, email))
       .limit(1);
 
+    const tierDef = founderTierById(tier);
     if (existing.length === 0) {
       await db.insert(moneturaMembers).values({
         email,
@@ -74,7 +71,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         phone,
         membershipTier: "founder",
         status: "pending",
-        city: province,
+        province,
+        tierInterest: tierDef?.tierInterest ?? "entry",
+        heardAbout: referral ?? null,
       });
     }
   } catch (err) {
@@ -114,7 +113,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       await resend.emails.send({
         from: "noreply@monetura.com",
         to: ownerEmail,
-        subject: `New Webinar Request — ${name} — Interested in ${tier}`,
+        subject: `New Webinar Request — ${name} — Interested in ${founderTierById(tier)?.name ?? tier}`,
         html: `
           <h2>New Founder Webinar Request</h2>
           <table cellpadding="8" style="border-collapse:collapse;font-family:sans-serif;font-size:14px;">
@@ -122,7 +121,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             <tr><td><strong>Email</strong></td><td>${email}</td></tr>
             <tr><td><strong>Phone</strong></td><td>${phone}</td></tr>
             <tr><td><strong>Province</strong></td><td>${province}</td></tr>
-            <tr><td><strong>Tier Interest</strong></td><td>${tier}</td></tr>
+            <tr><td><strong>Tier Interest</strong></td><td>${
+              founderTierById(tier)
+                ? `${founderTierById(tier)?.name} (${formatTierPrice(founderTierById(tier)!)} CAD)`
+                : tier
+            }</td></tr>
             <tr><td><strong>Referral Source</strong></td><td>${referral ?? "—"}</td></tr>
           </table>
           <p style="margin-top:20px;color:#888;font-size:12px;">

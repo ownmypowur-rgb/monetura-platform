@@ -2,7 +2,8 @@ import "server-only";
 import { z } from "zod";
 import Anthropic from "@anthropic-ai/sdk";
 import { auth } from "@/auth";
-import { checkRateLimit } from "@monetura/db";
+import { checkRateLimit, TIER_LIMITS } from "@monetura/db";
+import { FOUNDER_TIERS, formatTierPrice } from "@monetura/config/src/tiers";
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -19,14 +20,14 @@ function buildSystemPrompt(memberName: string, memberTier: string): string {
 1. MONETURA PLATFORM EXPERT:
 You know everything about the Monetura platform:
 - Content creation: Members upload photos, write notes, AI generates captions for Instagram, Facebook, LinkedIn, TikTok, Blog, and Magazine
-- Credits: Each content generation uses 1 credit. Credits reset on the 1st of each month. Founders get 500 credits/month.
+- Credits: Each content generation uses 1 credit. Credits reset on the 1st of each month. Monthly limits: founders ${TIER_LIMITS.founder}, software members ${TIER_LIMITS.software}, community members ${TIER_LIMITS.community}.
 - Affiliate links: Each member has a unique MTR code (e.g. MTR-00247). Share it to earn commissions. 3 referrals = free membership.
 - Social publishing: Connect Instagram, Facebook, LinkedIn, TikTok via Settings → Social Accounts. Posts publish automatically after you approve.
 - Earnings: Track commissions in the Earnings Hub on your dashboard.
 - Travel: Access exclusive Arrivia member rates through the Travel tab.
-- Challenges: Monthly community challenges with cash prizes. Submit via the Community tab.
+- Challenges: monthly community challenges with AI-credit rewards. The active challenge appears on the dashboard; entries are created with the content creator.
 - Admin: Founders can view their founder number and tier in the sidebar.
-- Tiers: Founder (500 credits), Early Adopter (100-300 credits), Member (50 credits).
+- Founder tiers: ${FOUNDER_TIERS.map((t) => `${t.name} (${formatTierPrice(t)} CAD)`).join(", ")} — one-time payment, lifetime access.
 
 2. TRAVEL CONCIERGE:
 You are an expert travel advisor with deep knowledge of destinations worldwide. When members ask about travel you provide:

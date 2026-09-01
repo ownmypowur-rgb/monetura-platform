@@ -12,7 +12,7 @@ import "server-only";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { getDb, moneturaMembers, moneturaFounderKeys, getOrCreateAffiliateLink } from "@monetura/db";
+import { getDb, moneturaMembers, getOrCreateAffiliateLink } from "@monetura/db";
 import { apexcrmUsers } from "@/lib/apexcrm-users";
 import { eq } from "drizzle-orm";
 import type { MemberTier } from "@/types/next-auth";
@@ -64,16 +64,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           console.error("AUTH: affiliate link creation failed (non-blocking):", err);
         });
 
-        // Step 4: Fetch founder number for founder-tier members
-        let founderNumber: number | null = null;
-        if (member.membershipTier === "founder") {
-          const founderKeys = await getDb()
-            .select()
-            .from(moneturaFounderKeys)
-            .where(eq(moneturaFounderKeys.memberId, member.id))
-            .limit(1);
-          founderNumber = founderKeys[0]?.id ?? null;
-        }
+        // Step 4: Founder number — monetura_members.founder_number is the
+        // single source of truth (set by the admin activation flow). The old
+        // lookup used monetura_founder_keys.id, which could diverge from it.
+        const founderNumber: number | null = member.founderNumber ?? null;
 
         return {
           id: String(user.id),

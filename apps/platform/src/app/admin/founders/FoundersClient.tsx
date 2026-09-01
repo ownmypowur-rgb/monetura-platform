@@ -6,6 +6,8 @@ import { SidebarNav } from "@/components/dashboard/SidebarNav";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
+import { FOUNDER_TIERS } from "@monetura/config/src/tiers";
+
 type TierInterest = "entry" | "core" | "elite" | "platinum";
 type MemberStatus = "pending" | "awaiting_payment" | "active" | "suspended" | "cancelled";
 type MembershipTier = "free" | "community" | "software" | "founder" | "admin";
@@ -43,12 +45,10 @@ interface FoundersClientProps {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const TIER_LABELS: Record<TierInterest, string> = {
-  entry: "Entry Founder",
-  core: "Core Founder",
-  elite: "Elite Founder",
-  platinum: "Platinum Founder",
-};
+// Canonical names from @monetura/config — keyed by the stored tier_interest.
+const TIER_LABELS: Record<TierInterest, string> = Object.fromEntries(
+  FOUNDER_TIERS.map((t) => [t.tierInterest, t.name])
+) as Record<TierInterest, string>;
 
 const TIER_COLORS: Record<TierInterest, string> = {
   entry: "#8B6E52",
@@ -283,10 +283,11 @@ function ConfirmModal({ member, onConfirm, onClose, loading }: ConfirmModalProps
               fontFamily: "var(--font-heading)",
             }}
           >
-            <option value="entry">Entry Founder</option>
-            <option value="core">Core Founder</option>
-            <option value="elite">Elite Founder</option>
-            <option value="platinum">Platinum Founder</option>
+            {FOUNDER_TIERS.map((t) => (
+              <option key={t.tierInterest} value={t.tierInterest}>
+                {t.name}
+              </option>
+            ))}
           </select>
         </div>
 

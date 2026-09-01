@@ -4,8 +4,8 @@ import { eq, and, gte, sum } from "drizzle-orm";
 
 export type MemberTier = "free" | "community" | "software" | "founder" | "admin";
 
-// Monthly credit limits per membership tier
-const TIER_LIMITS: Record<MemberTier, number> = {
+// Monthly credit limits per membership tier — the single source of truth.
+export const TIER_LIMITS: Record<MemberTier, number> = {
   free: 0,
   community: 50,
   software: 100,

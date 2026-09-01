@@ -1,9 +1,16 @@
-const tiers = [
-  {
-    name: "Explorer",
-    price: "$2,500",
-    currency: "CAD",
-    tagline: "The foundation",
+import {
+  FOUNDER_TIERS,
+  formatTierPrice,
+  type FounderTierId,
+} from "@monetura/config/src/tiers";
+
+// Marketing copy stays local; names, prices, and taglines come from the
+// canonical tier definition in @monetura/config.
+const TIER_COPY: Record<
+  FounderTierId,
+  { description: string; features: string[]; highlight: boolean }
+> = {
+  explorer: {
     description:
       "Full platform access, AI tools, member travel rates, community access, and monthly sessions. Everything you need to start turning travel into income.",
     features: [
@@ -14,13 +21,8 @@ const tiers = [
       "Monthly founder sessions",
     ],
     highlight: false,
-    cta: "Apply as Explorer",
   },
-  {
-    name: "Trailblazer",
-    price: "$3,500",
-    currency: "CAD",
-    tagline: "The inner circle",
+  trailblazer: {
     description:
       "Everything in Explorer, plus priority introductions and access to in-person events designed for deeper founder relationships.",
     features: [
@@ -31,13 +33,8 @@ const tiers = [
       "Early access to new features",
     ],
     highlight: false,
-    cta: "Apply as Trailblazer",
   },
-  {
-    name: "Pioneer",
-    price: "$4,500",
-    currency: "CAD",
-    tagline: "The builder",
+  pioneer: {
     description:
       "Everything in Trailblazer, plus quarterly strategy sessions and the earliest access to every new feature we ship.",
     features: [
@@ -48,13 +45,8 @@ const tiers = [
       "Extended affiliate commission rate",
     ],
     highlight: true,
-    cta: "Apply as Pioneer",
   },
-  {
-    name: "Luminary",
-    price: "$5,500",
-    currency: "CAD",
-    tagline: "The pinnacle",
+  luminary: {
     description:
       "The complete Monetura experience. Annual retreat, 1:1 introductions, advisory opportunities, and the deepest level of founder relationships.",
     features: [
@@ -65,9 +57,17 @@ const tiers = [
       "Founding member recognition",
     ],
     highlight: false,
-    cta: "Apply as Luminary",
   },
-];
+};
+
+const tiers = FOUNDER_TIERS.map((t) => ({
+  name: t.name,
+  price: formatTierPrice(t),
+  currency: "CAD",
+  tagline: t.tagline,
+  cta: `Apply as ${t.name}`,
+  ...TIER_COPY[t.id],
+}));
 
 export default function TiersSection() {
   return (

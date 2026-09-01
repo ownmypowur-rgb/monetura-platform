@@ -1,18 +1,24 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { getRemainingCredits } from "@monetura/db";
+import {
+  getRemainingCredits,
+  getMemberTotalReach,
+  getTotalCommissionsThisMonth,
+  getPublishedPostCountThisMonth,
+  getRecentPosts,
+  getActiveChallenge,
+  TIER_LIMITS,
+} from "@monetura/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import type { MemberTier } from "@/components/dashboard/types";
 
 export const dynamic = "force-dynamic";
 
-const TIER_TOTALS: Record<MemberTier, number> = {
-  free: 0,
-  community: 50,
-  software: 100,
-  founder: 500,
-  admin: 9999,
-};
+function daysUntil(date: Date | null): number | null {
+  if (!date) return null;
+  const diff = date.getTime() - Date.now();
+  return diff <= 0 ? 0 : Math.ceil(diff / 86400000);
+}
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -20,15 +26,53 @@ export default async function DashboardPage() {
 
   const tier = session.user.memberTier as MemberTier;
   const memberId = session.user.memberId;
-  const creditsRemaining = await getRemainingCredits(memberId, tier);
+
+  // Every widget gets real data; individual failures degrade to honest empties.
+  const [
+    creditsRemaining,
+    totalReach,
+    commissionsCents,
+    postsThisMonth,
+    recentPosts,
+    challenge,
+  ] = await Promise.all([
+    getRemainingCredits(memberId, tier),
+    getMemberTotalReach(memberId).catch(() => null),
+    getTotalCommissionsThisMonth(memberId).catch(() => 0),
+    getPublishedPostCountThisMonth(memberId).catch(() => 0),
+    getRecentPosts(memberId, 3).catch(() => []),
+    getActiveChallenge().catch(() => null),
+  ]);
 
   const user = {
     name: session.user.name ?? "Member",
     memberTier: tier,
     founderNumber: session.user.founderNumber,
     creditsRemaining,
-    creditsTotal: TIER_TOTALS[tier] ?? 0,
+    creditsTotal: TIER_LIMITS[tier] ?? 0,
   };
 
-  return <DashboardShell user={user} />;
+  return (
+    <DashboardShell
+      user={user}
+      stats={{ totalReach, commissionsCents, postsThisMonth }}
+      recentPosts={recentPosts.map((p) => ({
+        id: p.id,
+        title: p.title,
+        status: p.status,
+        createdAt: p.createdAt.toISOString(),
+        platforms: p.platforms,
+      }))}
+      challenge={
+        challenge
+          ? {
+              title: challenge.title,
+              creditReward: challenge.creditReward,
+              daysLeft: daysUntil(challenge.endDate),
+              entriesCount: challenge.entriesCount,
+            }
+          : null
+      }
+    />
+  );
 }

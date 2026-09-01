@@ -1,32 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
+import {
+  FOUNDER_TIERS,
+  formatTierPrice,
+  type FounderTierId,
+} from "@monetura/config/src/tiers";
 
-const TIERS = [
-  {
-    id: "Entry Founder",
-    tagline: "Build your foundation",
-    perks: ["Platform access", "Community network", "Founder badge"],
-  },
-  {
-    id: "Core Founder",
-    tagline: "Accelerate your growth",
-    perks: ["All Entry benefits", "Travel creation tools", "Monthly strategy call"],
-  },
-  {
-    id: "Elite Founder",
-    tagline: "Scale with intention",
-    perks: ["All Core benefits", "Priority deal flow", "VIP travel concierge"],
-  },
-  {
-    id: "Platinum Founder",
-    tagline: "Lead the founding circle",
-    perks: ["All Elite benefits", "Founding seat on advisory", "Lifetime access guaranteed"],
-  },
-] as const;
+const TIER_PERKS: Record<FounderTierId, readonly string[]> = {
+  explorer: ["Platform access", "Community network", "Founder badge"],
+  trailblazer: [
+    "All Explorer benefits",
+    "Travel creation tools",
+    "Monthly strategy call",
+  ],
+  pioneer: ["All Trailblazer benefits", "Priority deal flow", "VIP travel concierge"],
+  luminary: [
+    "All Pioneer benefits",
+    "Founding seat on advisory",
+    "Lifetime access guaranteed",
+  ],
+};
+
+// Names, taglines, and prices come from the canonical tier definition.
+const TIERS = FOUNDER_TIERS.map((t) => ({
+  id: t.id,
+  name: t.name,
+  tagline: t.tagline,
+  price: `${formatTierPrice(t)} CAD`,
+  perks: TIER_PERKS[t.id],
+}));
 
 const PROVINCES = [
   { value: "AB", label: "Alberta" },
@@ -46,13 +52,20 @@ const PROVINCES = [
 
 function WebinarForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Pre-select the tier when arriving from a "?tier=…" link (TierSelector).
+  const tierParam = searchParams.get("tier") ?? "";
+  const initialTier = FOUNDER_TIERS.some((t) => t.id === tierParam)
+    ? tierParam
+    : "";
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     province: "",
-    tier: "",
+    tier: initialTier,
     referral: "",
   });
   const [submitting, setSubmitting] = useState(false);
@@ -126,15 +139,16 @@ function WebinarForm() {
             Choose Your Level
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {TIERS.map(({ id, tagline, perks }) => (
+            {TIERS.map(({ id, name, price, tagline, perks }) => (
               <div
                 key={id}
                 className="lux-panel p-6 flex flex-col gap-4"
               >
                 <div>
                   <p className="font-garet font-bold text-monetura-cream text-base mb-1">
-                    {id}
+                    {name}
                   </p>
+                  <p className="text-monetura-champagne/80 text-xs mb-1">{price}</p>
                   <p className="text-monetura-cream/40 text-xs">{tagline}</p>
                 </div>
                 <ul className="space-y-1.5 flex-1">
@@ -210,7 +224,10 @@ function WebinarForm() {
               required
               options={[
                 { value: "", label: "Which tier interests you?" },
-                ...TIERS.map(({ id }) => ({ value: id, label: id })),
+                ...TIERS.map(({ id, name, price }) => ({
+                  value: id,
+                  label: `${name} — ${price}`,
+                })),
               ]}
             />
             <Field

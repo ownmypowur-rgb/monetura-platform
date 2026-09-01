@@ -46,29 +46,15 @@ export function ContentCreatorCard() {
           Upload photos from your latest experience and let AI do the rest — captions, hashtags, and multi-platform scheduling.
         </p>
 
-        {/* Quick stats row */}
-        <div className="flex gap-3 mb-5">
-          {[
-            { label: "Avg reach", value: "3,100" },
-            { label: "Avg earned", value: "$154" },
-            { label: "Best day", value: "Tuesday" },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="flex-1 rounded-xl p-2.5 text-center"
-              style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
-            >
-              <div
-                className="text-lg font-light"
-                style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
-              >
-                {item.value}
-              </div>
-              <div className="text-xs mt-0.5" style={{ color: "#C4A882" }}>
-                {item.label}
-              </div>
-            </div>
-          ))}
+        {/* Aspirational line — real per-post analytics land once tracking exists */}
+        <div
+          className="rounded-xl p-3.5 mb-5"
+          style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
+        >
+          <p className="text-sm leading-relaxed" style={{ color: "#C4A882" }}>
+            One photo. One note. Captions for every platform — written in your
+            voice, ready in seconds.
+          </p>
         </div>
 
         {/* CTA button */}

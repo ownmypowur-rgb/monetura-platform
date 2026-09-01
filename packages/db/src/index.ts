@@ -50,3 +50,6 @@ export * from "./password-tokens";
 
 // Re-export rate limiting helpers
 export * from "./rate-limit";
+
+// Re-export stats helpers
+export * from "./stats";

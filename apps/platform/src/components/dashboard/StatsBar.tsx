@@ -4,16 +4,29 @@ interface StatCard {
   label: string;
   value: string;
   sub: string;
-  positive: boolean;
   icon: string;
+}
+
+export interface DashboardStats {
+  /** Sum of follower counts across connected accounts, or null when unknown. */
+  totalReach: number | null;
+  /** Commissions earned this month, in cents (CAD). */
+  commissionsCents: number;
+  /** Posts published this calendar month. */
+  postsThisMonth: number;
 }
 
 interface StatsBarProps {
   creditsRemaining?: number;
   creditsTotal?: number;
+  stats: DashboardStats;
 }
 
-export function StatsBar({ creditsRemaining, creditsTotal }: StatsBarProps) {
+function formatCad(cents: number): string {
+  return `$${Math.round(cents / 100).toLocaleString("en-CA")}`;
+}
+
+export function StatsBar({ creditsRemaining, creditsTotal, stats }: StatsBarProps) {
   const creditsValue = creditsRemaining !== undefined ? String(creditsRemaining) : "—";
   const creditsSub =
     creditsTotal !== undefined && creditsRemaining !== undefined
@@ -23,30 +36,32 @@ export function StatsBar({ creditsRemaining, creditsTotal }: StatsBarProps) {
   const STATS: StatCard[] = [
     {
       label: "Total Reach",
-      value: "24,847",
-      sub: "+12% this month",
-      positive: true,
+      value:
+        stats.totalReach !== null
+          ? stats.totalReach.toLocaleString("en-CA")
+          : "—",
+      sub:
+        stats.totalReach !== null
+          ? "across connected accounts"
+          : "connect accounts to track",
       icon: "👁",
     },
     {
       label: "Commissions",
-      value: "$1,240",
+      value: formatCad(stats.commissionsCents),
       sub: "CAD this month",
-      positive: true,
       icon: "◈",
     },
     {
       label: "Posts",
-      value: "8",
+      value: String(stats.postsThisMonth),
       sub: "published this month",
-      positive: true,
       icon: "✦",
     },
     {
       label: "AI Credits",
       value: creditsValue,
       sub: creditsSub,
-      positive: false,
       icon: "⬡",
     },
   ];
@@ -81,13 +96,7 @@ export function StatsBar({ creditsRemaining, creditsTotal }: StatsBarProps) {
               >
                 {stat.value}
               </div>
-              <div
-                className="flex items-center gap-1 text-xs"
-                style={{ color: stat.positive ? "#7DAF7D" : "#C4A882" }}
-              >
-                {stat.positive && stat.sub.startsWith("+") && (
-                  <span>↑</span>
-                )}
+              <div className="flex items-center gap-1 text-xs" style={{ color: "#C4A882" }}>
                 <span>{stat.sub}</span>
               </div>
             </div>

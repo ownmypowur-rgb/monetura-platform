@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import FounderBenefits from "@/components/founders/FounderBenefits";
 import TierSelector from "@/components/founders/TierSelector";
 import Link from "next/link";
+import { getActiveFounderCount } from "@monetura/db";
+import { TOTAL_FOUNDER_SPOTS } from "@monetura/config/src/tiers";
+
+export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Founder Access — Monetura",
@@ -9,7 +13,13 @@ export const metadata: Metadata = {
     "Explore the Monetura founder tiers. 200 spots. Canada only. One payment. Lifetime access.",
 };
 
-export default function FoundersPage() {
+export default async function FoundersPage() {
+  const activeFounders = await getActiveFounderCount().catch(() => null);
+  const spotsRemaining =
+    activeFounders === null
+      ? null
+      : Math.max(0, TOTAL_FOUNDER_SPOTS - activeFounders);
+
   return (
     <main className="bg-monetura-charcoal">
       {/* Page hero */}
@@ -50,7 +60,9 @@ export default function FoundersPage() {
             Ready?
           </p>
           <h2 className="font-garet font-bold text-3xl md:text-4xl text-monetura-cream mb-8">
-            47 spots remaining.
+            {spotsRemaining !== null
+              ? `${spotsRemaining} spots remaining.`
+              : `${TOTAL_FOUNDER_SPOTS} seats. Reviewed personally.`}
           </h2>
           <Link href="/founders/apply" className="btn-champagne">
             Begin Your Application

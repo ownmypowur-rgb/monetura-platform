@@ -79,7 +79,14 @@ Goal: clicking Publish actually posts via bundle.social. See audit §6 bundle.so
 ---
 
 ## SPRINT 5 — HONEST NUMBERS EVERYWHERE
-STATUS: PENDING
+STATUS: COMPLETE
+> Summary: dashboard now runs on real queries (new packages/db stats helpers): StatsBar reach/commissions/posts (— when unknown, no +12%),
+> RecentPostsCard = member's real last 3 posts w/ empty state + View all → /posts, ContentCreatorCard numberless, CommunityCard reads the
+> seeded "Kill Them With Kindness" challenge (live DB, 50-credit reward, Sep 2026) with real entry count. Login page shows the real founder
+> count (server-fetched) + factual brand copy. Marketing UrgencySection + /founders compute spots remaining = 200 − active founders (ISR 600s,
+> graceful numberless fallback). Canonical tiers in packages/config/src/tiers.ts consumed by TiersSection, TierSelector (now 4 tiers), apply
+> form (+ ?tier= pre-select), apply API (persists province/tierInterest/heardAbout — city bug fixed), admin console, concierge prompt (credit
+> numbers now match TIER_LIMITS). auth.ts founderNumber reads members.founder_number only. Typecheck: 6/6 green.
 
 Goal: no fabricated figures anywhere a member or prospect can see. See audit §5.2, §5.4, Recommendation 5, 8.
 - StatsBar: Total Reach → sum of follower counts from connected bundle.social accounts if available else "—"; Commissions → getTotalCommissionsThisMonth(); Posts → real count of member's published posts this month. Remove +12% claim.

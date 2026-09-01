@@ -2,13 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import {
+  FOUNDER_TIERS,
+  formatTierPrice,
+  type FounderTierId,
+} from "@monetura/config/src/tiers";
 
-const tiers = [
-  {
-    id: "explorer",
-    name: "Explorer",
-    price: "$2,500 CAD",
-    tagline: "The foundation",
+// Marketing copy stays local; names, prices, and taglines come from the
+// canonical tier definition in @monetura/config.
+const TIER_COPY: Record<
+  FounderTierId,
+  { description: string; features: string[]; notIncluded: string[] }
+> = {
+  explorer: {
     description:
       "Full platform and community access. The essential Monetura experience — everything you need to be part of Canada's most curated founder network.",
     features: [
@@ -19,17 +25,9 @@ const tiers = [
       "Digital resources library",
       "Community forum access",
     ],
-    notIncluded: [
-      "In-person events",
-      "Annual retreat",
-      "Advisory opportunities",
-    ],
+    notIncluded: ["In-person events", "Annual retreat", "Advisory opportunities"],
   },
-  {
-    id: "trailblazer",
-    name: "Trailblazer",
-    price: "$3,500 CAD",
-    tagline: "The inner circle",
+  trailblazer: {
     description:
       "Everything in Explorer, plus in-person access and priority introductions. For founders who want to be in the room, not just in the feed.",
     features: [
@@ -42,15 +40,23 @@ const tiers = [
     ],
     notIncluded: ["Annual retreat (all-inclusive)", "Advisory opportunities"],
   },
-  {
-    id: "luminary",
-    name: "Luminary",
-    price: "$5,500 CAD",
-    tagline: "The pinnacle",
+  pioneer: {
+    description:
+      "Everything in Trailblazer, plus quarterly strategy sessions and the earliest access to every new feature we ship. Built for founders building in public.",
+    features: [
+      "Everything in Trailblazer",
+      "Quarterly strategy sessions",
+      "First access to every new feature",
+      "Founder product input sessions",
+      "Extended affiliate commission rate",
+    ],
+    notIncluded: ["Annual retreat (all-inclusive)"],
+  },
+  luminary: {
     description:
       "The complete Monetura experience. VIP access to every event, the annual retreat, and the deepest level of founder relationships.",
     features: [
-      "Everything in Trailblazer",
+      "Everything in Pioneer",
       "Annual Canadian founder retreat",
       "1:1 introduction calls with founders",
       "Advisory seat opportunities",
@@ -59,10 +65,18 @@ const tiers = [
     ],
     notIncluded: [],
   },
-];
+};
+
+const tiers = FOUNDER_TIERS.map((t) => ({
+  id: t.id,
+  name: t.name,
+  price: `${formatTierPrice(t)} CAD`,
+  tagline: t.tagline,
+  ...TIER_COPY[t.id],
+}));
 
 export default function TierSelector() {
-  const [selected, setSelected] = useState("trailblazer");
+  const [selected, setSelected] = useState<FounderTierId>("trailblazer");
   const activeTier = tiers.find((t) => t.id === selected) ?? tiers[1];
 
   return (
@@ -73,12 +87,12 @@ export default function TierSelector() {
         </p>
 
         {/* Tab selector */}
-        <div className="flex gap-px mb-16 bg-monetura-sand/10">
+        <div className="flex flex-wrap gap-px mb-16 bg-monetura-sand/10">
           {tiers.map(({ id, name, price }) => (
             <button
               key={id}
               onClick={() => setSelected(id)}
-              className={`flex-1 py-6 px-4 text-left transition-all duration-200 ${
+              className={`flex-1 min-w-[45%] sm:min-w-0 py-6 px-4 text-left transition-all duration-200 ${
                 selected === id
                   ? "bg-monetura-champagne text-monetura-charcoal"
                   : "bg-monetura-mocha text-monetura-cream/50 hover:text-monetura-cream"

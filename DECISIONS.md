@@ -84,3 +84,22 @@ Format per entry:
 - Context: the spec says "post returns to draft" on failure, but a distinct `failed` status (added to the enum alongside `publishing`) preserves the error (`publish_error` column), lets the UI show "Retry Publish", and keeps drafts semantically clean.
 - Decision made: publishing → failed (with stored error) → retry; the post's content is untouched, exactly as a draft would be.
 - Reversible? yes — statuses are data; a one-line UPDATE maps failed → draft.
+
+## [Sprint 5] Marketing "spots remaining" via direct DB read in server components + ISR, not an API route
+- Context: the spec allowed "a small API route or build-time fetch with revalidation".
+- Options considered: (a) a public /api/stats endpoint on the platform, fetched client-side (needs a middleware allowlist entry, CORS across apps, loading flicker); (b) `getActiveFounderCount()` in @monetura/db called directly from the marketing server components (UrgencySection, /founders) with `export const revalidate = 600` and a `.catch(() => null)` fallback that renders numberless copy ("Limited to 200 founders. Reviewed personally.").
+- Decision made: (b). The platform /login page does the same server-side (force-dynamic, so always fresh).
+- Reasoning: marketing already depends on @monetura/db; a DB read at ISR time is simpler, has no public endpoint to abuse, and degrades gracefully when DATABASE_URL is absent at build.
+- Reversible? yes.
+
+## [Sprint 5] Canonical tiers = Explorer/Trailblazer/Pioneer/Luminary; challenge reward is AI credits, not cash
+- Context: four incompatible tier vocabularies existed (home 4-tier, TierSelector 3-tier, apply form "Entry/Core/Elite/Platinum Founder", DB enums). A canonical set had to be picked. Separately, CommunityCard advertised a "$500 CAD" prize but `monetura_challenges` has only `credit_reward` (int) — no cash-prize column.
+- Options considered: tiers — keep the apply form's names (they match the DB enum labels) vs. the marketing names (what prospects actually see, 4 tiers incl. the $4,500 Pioneer). Prize — add a cash-prize column vs. use the schema's credit reward.
+- Decision made: marketing names are canonical (`packages/config/src/tiers.ts`), mapped to the immutable DB enum values entry/core/elite/platinum and key tiers bronze/silver/gold/gold (matching the activate route). The apply form now submits tier ids and the API persists `province`, `tierInterest`, `heardAbout` correctly (previously `city` ← province and the rest dropped). Challenge reward: 50 AI credits ("Kill Them With Kindness", 2026-09-01 → 2026-09-30, seeded live, idempotent) — no invented cash figure; a cash prize needs a schema addition and a real payout process first.
+- Reversible? yes — names/prices are data in one file; DB enum values unchanged.
+
+## [Sprint 5] "Total Reach" reads monetura_social_accounts follower counts; bundle.social analytics deferred
+- Context: the spec asks for follower counts "from connected bundle.social accounts if available else '—'", but this repo's bundle.social accounts call doesn't return follower counts and the API contract can't be verified without a live key (see Sprint 4 entry).
+- Decision made: `getMemberTotalReach()` sums `monetura_social_accounts.follower_count` (the table built for exactly this) and returns null → "—" when empty. Pulling live follower counts from bundle.social into that table is flagged as the follow-up requiring a live key.
+- Reasoning: never show a fabricated number; the only truthful local source is that table.
+- Reversible? yes — swap the data source inside one function.

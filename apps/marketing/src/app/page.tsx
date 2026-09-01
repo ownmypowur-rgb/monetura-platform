@@ -11,6 +11,9 @@ import TiersSection from "@/components/home/TiersSection";
 import TravelMomentsSection from "@/components/home/TravelMomentsSection";
 import UrgencySection from "@/components/home/UrgencySection";
 
+// UrgencySection reads the live founder count — refresh every 10 minutes.
+export const revalidate = 600;
+
 export default function HomePage() {
   return (
     <main className="overflow-hidden bg-monetura-charcoal">

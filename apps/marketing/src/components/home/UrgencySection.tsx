@@ -1,10 +1,19 @@
-export default function UrgencySection() {
-  // In production this would be fetched from DB
-  const spotsRemaining = 47;
-  const totalSpots = 200;
-  const percentFilled = Math.round(
-    ((totalSpots - spotsRemaining) / totalSpots) * 100,
-  );
+import { getActiveFounderCount } from "@monetura/db";
+import { TOTAL_FOUNDER_SPOTS } from "@monetura/config/src/tiers";
+
+export default async function UrgencySection() {
+  // Real count from the database; when unavailable, render without numbers.
+  const activeFounders = await getActiveFounderCount().catch(() => null);
+  const spotsRemaining =
+    activeFounders === null
+      ? null
+      : Math.max(0, TOTAL_FOUNDER_SPOTS - activeFounders);
+  const percentFilled =
+    spotsRemaining === null
+      ? 0
+      : Math.round(
+          ((TOTAL_FOUNDER_SPOTS - spotsRemaining) / TOTAL_FOUNDER_SPOTS) * 100
+        );
 
   return (
     <section className="bg-monetura-terracotta py-20">
@@ -15,29 +24,43 @@ export default function UrgencySection() {
               Founding Cohort — Canada Only
             </p>
             <h2 className="font-garet font-bold text-2xl md:text-3xl lg:text-4xl text-white leading-[1.2]">
-              {spotsRemaining} of {totalSpots} founder
-              <br />
-              spots remaining.
+              {spotsRemaining !== null ? (
+                <>
+                  {spotsRemaining} of {TOTAL_FOUNDER_SPOTS} founder
+                  <br />
+                  spots remaining.
+                </>
+              ) : (
+                <>
+                  Limited to {TOTAL_FOUNDER_SPOTS} founders.
+                  <br />
+                  Reviewed personally.
+                </>
+              )}
             </h2>
           </div>
 
           <div>
-            <div className="flex justify-between items-center mb-3">
-              <p className="text-white/70 text-xs tracking-[0.15em] uppercase font-garet">
-                {totalSpots - spotsRemaining} founders joined
-              </p>
-              <p className="text-white text-xs tracking-[0.15em] uppercase font-garet font-bold">
-                {spotsRemaining} remaining
-              </p>
-            </div>
+            {spotsRemaining !== null && (
+              <>
+                <div className="flex justify-between items-center mb-3">
+                  <p className="text-white/70 text-xs tracking-[0.15em] uppercase font-garet">
+                    {TOTAL_FOUNDER_SPOTS - spotsRemaining} founders joined
+                  </p>
+                  <p className="text-white text-xs tracking-[0.15em] uppercase font-garet font-bold">
+                    {spotsRemaining} remaining
+                  </p>
+                </div>
 
-            {/* Progress bar */}
-            <div className="w-full h-px bg-white/20 relative mb-8">
-              <div
-                className="absolute left-0 top-0 h-full bg-white transition-all duration-1000"
-                style={{ width: `${percentFilled}%` }}
-              />
-            </div>
+                {/* Progress bar */}
+                <div className="w-full h-px bg-white/20 relative mb-8">
+                  <div
+                    className="absolute left-0 top-0 h-full bg-white transition-all duration-1000"
+                    style={{ width: `${percentFilled}%` }}
+                  />
+                </div>
+              </>
+            )}
 
             <a
               href="/founders/apply"

@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { TopBar } from "./TopBar";
-import { StatsBar } from "./StatsBar";
+import { StatsBar, type DashboardStats } from "./StatsBar";
 import { ContentCreatorCard } from "./ContentCreatorCard";
 import { EarningsHubCard } from "./EarningsHubCard";
 import { TravelCard } from "./TravelCard";
 import { SocialAccountsCard } from "./SocialAccountsCard";
-import { CommunityCard } from "./CommunityCard";
-import { RecentPostsCard } from "./RecentPostsCard";
+import { CommunityCard, type ChallengeSummary } from "./CommunityCard";
+import { RecentPostsCard, type RecentPostItem } from "./RecentPostsCard";
 import { BottomNav } from "./BottomNav";
 import { SidebarNav } from "./SidebarNav";
 import { EventsWidget } from "./EventsWidget";
@@ -18,9 +18,17 @@ import type { DashboardUser } from "./types";
 
 interface DashboardShellProps {
   user: DashboardUser;
+  stats: DashboardStats;
+  recentPosts: RecentPostItem[];
+  challenge: ChallengeSummary | null;
 }
 
-export function DashboardShell({ user }: DashboardShellProps) {
+export function DashboardShell({
+  user,
+  stats,
+  recentPosts,
+  challenge,
+}: DashboardShellProps) {
   const [activeTab, setActiveTab] = useState("home");
 
   return (
@@ -44,6 +52,7 @@ export function DashboardShell({ user }: DashboardShellProps) {
             <StatsBar
               creditsRemaining={user.creditsRemaining}
               creditsTotal={user.creditsTotal}
+              stats={stats}
             />
 
             {/* Cards grid */}
@@ -52,10 +61,10 @@ export function DashboardShell({ user }: DashboardShellProps) {
               <EarningsHubCard />
               <TravelCard />
               <SocialAccountsCard />
-              <CommunityCard />
+              <CommunityCard challenge={challenge} />
               <EventsWidget />
               <TripSavingsCalculator />
-              <RecentPostsCard className="lg:col-span-2 xl:col-span-3" />
+              <RecentPostsCard posts={recentPosts} className="lg:col-span-2 xl:col-span-3" />
             </div>
           </main>
         </div>
