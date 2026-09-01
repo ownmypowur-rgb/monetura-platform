@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_PATHS = new Set(["/login", "/forgot-password"]);
+const PUBLIC_PATHS = new Set([
+  "/login",
+  "/forgot-password",
+  "/set-password",
+  "/reset-password",
+  "/api/auth/set-password",
+]);
 const API_AUTH_PREFIX = "/api/auth";
 
 export function middleware(req: NextRequest) {

@@ -522,6 +522,29 @@ export const moneturaBundleTeams = mysqlTable(
 );
 
 // ---------------------------------------------------------------------------
+// monetura_password_tokens
+// ---------------------------------------------------------------------------
+export const moneturaPasswordTokens = mysqlTable(
+  "monetura_password_tokens",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    // References the shared ApexCRM `users.id` (bigint unsigned) — see DECISIONS.md [Sprint 1].
+    userId: bigint("user_id", { mode: "number", unsigned: true }).notNull(),
+    token: varchar("token", { length: 128 }).notNull().unique(),
+    purpose: mysqlEnum("purpose", ["set_password", "reset_password"]).notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    usedAt: timestamp("used_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    tokenIdx: uniqueIndex("idx_password_tokens_token").on(t.token),
+    userIdx: index("idx_password_tokens_user").on(t.userId),
+  })
+);
+
+// ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
 export const moneturaMembersRelations = relations(

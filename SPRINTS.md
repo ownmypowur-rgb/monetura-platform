@@ -6,7 +6,12 @@ Statuses: PENDING / IN PROGRESS / COMPLETE / BLOCKED.
 ---
 
 ## SPRINT 1 — REAL PASSWORD SYSTEM
-STATUS: PENDING
+STATUS: COMPLETE
+> Summary: `monetura_password_tokens` created (schema + migration 0004 + applied to live DB via idempotent DDL — see DECISIONS.md for why not drizzle-kit).
+> `createPasswordToken`/`consumePasswordToken` in packages/db. Activation now issues a 7-day set-password token and sends a branded HTML welcome
+> email with a gold "Choose Your Password" button; payment-instructions email upgraded to the same template. forgot-password really sends a
+> 24h reset link (always returns success). New `/api/auth/set-password` + `/set-password` + `/reset-password` pages share one login-styled form.
+> Middleware allowlist extended; NEXT_PUBLIC_APP_URL documented. Typecheck: 6/6 green.
 
 Goal: activated founders receive a set-password email, can set a password, can log in; forgot-password really sends.
 - New table monetura_password_tokens: id PK, userId int notNull, token varchar(128) notNull unique, purpose enum("set_password","reset_password") notNull, expiresAt timestamp notNull, usedAt timestamp nullable, createdAt timestamp defaultNow. Push via the project's drizzle workflow.

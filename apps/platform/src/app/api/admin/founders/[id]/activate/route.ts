@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { getDb, moneturaMembers, moneturaFounderKeys } from "@monetura/db";
+import {
+  getDb,
+  moneturaMembers,
+  moneturaFounderKeys,
+  createPasswordToken,
+} from "@monetura/db";
 import { eq, max } from "drizzle-orm";
 import { getResend } from "@/lib/resend";
+import { apexcrmUsers } from "@/lib/apexcrm-users";
+import { appBaseUrl, brandedEmailHtml } from "@/lib/email-templates";
 
 export const dynamic = "force-dynamic";
 
@@ -126,21 +133,61 @@ export async function POST(
     );
   }
 
-  // Send welcome email
+  // Create a set-password token so the founder can actually sign in.
+  // The application form creates the ApexCRM user without a password hash;
+  // look it up (create defensively if missing) and attach a token to it.
+  let setPasswordUrl: string | null = null;
+  try {
+    const users = await db
+      .select({ id: apexcrmUsers.id })
+      .from(apexcrmUsers)
+      .where(eq(apexcrmUsers.email, member.email))
+      .limit(1);
+
+    let userId = users[0]?.id ?? null;
+    if (userId === null) {
+      await db.insert(apexcrmUsers).values({
+        openId: `local:${member.email}`,
+        email: member.email,
+        name: member.name,
+        loginMethod: "credentials",
+        role: "user",
+      });
+      const created = await db
+        .select({ id: apexcrmUsers.id })
+        .from(apexcrmUsers)
+        .where(eq(apexcrmUsers.email, member.email))
+        .limit(1);
+      userId = created[0]?.id ?? null;
+    }
+
+    if (userId !== null) {
+      const token = await createPasswordToken(userId, "set_password");
+      setPasswordUrl = `${appBaseUrl()}/set-password?token=${token}`;
+    }
+  } catch (err) {
+    console.error("Set-password token creation failed (non-blocking):", err);
+  }
+
+  // Send branded welcome email with the set-password call to action.
   const resend = getResend();
   const { error: emailError } = await resend.emails.send({
     from: "Monetura <noreply@monetura.com>",
     to: member.email,
     subject: `Welcome to Monetura — You're Founder #${founderNumber}`,
-    text: `Hi ${member.name},
-
-Welcome to Monetura. Your founding membership is now active.
-
-You are Founder #${founderNumber}.
-
-Sign in to your member dashboard at app.monetura.com
-
-The Monetura Team`,
+    html: brandedEmailHtml({
+      heading: `Welcome, Founder #${founderNumber}`,
+      paragraphs: [
+        `Hi ${member.name},`,
+        "Your founding membership is now active. One step remains: choose the password for your member dashboard.",
+      ],
+      button: setPasswordUrl
+        ? { label: "Choose Your Password", url: setPasswordUrl }
+        : { label: "Go to Your Dashboard", url: `${appBaseUrl()}/login` },
+      footerNote: setPasswordUrl
+        ? "This link is valid for 7 days. If it expires, use “Forgot your password?” on the sign-in page."
+        : undefined,
+    }),
   });
 
   if (emailError) {

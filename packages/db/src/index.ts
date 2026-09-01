@@ -44,3 +44,6 @@ export * from "./social";
 
 // Re-export commission helpers
 export * from "./commissions";
+
+// Re-export password token helpers
+export * from "./password-tokens";
