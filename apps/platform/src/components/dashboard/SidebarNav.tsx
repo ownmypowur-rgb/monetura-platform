@@ -7,7 +7,6 @@ import {
   CreateIcon,
   EarningsIcon,
   TravelIcon,
-  CommunityIcon,
   CalendarDaysIcon,
   ShoppingBagIcon,
   SettingsIcon,
@@ -42,7 +41,6 @@ const NAV_ITEMS: NavItem[] = [
   { id: "create", label: "Create", icon: <CreateIcon size={18} /> },
   { id: "earnings", label: "Earnings", icon: <EarningsIcon size={18} /> },
   { id: "travel", label: "Travel", icon: <TravelIcon size={18} /> },
-  { id: "community", label: "Community", icon: <CommunityIcon size={18} /> },
   { id: "events", label: "Events", icon: <CalendarDaysIcon size={18} /> },
   { id: "marketplace", label: "Marketplace", icon: <ShoppingBagIcon size={18} /> },
 ];
@@ -97,6 +95,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
           const isActive = activeTab === item.id;
           // Create, Travel, and Earnings navigate to their own pages
           const PAGE_HREFS: Partial<Record<string, string>> = {
+            home: "/dashboard",
             create: "/create",
             earnings: "/earnings",
             travel: "/travel",
@@ -204,6 +203,22 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
             {activeTab === "admin" && (
               <span className="ml-auto w-1 h-1 rounded-full" style={{ background: "#D4A853" }} />
             )}
+          </Link>
+          <Link
+            href="/admin/submissions"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+            style={{
+              background: "transparent",
+              border: "1px solid transparent",
+              color: "#E8DCCB",
+              textDecoration: "none",
+              display: "flex",
+            }}
+          >
+            <span><ShoppingBagIcon size={18} /></span>
+            <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
+              Submissions
+            </span>
           </Link>
         </div>
       )}

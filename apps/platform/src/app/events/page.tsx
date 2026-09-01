@@ -1,7 +1,11 @@
 import Link from "next/link";
-import { EVENTS } from "@/lib/events-data";
+import { getUpcomingEvents } from "@monetura/db";
 
-export default function EventsIndexPage() {
+export const dynamic = "force-dynamic";
+
+export default async function EventsIndexPage() {
+  const events = await getUpcomingEvents().catch(() => []);
+
   return (
     <div style={{ background: "#1A0F0A", minHeight: "100vh" }}>
       <div className="max-w-5xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
@@ -32,9 +36,28 @@ export default function EventsIndexPage() {
           </p>
         </div>
 
+        {/* ── Empty state ─────────────────────────────────────── */}
+        {events.length === 0 && (
+          <div
+            className="rounded-2xl p-12 text-center"
+            style={{ background: "#2C2420", border: "1px solid #4A3728" }}
+          >
+            <p
+              className="text-2xl font-light mb-3"
+              style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}
+            >
+              New events are being curated
+            </p>
+            <p className="text-sm" style={{ color: "#C4A882" }}>
+              The next season of member experiences is in the works. Check back
+              soon — announcements land here first.
+            </p>
+          </div>
+        )}
+
         {/* ── Event cards ─────────────────────────────────────── */}
         <div className="space-y-5">
-          {EVENTS.map((event) => (
+          {events.map((event) => (
             <Link
               key={event.slug}
               href={`/events/${event.slug}`}
@@ -51,12 +74,19 @@ export default function EventsIndexPage() {
                 <div className="flex flex-col sm:flex-row">
                   {/* Hero image */}
                   <div className="relative sm:w-56 h-44 sm:h-auto flex-shrink-0 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={event.heroImage}
-                      alt={event.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    {event.heroImage ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={event.heroImage}
+                        alt={event.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full"
+                        style={{ background: "#1A0F0A" }}
+                      />
+                    )}
                     <div
                       className="absolute inset-0"
                       style={{
@@ -92,12 +122,14 @@ export default function EventsIndexPage() {
                       </h2>
 
                       {/* Tagline */}
-                      <p
-                        className="text-sm italic mb-3"
-                        style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
-                      >
-                        {event.tagline}
-                      </p>
+                      {event.tagline && (
+                        <p
+                          className="text-sm italic mb-3"
+                          style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
+                        >
+                          {event.tagline}
+                        </p>
+                      )}
                     </div>
 
                     {/* Meta row */}
@@ -113,9 +145,11 @@ export default function EventsIndexPage() {
                           className="font-semibold"
                           style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
                         >
-                          {event.date.split(",")[0]}
+                          {event.dateLabel.split(",")[0]}
                         </span>
-                        <span style={{ color: "#8B6E52" }}>· {event.duration}</span>
+                        {event.duration && (
+                          <span style={{ color: "#8B6E52" }}>· {event.duration}</span>
+                        )}
                       </span>
 
                       <span className="flex items-center gap-1.5 text-sm" style={{ color: "#8B6E52" }}>
@@ -126,12 +160,14 @@ export default function EventsIndexPage() {
                         {event.location}
                       </span>
 
-                      <span
-                        className="ml-auto text-sm font-semibold"
-                        style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
-                      >
-                        {event.price}
-                      </span>
+                      {event.priceLabel && (
+                        <span
+                          className="ml-auto text-sm font-semibold"
+                          style={{ color: "#D4A853", fontFamily: "var(--font-heading)" }}
+                        >
+                          {event.priceLabel}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

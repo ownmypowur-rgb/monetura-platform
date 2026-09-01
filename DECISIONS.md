@@ -103,3 +103,25 @@ Format per entry:
 - Decision made: `getMemberTotalReach()` sums `monetura_social_accounts.follower_count` (the table built for exactly this) and returns null → "—" when empty. Pulling live follower counts from bundle.social into that table is flagged as the follow-up requiring a live key.
 - Reasoning: never show a fabricated number; the only truthful local source is that table.
 - Reversible? yes — swap the data source inside one function.
+
+## [Sprint 6] Events seeded with their original (now past) dates → honest empty states
+- Context: the spec says to move the 5 events into the DB "unchanged", but their dates are April–July 2026 and today is September 2026, so the required "upcoming only" filter shows none of them.
+- Options considered: (a) shift the seeded dates forward so pages look populated (fabricates schedule data — exactly what Sprint 5 eliminated); (b) seed unchanged and give every surface a real empty state ("New events are being curated").
+- Decision made: (b). The events remain reachable in the DB (and by direct slug URL) for when an admin re-dates them; EventsWidget, /events, and the dashboard all render honest empty states.
+- Reversible? yes — an UPDATE on sort_date/date_label brings any event back.
+
+## [Sprint 6] Mobile nav: four link tabs + a "More" sheet; sidebar's dead items fixed alongside
+- Context: BottomNav's Home/Community were state buttons going nowhere, and Events/Marketplace/Posts/Settings were unreachable on mobile. A pattern had to be chosen (fifth tab vs. sheet).
+- Decision made: Home/Create/Earnings/Travel as real links (pathname-driven highlighting, legacy props accepted and ignored so call sites didn't churn) plus a fifth "More" tab opening a bottom sheet with Events, Marketplace, Posts, Settings. Adjacent fix, logged here because it slightly exceeds the letter of the spec: SidebarNav's Home is now a /dashboard link and its dead "Community" item (no route exists) was removed — same inert-nav defect, same sprint goal.
+- Reasoning: four sections don't fit as tabs on small screens; a sheet keeps the bar at five targets.
+- Reversible? yes.
+
+## [Sprint 6] Approve creates an UNPUBLISHED product; slug suffixed with submission id
+- Context: member submissions carry no gallery images, tags, or long copy — publishing them straight to the storefront would produce visibly broken cards.
+- Decision made: Approve inserts a `monetura_marketplace_products` row with `is_published = false` (admin polishes image/copy, then flips the flag — for now via DB, an edit screen is future work), `submitted_by_member = true`, savings % computed from the two prices, and slug `slugify(brand-name)-{submissionId}` so collisions are impossible. Marketplace pages filter to published only; the members' "$50 credit" reward promise is unchanged copy and its automation remains future work.
+- Reversible? yes — flag flip / row delete.
+
+## [Sprint 6] Marketplace "average savings" is computed, not claimed
+- Context: the callout said "average of 22%" while the true catalogue mean was ~21%.
+- Decision made: the server computes the real average of `savings_percent` across published products and passes it to the client; the callout hides entirely when there is nothing to average.
+- Reversible? yes.

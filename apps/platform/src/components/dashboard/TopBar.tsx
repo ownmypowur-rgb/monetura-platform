@@ -72,11 +72,6 @@ export function TopBar({ user }: TopBarProps) {
           aria-label="Notifications"
         >
           <BellIcon size={18} />
-          {/* Notification dot */}
-          <span
-            className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full"
-            style={{ background: "#D4A853" }}
-          />
         </button>
 
         <button

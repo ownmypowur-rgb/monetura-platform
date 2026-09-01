@@ -529,6 +529,138 @@ export const moneturaBundleTeams = mysqlTable(
 );
 
 // ---------------------------------------------------------------------------
+// monetura_events
+// ---------------------------------------------------------------------------
+export const moneturaEvents = mysqlTable(
+  "monetura_events",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    slug: varchar("slug", { length: 255 }).notNull().unique(),
+    title: varchar("title", { length: 500 }).notNull(),
+    type: varchar("type", { length: 100 }).notNull(),
+    typeDot: varchar("type_dot", { length: 16 }).notNull().default("#D4A853"),
+    dateLabel: varchar("date_label", { length: 100 }).notNull(),
+    endDateLabel: varchar("end_date_label", { length: 100 }),
+    duration: varchar("duration", { length: 50 }),
+    location: varchar("location", { length: 255 }).notNull(),
+    country: varchar("country", { length: 100 }),
+    heroImage: varchar("hero_image", { length: 1000 }),
+    tagline: varchar("tagline", { length: 500 }),
+    description: text("description"),
+    included: json("included").$type<string[]>(),
+    priceLabel: varchar("price_label", { length: 255 }),
+    priceNote: varchar("price_note", { length: 500 }),
+    ctaLabel: varchar("cta_label", { length: 100 })
+      .notNull()
+      .default("Express Interest"),
+    isPublished: boolean("is_published").notNull().default(true),
+    sortDate: timestamp("sort_date").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    slugIdx: uniqueIndex("idx_events_slug").on(t.slug),
+    sortDateIdx: index("idx_events_sort_date").on(t.sortDate),
+  })
+);
+
+// ---------------------------------------------------------------------------
+// monetura_event_registrations
+// ---------------------------------------------------------------------------
+export const moneturaEventRegistrations = mysqlTable(
+  "monetura_event_registrations",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    eventId: bigint("event_id", { mode: "number", unsigned: true }).notNull(),
+    memberId: bigint("member_id", { mode: "number", unsigned: true }).notNull(),
+    status: mysqlEnum("status", ["registered", "cancelled"])
+      .notNull()
+      .default("registered"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    memberEventIdx: uniqueIndex("idx_event_reg_member_event").on(
+      t.eventId,
+      t.memberId
+    ),
+    memberIdx: index("idx_event_reg_member").on(t.memberId),
+  })
+);
+
+// ---------------------------------------------------------------------------
+// monetura_marketplace_products
+// ---------------------------------------------------------------------------
+export const moneturaMarketplaceProducts = mysqlTable(
+  "monetura_marketplace_products",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    slug: varchar("slug", { length: 255 }).notNull().unique(),
+    name: varchar("name", { length: 500 }).notNull(),
+    brand: varchar("brand", { length: 255 }).notNull(),
+    category: varchar("category", { length: 50 }).notNull(),
+    description: text("description"),
+    longDescription: text("long_description"),
+    // Prices in whole CAD dollars — matches the seeded catalogue data.
+    publicPrice: int("public_price").notNull(),
+    memberPrice: int("member_price").notNull(),
+    savingsPercent: int("savings_percent").notNull().default(0),
+    image: varchar("image", { length: 1000 }),
+    images: json("images").$type<string[]>(),
+    tags: json("tags").$type<string[]>(),
+    checkoutType: mysqlEnum("checkout_type", ["external", "contact"])
+      .notNull()
+      .default("external"),
+    externalUrl: varchar("external_url", { length: 1000 }),
+    inStock: boolean("in_stock").notNull().default(true),
+    featured: boolean("featured").notNull().default(false),
+    submittedByMember: boolean("submitted_by_member").notNull().default(false),
+    approvedAt: timestamp("approved_at"),
+    isPublished: boolean("is_published").notNull().default(true),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    slugIdx: uniqueIndex("idx_marketplace_products_slug").on(t.slug),
+    categoryIdx: index("idx_marketplace_products_category").on(t.category),
+  })
+);
+
+// ---------------------------------------------------------------------------
+// monetura_marketplace_submissions
+// ---------------------------------------------------------------------------
+export const moneturaMarketplaceSubmissions = mysqlTable(
+  "monetura_marketplace_submissions",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    memberId: bigint("member_id", { mode: "number", unsigned: true }).notNull(),
+    productName: varchar("product_name", { length: 500 }).notNull(),
+    brand: varchar("brand", { length: 255 }).notNull(),
+    category: varchar("category", { length: 50 }).notNull(),
+    publicPrice: decimal("public_price", { precision: 10, scale: 2 }),
+    memberPrice: decimal("member_price", { precision: 10, scale: 2 }),
+    description: text("description"),
+    productUrl: varchar("product_url", { length: 1000 }),
+    imageUrl: varchar("image_url", { length: 1000 }),
+    notes: text("notes"),
+    status: mysqlEnum("status", ["pending", "approved", "rejected"])
+      .notNull()
+      .default("pending"),
+    reviewedAt: timestamp("reviewed_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    statusIdx: index("idx_marketplace_submissions_status").on(t.status),
+    memberIdx: index("idx_marketplace_submissions_member").on(t.memberId),
+  })
+);
+
+// ---------------------------------------------------------------------------
 // monetura_password_tokens
 // ---------------------------------------------------------------------------
 export const moneturaPasswordTokens = mysqlTable(

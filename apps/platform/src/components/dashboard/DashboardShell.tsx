@@ -11,7 +11,7 @@ import { CommunityCard, type ChallengeSummary } from "./CommunityCard";
 import { RecentPostsCard, type RecentPostItem } from "./RecentPostsCard";
 import { BottomNav } from "./BottomNav";
 import { SidebarNav } from "./SidebarNav";
-import { EventsWidget } from "./EventsWidget";
+import { EventsWidget, type EventItem } from "./EventsWidget";
 import { TripSavingsCalculator } from "./TripSavingsCalculator";
 import { ConciergeWidget } from "@/components/concierge/ConciergeWidget";
 import type { DashboardUser } from "./types";
@@ -21,6 +21,7 @@ interface DashboardShellProps {
   stats: DashboardStats;
   recentPosts: RecentPostItem[];
   challenge: ChallengeSummary | null;
+  events: EventItem[];
 }
 
 export function DashboardShell({
@@ -28,6 +29,7 @@ export function DashboardShell({
   stats,
   recentPosts,
   challenge,
+  events,
 }: DashboardShellProps) {
   const [activeTab, setActiveTab] = useState("home");
 
@@ -62,7 +64,7 @@ export function DashboardShell({
               <TravelCard />
               <SocialAccountsCard />
               <CommunityCard challenge={challenge} />
-              <EventsWidget />
+              <EventsWidget events={events} />
               <TripSavingsCalculator />
               <RecentPostsCard posts={recentPosts} className="lg:col-span-2 xl:col-span-3" />
             </div>

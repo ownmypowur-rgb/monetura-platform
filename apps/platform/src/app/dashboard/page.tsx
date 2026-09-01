@@ -7,6 +7,7 @@ import {
   getPublishedPostCountThisMonth,
   getRecentPosts,
   getActiveChallenge,
+  getUpcomingEvents,
   TIER_LIMITS,
 } from "@monetura/db";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
@@ -35,6 +36,7 @@ export default async function DashboardPage() {
     postsThisMonth,
     recentPosts,
     challenge,
+    upcomingEvents,
   ] = await Promise.all([
     getRemainingCredits(memberId, tier),
     getMemberTotalReach(memberId).catch(() => null),
@@ -42,6 +44,7 @@ export default async function DashboardPage() {
     getPublishedPostCountThisMonth(memberId).catch(() => 0),
     getRecentPosts(memberId, 3).catch(() => []),
     getActiveChallenge().catch(() => null),
+    getUpcomingEvents(4).catch(() => []),
   ]);
 
   const user = {
@@ -73,6 +76,15 @@ export default async function DashboardPage() {
             }
           : null
       }
+      events={upcomingEvents.map((e) => ({
+        id: e.id,
+        slug: e.slug,
+        title: e.title,
+        dateLabel: e.dateLabel,
+        location: e.location,
+        tagline: e.tagline,
+        typeDot: e.typeDot,
+      }))}
     />
   );
 }

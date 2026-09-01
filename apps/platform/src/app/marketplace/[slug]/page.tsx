@@ -1,14 +1,26 @@
 import { notFound } from "next/navigation";
-import { MARKETPLACE_PRODUCTS } from "@/lib/marketplace-data";
+import { getProductBySlug, getRelatedProducts } from "@monetura/db";
+import { toMarketplaceProduct } from "@/lib/marketplace-map";
 import { ProductDetailClient } from "./ProductDetailClient";
 
-export default function MarketplaceProductPage({
+export const dynamic = "force-dynamic";
+
+export default async function MarketplaceProductPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const product = MARKETPLACE_PRODUCTS.find((p) => p.slug === params.slug);
-  if (!product) notFound();
+  const row = await getProductBySlug(params.slug);
+  if (!row) notFound();
 
-  return <ProductDetailClient product={product} />;
+  const relatedRows = await getRelatedProducts(row.category, row.slug, 3).catch(
+    () => []
+  );
+
+  return (
+    <ProductDetailClient
+      product={toMarketplaceProduct(row)}
+      related={relatedRows.map(toMarketplaceProduct)}
+    />
+  );
 }

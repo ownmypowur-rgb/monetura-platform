@@ -101,7 +101,15 @@ Goal: no fabricated figures anywhere a member or prospect can see. See audit §5
 ---
 
 ## SPRINT 6 — EVENTS, MARKETPLACE, CHALLENGE GET A BACKEND
-STATUS: PENDING
+STATUS: COMPLETE
+> Summary: 4 new tables (events, event_registrations, marketplace_products, marketplace_submissions) — migration 0005 generated and applied
+> live; seed-content.ts moved the 5 events + 15 products into the DB unchanged (all idempotent). Events pages + EventsWidget read from the DB,
+> upcoming-only ascending, with honest empty states (seeded dates are past — see DECISIONS.md); "Reserve Your Spot"/"Express Interest" now
+> POSTs /api/events/register → "You're on the list ✦". Marketplace list/detail read published products (real computed average-savings claim);
+> /marketplace/submit really submits (rate-limited API, member-linked). New /admin/submissions review screen: Approve → unpublished product
+> row, Reject → status rejected; sidebar admin section links it. BottomNav rebuilt: real links + "More" sheet (Events/Marketplace/Posts/
+> Settings reachable on mobile); sidebar Home → /dashboard link, dead Community item removed; TopBar's always-on bell dot removed.
+> Typecheck: 6/6 green.
 
 Goal: content areas run from the database; inert CTAs work. See audit Recommendation 6 and §1.1 inert-button list.
 - New tables (additive migration): monetura_events (all fields currently in lib/events-data.ts + isPublished, sortDate), monetura_event_registrations (eventId, memberId, status, createdAt, unique member+event), monetura_marketplace_products (fields from lib/marketplace-data.ts + isPublished), monetura_marketplace_submissions (form fields + status pending/approved/rejected + memberId).

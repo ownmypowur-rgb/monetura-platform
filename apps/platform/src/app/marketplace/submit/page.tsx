@@ -14,6 +14,7 @@ const CATEGORIES: MarketplaceCategory[] = [
 export default function MarketplaceSubmitPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     productName: "",
     brand: "",
@@ -35,10 +36,38 @@ export default function MarketplaceSubmitPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    // Simulate async submission
-    await new Promise((r) => setTimeout(r, 800));
-    setLoading(false);
-    setSubmitted(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/marketplace/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productName: form.productName,
+          brand: form.brand,
+          category: form.category,
+          publicPrice: form.publicPrice,
+          memberPrice: form.memberPrice,
+          description: form.description,
+          productUrl: form.productUrl,
+          imageUrl: form.imageUrl,
+          notes: form.adminNotes,
+        }),
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        setError(data?.error ?? "Submission failed — please try again.");
+      }
+    } catch {
+      setError("Submission failed — please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const inputStyle = {
@@ -302,6 +331,20 @@ export default function MarketplaceSubmitPage() {
               />
             </div>
           </div>
+
+          {/* Error */}
+          {error && (
+            <div
+              className="mt-6 px-4 py-3 rounded-xl text-sm"
+              style={{
+                background: "rgba(220, 38, 38, 0.08)",
+                border: "1px solid rgba(220, 38, 38, 0.2)",
+                color: "#FCA5A5",
+              }}
+            >
+              {error}
+            </div>
+          )}
 
           {/* Submit */}
           <button

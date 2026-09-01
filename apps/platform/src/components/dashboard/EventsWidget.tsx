@@ -3,23 +3,26 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CalendarDaysIcon, ArrowRightIcon } from "./icons";
-import { EVENTS, type EventType } from "@/lib/events-data";
+
+export interface EventItem {
+  id: number;
+  slug: string;
+  title: string;
+  dateLabel: string;
+  location: string;
+  tagline: string | null;
+  typeDot: string;
+}
 
 // ---------------------------------------------------------------------------
 // EventRow — hover state per row
 // ---------------------------------------------------------------------------
 
-function EventRow({
-  event,
-  isLast,
-}: {
-  event: EventType;
-  isLast: boolean;
-}) {
+function EventRow({ event, isLast }: { event: EventItem; isLast: boolean }) {
   const [hovered, setHovered] = useState(false);
 
   // Short date: "May 15, 2026" → "May 15"
-  const shortDate = event.date.split(",")[0] ?? event.date;
+  const shortDate = event.dateLabel.split(",")[0] ?? event.dateLabel;
 
   return (
     <div>
@@ -32,7 +35,6 @@ function EventRow({
         <div
           className="flex items-start gap-3 py-4 rounded-lg transition-all"
           style={{
-            // always reserve 2px left border width to prevent layout shift
             borderLeft: `2px solid ${hovered ? "#D4A853" : "transparent"}`,
             background: hovered ? "rgba(212,168,83,0.04)" : "transparent",
             paddingLeft: "0.5rem",
@@ -64,8 +66,11 @@ function EventRow({
             <p className="text-sm mt-0.5" style={{ color: "#8B6E52" }}>
               {event.location}
             </p>
-            {"description" in event && typeof event.description === "string" && (
-              <p className="text-sm mt-0.5 italic line-clamp-1" style={{ color: "#6B5442" }}>
+            {event.tagline && (
+              <p
+                className="text-sm mt-0.5 italic line-clamp-1"
+                style={{ color: "#6B5442" }}
+              >
                 {event.tagline}
               </p>
             )}
@@ -73,7 +78,6 @@ function EventRow({
         </div>
       </Link>
 
-      {/* Divider — not after last item */}
       {!isLast && <div className="h-px" style={{ background: "#3D2E26" }} />}
     </div>
   );
@@ -83,7 +87,11 @@ function EventRow({
 // EventsWidget
 // ---------------------------------------------------------------------------
 
-export function EventsWidget() {
+interface EventsWidgetProps {
+  events: EventItem[];
+}
+
+export function EventsWidget({ events }: EventsWidgetProps) {
   return (
     <div
       className="rounded-2xl overflow-hidden"
@@ -122,30 +130,38 @@ export function EventsWidget() {
           </div>
         </div>
 
-        {/* Event list */}
+        {/* Event list / empty state */}
         <div className="mb-5">
-          {EVENTS.map((event, i) => (
-            <EventRow
-              key={event.slug}
-              event={event}
-              isLast={i === EVENTS.length - 1}
-            />
-          ))}
+          {events.length === 0 ? (
+            <p className="py-4 text-sm" style={{ color: "#C4A882" }}>
+              New events are being curated — check back soon.
+            </p>
+          ) : (
+            events.map((event, i) => (
+              <EventRow
+                key={event.slug}
+                event={event}
+                isLast={i === events.length - 1}
+              />
+            ))
+          )}
         </div>
 
         {/* CTA */}
-        <button
+        <Link
+          href="/events"
           className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 text-base font-medium tracking-[0.08em] transition-all active:scale-[0.98]"
           style={{
             background: "transparent",
             border: "1px solid #D4A853",
             color: "#D4A853",
             fontFamily: "var(--font-heading)",
+            textDecoration: "none",
           }}
         >
           View All Events
           <ArrowRightIcon size={14} />
-        </button>
+        </Link>
       </div>
     </div>
   );

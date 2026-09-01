@@ -53,3 +53,6 @@ export * from "./rate-limit";
 
 // Re-export stats helpers
 export * from "./stats";
+
+// Re-export events/marketplace catalog helpers
+export * from "./catalog";

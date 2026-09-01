@@ -3,17 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  MARKETPLACE_PRODUCTS,
   CATEGORY_LABELS,
   type MarketplaceProduct,
 } from "@/lib/marketplace-data";
 
-export function ProductDetailClient({ product }: { product: MarketplaceProduct }) {
+export function ProductDetailClient({
+  product,
+  related,
+}: {
+  product: MarketplaceProduct;
+  related: MarketplaceProduct[];
+}) {
   const [activeImage, setActiveImage] = useState(product.images[0] ?? product.image);
-
-  const related = MARKETPLACE_PRODUCTS.filter(
-    (p) => p.category === product.category && p.slug !== product.slug
-  ).slice(0, 3);
 
   return (
     <div style={{ background: "#1A0F0A", minHeight: "100vh" }}>
