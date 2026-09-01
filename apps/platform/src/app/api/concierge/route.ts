@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import Anthropic from "@anthropic-ai/sdk";
 import { auth } from "@/auth";
+import { checkRateLimit } from "@monetura/db";
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -49,6 +50,25 @@ export async function POST(request: Request): Promise<Response> {
       status: 401,
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  // Per-member rate limit — every message is a paid model call.
+  const rl = checkRateLimit(
+    `concierge:${session.user.memberId}`,
+    30,
+    5 * 60 * 1000
+  );
+  if (!rl.allowed) {
+    return new Response(
+      JSON.stringify({ error: "Too many messages. Please slow down a little." }),
+      {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": String(rl.retryAfterSeconds),
+        },
+      }
+    );
   }
 
   const memberName = session.user.name ?? "Member";

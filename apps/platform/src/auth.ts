@@ -36,7 +36,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const password = credentials.password;
 
         // Step 1: Query ApexCRM users table — read-only, never write
-        console.log("AUTH: looking up user", email);
         const users = await getDb()
           .select()
           .from(apexcrmUsers)
@@ -44,12 +43,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .limit(1);
 
         const user = users[0];
-        console.log("AUTH: user found", !!user, "has hash", !!user?.passwordHash);
         if (!user?.passwordHash) return null;
 
         // Step 2: Verify password (bcrypt, 12 rounds)
         const isValid = await bcrypt.compare(password, user.passwordHash);
-        console.log("AUTH: bcrypt result", isValid);
         if (!isValid) return null;
 
         // Step 3: Confirm an active Monetura member record exists
@@ -60,7 +57,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .limit(1);
 
         const member = members[0];
-        console.log("AUTH: member found", !!member, "status", member?.status, "tier", member?.membershipTier);
         if (!member || member.status !== "active") return null;
 
         // Step 3b: Ensure member has an affiliate link — fire and forget
@@ -91,7 +87,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
 
-  session: { strategy: "jwt" },
+  // 7-day sessions: tier/status changes take effect within a week at most.
+  session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60 },
 
   pages: {
     signIn: "/login",

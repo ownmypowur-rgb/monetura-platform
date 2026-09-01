@@ -47,3 +47,6 @@ export * from "./commissions";
 
 // Re-export password token helpers
 export * from "./password-tokens";
+
+// Re-export rate limiting helpers
+export * from "./rate-limit";

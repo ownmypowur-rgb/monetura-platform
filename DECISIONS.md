@@ -42,3 +42,24 @@ Format per entry:
 - Decision made: (b). Future sprints apply schema additions with `CREATE TABLE IF NOT EXISTS` / guarded `ALTER TABLE` scripts and commit the matching generated migration.
 - Reasoning: reconciling migration bookkeeping requires knowing what the other checkout's migrations contained; guessing risks data loss. Additive idempotent DDL is safe either way.
 - Reversible? yes — once the histories are reconciled, `drizzle-kit migrate` can take over.
+
+## [Sprint 3] Admin defense-in-depth via JWT verification only on /admin paths
+- Context: middleware was cookie-presence-only; adding a tier check needs the decoded JWT, but the repo history (commit 2212eb3) shows middleware was deliberately kept DB-free for Edge-runtime compatibility.
+- Options considered: (a) import auth() into middleware (pulls mysql2 into Edge — the exact thing 2212eb3 reverted); (b) decode the session JWT with next-auth/jwt getToken (jose, Edge-safe), but on every request; (c) getToken only for /admin* paths, presence-check for everything else.
+- Decision made: (c). Non-admin routes keep the cheap presence check (real verification still happens in every page/route via auth()); /admin and /api/admin/* verify the JWT and require memberTier === "admin", failing closed (403 for APIs, redirect for pages) including when NEXTAUTH_SECRET is missing.
+- Reasoning: full verification everywhere doubles per-request work for no gain (handlers re-verify anyway); admin is where defense-in-depth pays.
+- Reversible? yes — drop the isAdminPath block.
+
+## [Sprint 3] Affiliate attribution path: platform-domain cookie is the mechanism; marketing ?ref forwarding deferred
+- Context: /api/affiliate/track records the click, sets the 30-day mtr_ref cookie on the platform domain, then redirects to the link's destination (currently monetura.com?ref=CODE, which the marketing site ignores).
+- Options considered: (a) move tracking to the marketing app and share cookies across domains (needs a common parent domain + cookie domain config — deploy-level work); (b) make the marketing site read ?ref and re-set its own cookie (still can't reach the platform domain's cookie jar); (c) keep tracking on the platform domain, where /api/auth/register already reads mtr_ref — un-blocking the route in middleware completes the required outcome: click recorded + future platform signup attributes the referrer.
+- Decision made: (c). Middleware now allowlists /api/affiliate/track; no other change. Cross-domain attribution (marketing-site signups) is deferred until the apps share a parent domain (app.monetura.com + monetura.com can then use Domain=.monetura.com — the current Vercel preview domain cannot).
+- Reasoning: (c) is the spec's stated minimum, needs no deploy-level changes, and doesn't preclude (a) later.
+- Reversible? yes.
+
+## [Sprint 3] Rate limiting: in-memory fixed window in @monetura/db; limits chosen
+- Context: no new dependencies allowed; both apps need the limiter. Limits had to be picked.
+- Options considered: per-app duplicate util vs. one implementation in the only shared server package (@monetura/db, despite the name); sliding vs. fixed window.
+- Decision made: packages/db/src/rate-limit.ts, fixed-window per key. Limits (per IP unless noted): forgot-password 5/15min; set-password 10/15min; register 5/hour; founders/apply 5/hour; concierge 30/5min per member. 429 + Retry-After on excess.
+- Reasoning: fixed window is a few lines and good enough against scripted abuse; the audit flagged duplication as debt, so one shared copy. Known limitation (documented in the file): per-serverless-instance state, so effective limits are a multiple of configured ones — acceptable for v1.
+- Reversible? yes — limits are constants at each call site; the store can be swapped for Redis behind the same function signature.

@@ -44,7 +44,12 @@ Goal: migrations in git, schema and migrations agree. See audit §4 "Migrations 
 ---
 
 ## SPRINT 3 — AFFILIATE TRACKING REACHABLE + AUTH HARDENING
-STATUS: IN PROGRESS
+STATUS: COMPLETE
+> Summary: middleware rewritten as explicit public allowlist (pages + /api/affiliate/track + /api/auth/*), with JWT-verified admin-tier gate on
+> /admin* and /api/admin/* (fails closed; Edge-safe getToken, no DB import). Attribution: click now recorded for logged-out visitors; platform-
+> domain mtr_ref cookie + register route complete the loop (cross-domain marketing forwarding deferred — DECISIONS.md). All AUTH:/debug
+> console.logs stripped from auth.ts, presign, confirm. In-memory rate limiter added to @monetura/db and applied to forgot-password (5/15m),
+> set-password (10/15m), register (5/h), founders/apply (5/h), concierge (30/5m/member). Session maxAge 7 days. Typecheck: 6/6 green.
 
 Goal: public affiliate clicks record; auth endpoints hardened. See audit §1.1 middleware, §5.3, §7 weaknesses, Tech Debt 1-3, 8.
 - Middleware: restructure to an explicit public allowlist that includes /api/affiliate/track plus everything already public; keep everything else protected. Add tier check for /admin paths in middleware as defense-in-depth (pages keep their own checks).

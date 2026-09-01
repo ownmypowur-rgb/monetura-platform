@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { getDb, createPasswordToken } from "@monetura/db";
+import {
+  getDb,
+  createPasswordToken,
+  checkRateLimit,
+  getClientIp,
+} from "@monetura/db";
 import { apexcrmUsers } from "@/lib/apexcrm-users";
 import { getResend } from "@/lib/resend";
 import { appBaseUrl, brandedEmailHtml } from "@/lib/email-templates";
@@ -13,6 +18,18 @@ const BodySchema = z.object({
 });
 
 export async function POST(req: Request): Promise<Response> {
+  const rl = checkRateLimit(
+    `forgot-password:${getClientIp(req)}`,
+    5,
+    15 * 60 * 1000
+  );
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds) } }
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();

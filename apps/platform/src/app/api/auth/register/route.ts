@@ -1,7 +1,15 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { getDb, moneturaMembers, getAffiliateLinkByCode, checkReferralMilestone, recordCommission } from "@monetura/db";
+import {
+  getDb,
+  moneturaMembers,
+  getAffiliateLinkByCode,
+  checkReferralMilestone,
+  recordCommission,
+  checkRateLimit,
+  getClientIp,
+} from "@monetura/db";
 import { apexcrmUsers } from "@/lib/apexcrm-users";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
@@ -18,6 +26,14 @@ const RegisterSchema = z.object({
 });
 
 export async function POST(req: Request): Promise<Response> {
+  const rl = checkRateLimit(`register:${getClientIp(req)}`, 5, 60 * 60 * 1000);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds) } }
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();

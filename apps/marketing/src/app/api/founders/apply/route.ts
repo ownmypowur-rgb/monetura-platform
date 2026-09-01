@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { Resend } from "resend";
-import { getDb, moneturaMembers } from "@monetura/db";
+import {
+  getDb,
+  moneturaMembers,
+  checkRateLimit,
+  getClientIp,
+} from "@monetura/db";
 import { apexcrmUsers } from "@/lib/apexcrm-users";
 import { eq } from "drizzle-orm";
 
@@ -24,6 +29,18 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const rl = checkRateLimit(
+    `founders-apply:${getClientIp(request)}`,
+    5,
+    60 * 60 * 1000
+  );
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds) } }
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();

@@ -26,8 +26,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  console.log("[confirm] mediaUploadId:", body.mediaUploadId, "memberId:", memberId);
-
   // ── Fetch upload record (verifying ownership) ─────────────────────────────
   let rows: { publicUrl: string | null }[];
   try {
@@ -46,8 +44,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Database error" }, { status: 500 });
   }
 
-  console.log("[confirm] select result rows:", rows.length, rows[0] ?? null);
-
   const record = rows[0];
   if (!record) {
     return NextResponse.json({ error: "Upload not found" }, { status: 404 });
@@ -55,7 +51,7 @@ export async function POST(request: Request) {
 
   // ── Update status to uploaded ─────────────────────────────────────────────
   try {
-    const updateResult = await getDb()
+    await getDb()
       .update(moneturaMediaUploads)
       .set({ status: "uploaded" })
       .where(
@@ -64,7 +60,6 @@ export async function POST(request: Request) {
           eq(moneturaMediaUploads.uploaderId, memberId)
         )
       );
-    console.log("[confirm] update result:", updateResult);
   } catch (err) {
     console.error("[confirm] DB update error:", err);
     return NextResponse.json({ error: "Database error" }, { status: 500 });
