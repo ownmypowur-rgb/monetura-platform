@@ -21,6 +21,17 @@ const bodySchema = z.object({
   mediaUploadIds: z.array(z.number()).max(10).optional(),
 });
 
+/**
+ * Strips a wrapping markdown code fence (```json ... ``` or ``` ... ```) from
+ * model output. Models sometimes fence JSON despite being told not to, which
+ * is the most common cause of JSON.parse failing on otherwise valid output.
+ */
+function stripCodeFences(text: string): string {
+  const trimmed = text.trim();
+  const match = /^```[a-zA-Z0-9_-]*\s*\n?([\s\S]*?)\n?\s*```$/.exec(trimmed);
+  return match?.[1] !== undefined ? match[1].trim() : trimmed;
+}
+
 export async function POST(request: Request) {
   // ── Auth ──────────────────────────────────────────────────────────────────
   const session = await auth();
@@ -98,18 +109,66 @@ Guidelines:
     magazineIntro: string;
   };
 
+  let message: Anthropic.Message;
   try {
-    const message = await client.messages.create({
+    message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
       messages: [{ role: "user", content: prompt }],
     });
+  } catch (err) {
+    if (err instanceof Anthropic.AuthenticationError) {
+      console.error(
+        "[content/generate] Anthropic auth error (check ANTHROPIC_API_KEY):",
+        err.status,
+        err.message
+      );
+    } else if (err instanceof Anthropic.RateLimitError) {
+      console.error("[content/generate] Anthropic rate limited:", err.status, err.message);
+    } else if (err instanceof Anthropic.APIError) {
+      console.error(
+        "[content/generate] Anthropic API error:",
+        err.status,
+        err.name,
+        err.message
+      );
+    } else {
+      console.error("[content/generate] Anthropic call failed:", err);
+    }
+    return NextResponse.json(
+      { error: "Content generation failed" },
+      { status: 500 }
+    );
+  }
 
-    const text =
-      message.content[0]?.type === "text" ? message.content[0].text : "";
+  if (message.stop_reason === "refusal") {
+    console.error(
+      "[content/generate] Model refused the request. stop_reason=refusal content=",
+      JSON.stringify(message.content)
+    );
+    return NextResponse.json(
+      { error: "Content generation failed" },
+      { status: 500 }
+    );
+  }
+
+  const rawText = message.content
+    .filter((block): block is Anthropic.TextBlock => block.type === "text")
+    .map((block) => block.text)
+    .join("");
+  const text = stripCodeFences(rawText);
+
+  try {
     generated = JSON.parse(text) as typeof generated;
   } catch (err) {
-    console.error("AI generation error:", err);
+    console.error(
+      "[content/generate] Failed to parse model output as JSON.",
+      `stop_reason=${message.stop_reason}`,
+      "error:",
+      err instanceof Error ? err.message : err,
+      "\nraw model output:\n",
+      rawText
+    );
     return NextResponse.json(
       { error: "Content generation failed" },
       { status: 500 }
