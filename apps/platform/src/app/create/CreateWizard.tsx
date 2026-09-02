@@ -24,7 +24,13 @@ interface ConfirmResponse {
   publicUrl: string;
 }
 
-async function uploadFile(file: File): Promise<string> {
+/** A photo that has been uploaded to S3 and confirmed in the DB. */
+export interface UploadedPhoto {
+  mediaUploadId: number;
+  publicUrl: string;
+}
+
+async function uploadFile(file: File): Promise<UploadedPhoto> {
   if (!isAllowedMimeType(file.type)) {
     throw new Error(`Unsupported file type: ${file.type || "(unknown)"}. Use JPEG, PNG, or WebP.`);
   }
@@ -88,7 +94,7 @@ async function uploadFile(file: File): Promise<string> {
     throw new Error("Failed to confirm upload — please try again.");
   }
 
-  return publicUrl;
+  return { mediaUploadId, publicUrl };
 }
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -742,7 +748,7 @@ interface Step1Props {
   setMemberNotes: (v: string) => void;
   creditsRemaining: number;
   onGenerate: () => void;
-  onPhotosUploaded: (publicUrls: string[]) => void;
+  onPhotosUploaded: (photos: UploadedPhoto[]) => void;
 }
 
 function Step1Input({
@@ -774,13 +780,12 @@ function Step1Input({
     setUploadError(null);
 
     try {
-      const publicUrls: string[] = [];
+      const photos: UploadedPhoto[] = [];
       for (const file of fileArray) {
-        const url = await uploadFile(file);
-        publicUrls.push(url);
+        photos.push(await uploadFile(file));
       }
       setUploadStatus("done");
-      onPhotosUploaded(publicUrls);
+      onPhotosUploaded(photos);
     } catch (err) {
       setUploadStatus("error");
       setUploadError(err instanceof Error ? err.message : "Upload failed. Please try again.");
@@ -1100,7 +1105,7 @@ interface Step3Props {
   locationName: string;
   memberNotes: string;
   memberName: string;
-  mediaUploadIds: string[];
+  photoUrls: string[];
   onRegenerate: () => void;
   onNext: () => void;
 }
@@ -1110,7 +1115,7 @@ function Step3Review({
   creditsRemaining,
   locationName,
   memberName,
-  mediaUploadIds,
+  photoUrls,
   onNext,
 }: Step3Props) {
   const [activeTab, setActiveTab] = useState<Platform>("instagram");
@@ -1118,7 +1123,7 @@ function Step3Review({
   const [edited, setEdited] = useState<GeneratedContent>(content);
 
   const handle = deriveHandle(memberName);
-  const photoUrl = mediaUploadIds[0] ?? null;
+  const photoUrl = photoUrls[0] ?? null;
 
   function getPlatformContent(platform: Platform): string {
     switch (platform) {
@@ -1520,7 +1525,7 @@ export function CreateWizard({ initialCredits, memberName }: CreateWizardProps) 
   const [content, setContent] = useState<GeneratedContent | null>(null);
   const [slug, setSlug] = useState("");
   const [creditsRemaining, setCreditsRemaining] = useState(initialCredits);
-  const [mediaUploadIds, setMediaUploadIds] = useState<string[]>([]);
+  const [uploads, setUploads] = useState<UploadedPhoto[]>([]);
 
   // Step 4 state
   const [publishing, setPublishing] = useState(false);
@@ -1546,6 +1551,7 @@ export function CreateWizard({ initialCredits, memberName }: CreateWizardProps) 
           memberNotes,
           experienceType,
           locationName,
+          mediaUploadIds: uploads.map((u) => u.mediaUploadId),
         }),
       });
       const data = (await res.json()) as {
@@ -1564,7 +1570,7 @@ export function CreateWizard({ initialCredits, memberName }: CreateWizardProps) 
       setContent(data.content!);
       setSlug(data.slug!);
       setCreditsRemaining(data.creditsRemaining!);
-      // mediaUploadIds is set by onPhotosUploaded — do not overwrite here
+      // uploads is set by onPhotosUploaded — do not overwrite here
       setStep(3);
     } catch {
       clearInterval(interval);
@@ -1670,7 +1676,7 @@ export function CreateWizard({ initialCredits, memberName }: CreateWizardProps) 
           setMemberNotes={setMemberNotes}
           creditsRemaining={creditsRemaining}
           onGenerate={handleGenerate}
-          onPhotosUploaded={(urls) => setMediaUploadIds(urls)}
+          onPhotosUploaded={setUploads}
         />
       )}
 
@@ -1684,7 +1690,7 @@ export function CreateWizard({ initialCredits, memberName }: CreateWizardProps) 
           locationName={locationName}
           memberNotes={memberNotes}
           memberName={memberName}
-          mediaUploadIds={mediaUploadIds}
+          photoUrls={uploads.map((u) => u.publicUrl)}
           onRegenerate={handleGenerate}
           onNext={() => setStep(4)}
         />

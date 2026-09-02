@@ -1,12 +1,15 @@
 import "server-only";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { auth } from "@/auth";
 import {
   getDb,
   moneturaContentPosts,
+  moneturaMediaUploads,
+  moneturaPostMedia,
   publishBundlePost,
+  type BundlePublishMedia,
   type BundleSocialPlatform,
 } from "@monetura/db";
 
@@ -107,6 +110,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, slug: body.slug });
   }
 
+  // ── Attached media, in display order ──────────────────────────────────────
+  const mediaRows = await db
+    .select({
+      url: moneturaMediaUploads.publicUrl,
+      fileName: moneturaMediaUploads.fileName,
+      mimeType: moneturaMediaUploads.mimeType,
+    })
+    .from(moneturaPostMedia)
+    .innerJoin(
+      moneturaMediaUploads,
+      eq(moneturaPostMedia.mediaUploadId, moneturaMediaUploads.id)
+    )
+    .where(eq(moneturaPostMedia.postId, post.id))
+    .orderBy(asc(moneturaPostMedia.sortOrder), asc(moneturaPostMedia.id));
+
+  const media: BundlePublishMedia[] = mediaRows.flatMap((row) =>
+    row.url ? [{ url: row.url, fileName: row.fileName, mimeType: row.mimeType }] : []
+  );
+
   // ── Social publish: publishing → published / failed ───────────────────────
   await db
     .update(moneturaContentPosts)
@@ -118,6 +140,7 @@ export async function POST(request: Request) {
     title: post.title,
     content,
     scheduleAt,
+    media,
   });
 
   if (!result.ok) {

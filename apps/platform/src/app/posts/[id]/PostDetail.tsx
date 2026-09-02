@@ -8,11 +8,19 @@ import Link from "next/link";
 type Platform = "instagram" | "facebook" | "linkedin" | "tiktok" | "blog" | "magazine";
 type PostStatus = "draft" | "publishing" | "published" | "failed" | "archived";
 
+export interface PostMediaItem {
+  id: number;
+  url: string;
+  fileName: string;
+}
+
 export interface PostDetailData {
   id: number;
   title: string;
   slug: string;
   status: PostStatus;
+  coverImageUrl: string | null;
+  media: PostMediaItem[];
   publishError: string | null;
   contentType: string;
   aiCreditsUsed: number;
@@ -155,6 +163,17 @@ export function PostDetail({ post }: { post: PostDetailData }) {
 
   const platformHasContent = (p: Platform): boolean => Boolean(getPlatformContent(p));
 
+  // Attached media, with the cover first. Falls back to the cover alone for
+  // posts created before media linking existed.
+  const gallery: PostMediaItem[] =
+    post.media.length > 0
+      ? post.media
+      : post.coverImageUrl
+        ? [{ id: 0, url: post.coverImageUrl, fileName: "cover" }]
+        : [];
+  const hero = gallery[0] ?? null;
+  const thumbnails = gallery.slice(1);
+
   return (
     <div className="min-h-screen" style={{ background: C.bg }}>
       {/* Header */}
@@ -201,6 +220,60 @@ export function PostDetail({ post }: { post: PostDetailData }) {
       </div>
 
       <div className="px-4 lg:px-8 pt-5 pb-28 lg:pb-10 max-w-3xl mx-auto space-y-4">
+        {/* Attached media */}
+        {hero && (
+          <div
+            style={{
+              background: C.card,
+              border: `1px solid ${C.mocha}`,
+              borderRadius: 16,
+              overflow: "hidden",
+            }}
+          >
+            <img
+              src={hero.url}
+              alt={hero.fileName}
+              style={{
+                display: "block",
+                width: "100%",
+                maxHeight: 360,
+                objectFit: "cover",
+                background: C.panel,
+              }}
+            />
+            {thumbnails.length > 0 && (
+              <div
+                className="flex gap-2 overflow-x-auto p-3"
+                style={{ borderTop: `1px solid ${C.mocha}`, background: C.panel }}
+              >
+                {thumbnails.map((item) => (
+                  <img
+                    key={item.id}
+                    src={item.url}
+                    alt={item.fileName}
+                    style={{
+                      width: 72,
+                      height: 72,
+                      objectFit: "cover",
+                      borderRadius: 10,
+                      border: `1px solid ${C.mocha}`,
+                      flexShrink: 0,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+            <p
+              className="px-3 py-2 text-xs"
+              style={{ color: C.mid, borderTop: `1px solid ${C.mocha}` }}
+            >
+              {gallery.length} photo{gallery.length !== 1 ? "s" : ""} attached
+              {" · "}
+              included when publishing to social platforms
+            </p>
+          </div>
+        )}
+
         {/* Stats row (placeholder) */}
         <div
           className="grid grid-cols-3 gap-3"

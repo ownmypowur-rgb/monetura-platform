@@ -4,11 +4,15 @@ import { getDb, moneturaBundleTeams } from "./index";
 
 const BUNDLE_API = "https://api.bundle.social/api/v1";
 
-function getBundleHeaders(): Record<string, string> {
+function getBundleApiKey(): string {
   const key = process.env["BUNDLE_SOCIAL_API_KEY"];
   if (!key) throw new Error("BUNDLE_SOCIAL_API_KEY environment variable is required");
+  return key;
+}
+
+function getBundleHeaders(): Record<string, string> {
   return {
-    "x-api-key": key,
+    "x-api-key": getBundleApiKey(),
     "Content-Type": "application/json",
   };
 }
@@ -109,6 +113,13 @@ const BUNDLE_TYPE_MAP: Record<BundleSocialPlatform, string> = {
   tiktok: "TIKTOK",
 };
 
+export interface BundlePublishMedia {
+  /** Publicly fetchable URL of the image (S3 public URL). */
+  url: string;
+  fileName: string;
+  mimeType: string;
+}
+
 export interface BundlePublishInput {
   memberId: number;
   title: string;
@@ -116,20 +127,100 @@ export interface BundlePublishInput {
   content: Partial<Record<BundleSocialPlatform, string>>;
   /** When set, the post is scheduled for this time; otherwise published now. */
   scheduleAt?: Date | null;
+  /** Images attached to the post, in display order. */
+  media?: BundlePublishMedia[];
 }
 
 export type BundlePublishResult =
   | { ok: true; bundlePostId: string | null }
   | { ok: false; error: string };
 
+type BundleUploadResult =
+  | { ok: true; uploadId: string }
+  | { ok: false; error: string };
+
+/**
+ * Uploads one image to bundle.social's media library for the team.
+ *
+ * Contract per bundle.social API reference (POST /api/v1/upload/): the only
+ * multipart endpoint — form fields `teamId` and `file`; returns `{ id, … }`.
+ * The returned id is what post payloads reference via `uploadIds`.
+ */
+async function uploadMediaToBundle(
+  teamId: string,
+  media: BundlePublishMedia
+): Promise<BundleUploadResult> {
+  let source: Response;
+  try {
+    source = await fetch(media.url);
+  } catch (err) {
+    return {
+      ok: false,
+      error: `could not fetch ${media.fileName} from storage: ${
+        err instanceof Error ? err.message : "network error"
+      }`,
+    };
+  }
+  if (!source.ok) {
+    return {
+      ok: false,
+      error: `could not fetch ${media.fileName} from storage: HTTP ${source.status}`,
+    };
+  }
+
+  const bytes = await source.arrayBuffer();
+  const form = new FormData();
+  form.append("teamId", teamId);
+  form.append("file", new Blob([bytes], { type: media.mimeType }), media.fileName);
+
+  let response: Response;
+  try {
+    // No Content-Type header here — fetch sets the multipart boundary itself.
+    response = await fetch(`${BUNDLE_API}/upload/`, {
+      method: "POST",
+      headers: { "x-api-key": getBundleApiKey() },
+      body: form,
+    });
+  } catch (err) {
+    return {
+      ok: false,
+      error: `bundle.social unreachable during upload: ${
+        err instanceof Error ? err.message : "network error"
+      }`,
+    };
+  }
+
+  if (!response.ok) {
+    const text = await response.text();
+    return {
+      ok: false,
+      error: `upload of ${media.fileName} rejected: ${response.status} ${text.slice(0, 300)}`,
+    };
+  }
+
+  const result = (await response.json().catch(() => null)) as { id?: string } | null;
+  if (!result?.id) {
+    return { ok: false, error: `upload of ${media.fileName} returned no id` };
+  }
+  return { ok: true, uploadId: result.id };
+}
+
+interface BundlePlatformData {
+  type?: string;
+  text: string;
+  uploadIds?: string[];
+}
+
 /**
  * Creates a post on bundle.social for the member's team.
  *
  * Contract per bundle.social API reference (POST /api/v1/post/):
  *   { teamId, title, postDate (ISO), status: "SCHEDULED", socialAccountTypes,
- *     data: { INSTAGRAM: { type: "POST", text }, FACEBOOK: { text }, … } }
- * An immediate publish is a SCHEDULED post dated now. See DECISIONS.md
- * [Sprint 4] for what still needs a live-key verification pass.
+ *     data: { INSTAGRAM: { type: "POST", text, uploadIds }, FACEBOOK: { text, uploadIds },
+ *             LINKEDIN: { text, uploadIds }, TIKTOK: { type: "IMAGE", text, uploadIds } } }
+ * Media is first pushed through POST /api/v1/upload/ (multipart) and the
+ * returned ids are referenced via `uploadIds`. An immediate publish is a
+ * SCHEDULED post dated now.
  */
 export async function publishBundlePost(
   input: BundlePublishInput
@@ -150,6 +241,8 @@ export async function publishBundlePost(
     };
   }
 
+  const teamId = rows[0].bundleTeamId;
+
   const platforms = (
     Object.keys(input.content) as BundleSocialPlatform[]
   ).filter((p) => Boolean(input.content[p]));
@@ -158,13 +251,28 @@ export async function publishBundlePost(
     return { ok: false, error: "No social platform content to publish." };
   }
 
-  const data: Record<string, { type?: string; text: string }> = {};
+  // ── Push attached images to bundle.social's media library ─────────────────
+  const uploadIds: string[] = [];
+  for (const item of input.media ?? []) {
+    const uploaded = await uploadMediaToBundle(teamId, item);
+    if (!uploaded.ok) {
+      return { ok: false, error: `bundle.social media upload failed: ${uploaded.error}` };
+    }
+    uploadIds.push(uploaded.uploadId);
+  }
+  const hasMedia = uploadIds.length > 0;
+
+  const data: Record<string, BundlePlatformData> = {};
   for (const platform of platforms) {
     const text = input.content[platform] ?? "";
+    const withMedia = hasMedia ? { uploadIds } : {};
     if (platform === "instagram") {
-      data[BUNDLE_TYPE_MAP[platform]] = { type: "POST", text };
+      data[BUNDLE_TYPE_MAP[platform]] = { type: "POST", text, ...withMedia };
+    } else if (platform === "tiktok" && hasMedia) {
+      // TikTok needs an explicit IMAGE type for photo posts (default is VIDEO).
+      data[BUNDLE_TYPE_MAP[platform]] = { type: "IMAGE", text, uploadIds };
     } else {
-      data[BUNDLE_TYPE_MAP[platform]] = { text };
+      data[BUNDLE_TYPE_MAP[platform]] = { text, ...withMedia };
     }
   }
 
@@ -176,7 +284,7 @@ export async function publishBundlePost(
       method: "POST",
       headers: getBundleHeaders(),
       body: JSON.stringify({
-        teamId: rows[0].bundleTeamId,
+        teamId,
         title: input.title,
         postDate,
         status: "SCHEDULED",
@@ -213,9 +321,24 @@ const PLATFORM_MAP: Record<string, string> = {
   LINKEDIN: "linkedin",
 };
 
+interface BundleTeamSocialAccount {
+  type: string;
+  username: string | null;
+  displayName: string | null;
+  userDisplayName: string | null;
+  deletedAt: string | null;
+  channels?: Array<{ name: string | null; username: string | null }>;
+}
+
 /**
  * Fetches connected social accounts for a member from bundle.social.
  * Returns an empty array if the member has no bundle team yet.
+ *
+ * Contract per bundle.social API reference (GET /api/v1/team/{id}): the team
+ * object carries its connected accounts in `socialAccounts[]`. Facebook and
+ * LinkedIn accounts expose the selectable Pages as `channels[]` and often
+ * have a null top-level `username`, so the first channel's handle is used as
+ * the display name in that case.
  */
 export async function getBundleAccounts(memberId: number): Promise<BundleAccount[]> {
   const db = getDb();
@@ -231,24 +354,33 @@ export async function getBundleAccounts(memberId: number): Promise<BundleAccount
   const { bundleTeamId } = rows[0];
 
   const response = await fetch(
-    `${BUNDLE_API}/social-accounts?teamId=${encodeURIComponent(bundleTeamId)}`,
+    `${BUNDLE_API}/team/${encodeURIComponent(bundleTeamId)}`,
     { headers: getBundleHeaders() }
   );
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`bundle.social accounts fetch failed: ${response.status} ${text}`);
+    throw new Error(`bundle.social team fetch failed: ${response.status} ${text}`);
   }
 
-  const data = (await response.json()) as Array<{
-    type: string;
-    username: string;
-    status: string;
-  }>;
+  const data = (await response.json()) as {
+    socialAccounts?: BundleTeamSocialAccount[];
+  };
 
-  return data.map((account) => ({
-    platform: PLATFORM_MAP[account.type] ?? account.type.toLowerCase(),
-    username: account.username,
-    status: account.status,
-  }));
+  return (data.socialAccounts ?? [])
+    .filter((account) => !account.deletedAt)
+    .map((account) => {
+      const channel = account.channels?.[0];
+      return {
+        platform: PLATFORM_MAP[account.type] ?? account.type.toLowerCase(),
+        username:
+          account.username ??
+          channel?.username ??
+          channel?.name ??
+          account.displayName ??
+          account.userDisplayName ??
+          "",
+        status: "connected",
+      };
+    });
 }

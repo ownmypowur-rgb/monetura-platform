@@ -210,6 +210,33 @@ export const moneturaMediaUploads = mysqlTable(
 );
 
 // ---------------------------------------------------------------------------
+// monetura_post_media — join table linking uploads to posts (ordered)
+// ---------------------------------------------------------------------------
+export const moneturaPostMedia = mysqlTable(
+  "monetura_post_media",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    postId: bigint("post_id", { mode: "number", unsigned: true }).notNull(),
+    mediaUploadId: bigint("media_upload_id", {
+      mode: "number",
+      unsigned: true,
+    }).notNull(),
+    sortOrder: int("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    postMediaUnique: uniqueIndex("idx_post_media_post_upload").on(
+      t.postId,
+      t.mediaUploadId
+    ),
+    postIdx: index("idx_post_media_post").on(t.postId),
+    uploadIdx: index("idx_post_media_upload").on(t.mediaUploadId),
+  })
+);
+
+// ---------------------------------------------------------------------------
 // monetura_affiliate_links
 // ---------------------------------------------------------------------------
 export const moneturaAffiliateLinks = mysqlTable(
@@ -735,10 +762,25 @@ export const moneturaMilestonesRelations = relations(
 
 export const moneturaContentPostsRelations = relations(
   moneturaContentPosts,
-  ({ one }) => ({
+  ({ one, many }) => ({
     author: one(moneturaMembers, {
       fields: [moneturaContentPosts.authorId],
       references: [moneturaMembers.id],
+    }),
+    media: many(moneturaPostMedia),
+  })
+);
+
+export const moneturaPostMediaRelations = relations(
+  moneturaPostMedia,
+  ({ one }) => ({
+    post: one(moneturaContentPosts, {
+      fields: [moneturaPostMedia.postId],
+      references: [moneturaContentPosts.id],
+    }),
+    upload: one(moneturaMediaUploads, {
+      fields: [moneturaPostMedia.mediaUploadId],
+      references: [moneturaMediaUploads.id],
     }),
   })
 );

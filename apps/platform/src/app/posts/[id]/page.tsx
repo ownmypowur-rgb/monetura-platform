@@ -1,8 +1,13 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { getDb, moneturaContentPosts } from "@monetura/db";
-import { eq, and } from "drizzle-orm";
-import { PostDetail } from "./PostDetail";
+import {
+  getDb,
+  moneturaContentPosts,
+  moneturaMediaUploads,
+  moneturaPostMedia,
+} from "@monetura/db";
+import { eq, and, asc } from "drizzle-orm";
+import { PostDetail, type PostMediaItem } from "./PostDetail";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +39,24 @@ export default async function PostDetailPage({ params }: PageProps) {
   const post = rows[0];
   if (!post) notFound();
 
+  const mediaRows = await getDb()
+    .select({
+      id: moneturaPostMedia.id,
+      url: moneturaMediaUploads.publicUrl,
+      fileName: moneturaMediaUploads.fileName,
+    })
+    .from(moneturaPostMedia)
+    .innerJoin(
+      moneturaMediaUploads,
+      eq(moneturaPostMedia.mediaUploadId, moneturaMediaUploads.id)
+    )
+    .where(eq(moneturaPostMedia.postId, post.id))
+    .orderBy(asc(moneturaPostMedia.sortOrder), asc(moneturaPostMedia.id));
+
+  const media: PostMediaItem[] = mediaRows.flatMap((row) =>
+    row.url ? [{ id: row.id, url: row.url, fileName: row.fileName }] : []
+  );
+
   return (
     <PostDetail
       post={{
@@ -41,6 +64,8 @@ export default async function PostDetailPage({ params }: PageProps) {
         title: post.title,
         slug: post.slug,
         status: post.status,
+        coverImageUrl: post.coverImageUrl ?? null,
+        media,
         publishError: post.publishError ?? null,
         contentType: post.contentType,
         aiCreditsUsed: post.aiCreditsUsed,

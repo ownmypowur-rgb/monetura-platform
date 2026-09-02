@@ -125,3 +125,29 @@ Format per entry:
 - Context: the callout said "average of 22%" while the true catalogue mean was ~21%.
 - Decision made: the server computes the real average of `savings_percent` across published products and passes it to the client; the callout hides entirely when there is nothing to average.
 - Reversible? yes.
+
+## [Sprint 7] Post ↔ media link is a join table; `cover_image_url` reused, not re-added
+- Context: audit Recommendation 7 / Integrations §6 (S3 row): uploads reached S3 and `monetura_media_uploads` but were never linked to a post, `cover_image_url` was never written, and publishing sent text only. The spec allowed "set cover_image_url if the column exists, else add it".
+- Decision made: new `monetura_post_media` (id, post_id, media_upload_id, sort_order, created_at; unique on post+upload, indexed both ways) via a proper `drizzle-kit generate` migration `0006_sharp_hemingway` (snapshot included), applied to the live DB with an idempotent `CREATE TABLE IF NOT EXISTS` + guarded `CREATE INDEX` script per the Sprint 2 rule. `cover_image_url` already existed on both the schema and the live table (varchar(500)), so no DDL was needed for it; `content/generate` now writes it from the first linked upload's public URL. No foreign keys, matching every other monetura_ table.
+- Reversible? yes — additive only; dropping the table loses nothing that isn't in `monetura_media_uploads`.
+
+## [Sprint 7] `content/generate` links only uploads the member owns and has confirmed; a failed link never fails the generation
+- Context: `mediaUploadIds` comes from the browser and must not be trusted as-is.
+- Decision made: the ids are re-selected with `uploader_id = memberId AND status = 'uploaded'`; unknown/foreign/pending ids are silently dropped, requested order is preserved (index → `sort_order`). The draft insert uses `$returningId()`; if the join-table insert then fails, the error is logged and the response is still success — the member has already spent a credit and the draft (with cover) is saved.
+- Reversible? yes.
+
+## [Sprint 7] Media goes to bundle.social through their upload endpoint, and a media failure fails the publish
+- Context: bundle.social's create-post contract takes `uploadIds` (ids from `POST /api/v1/upload/`, their only multipart endpoint — form fields `teamId`, `file`), not external URLs. Per-platform shapes confirmed from the API reference: `INSTAGRAM { type: "POST", text, uploadIds }`, `FACEBOOK { text, uploadIds }`, `LINKEDIN { text, uploadIds }`, `TIKTOK { type: "IMAGE", text, uploadIds }` (TikTok's default type is VIDEO, so photo posts must say IMAGE).
+- Options considered: (a) on an upload failure, still publish text-only (silently reproduces the exact defect the audit flagged, and Instagram/TikTok would reject it anyway); (b) treat any media upload failure as a publish failure with the reason stored in `publish_error` and the existing Retry path.
+- Decision made: (b). The server streams each image from its S3 public URL into a `FormData` upload (`fetch` sets the multipart boundary; the JSON `Content-Type` header is deliberately not sent on that call). Posts with no linked media publish exactly as before.
+- Reversible? yes — the contract lives in `uploadMediaToBundle` / `publishBundlePost`.
+
+## [Sprint 7] `getBundleAccounts` reads `GET /team/{id}`.socialAccounts; "connected" is the only status it can report
+- Context: the previous call hit `GET /social-accounts?teamId=` which is not a documented endpoint (the live-key diagnostic on 2026-09-02 confirmed the documented shapes: `GET /team/{id}` returns `socialAccounts[]`; `GET /social-account/by-type` is per-platform).
+- Decision made: one `GET /team/{id}` call; accounts with `deletedAt` set are dropped. bundle.social's account object has no `status` field, so the existing `BundleAccount.status` (which the dashboard card never reads) is always `"connected"`. Display name falls back `username → first channel username → first channel name → displayName → userDisplayName`, because Facebook/LinkedIn Page connections carry a null top-level username and expose Pages as `channels[]`.
+- Reversible? yes.
+
+## [Sprint 7] Posts UI shows attached media from the join table, falling back to `cover_image_url`
+- Context: posts created before this sprint have neither; posts created by an older client that sends no ids have neither; only new posts have both.
+- Decision made: `/posts` cards render `cover_image_url` when present. `/posts/[id]` renders the join-table media (cover first, thumbnails strip for the rest) and falls back to the cover alone; plain `<img>` tags, matching the events/marketplace pages (no `next/image` remote-pattern config change).
+- Reversible? yes.

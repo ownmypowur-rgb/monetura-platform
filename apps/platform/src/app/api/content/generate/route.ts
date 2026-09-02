@@ -2,8 +2,14 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import Anthropic from "@anthropic-ai/sdk";
+import { and, eq, inArray } from "drizzle-orm";
 import { auth } from "@/auth";
-import { getDb, moneturaContentPosts } from "@monetura/db";
+import {
+  getDb,
+  moneturaContentPosts,
+  moneturaMediaUploads,
+  moneturaPostMedia,
+} from "@monetura/db";
 import { getRemainingCredits, deductCredit } from "@monetura/db";
 import type { MemberTier } from "@/types/next-auth";
 
@@ -57,6 +63,34 @@ export async function POST(request: Request) {
       { status: 402 }
     );
   }
+
+  // ── Resolve uploaded media (ownership + status checked) ───────────────────
+  // Only uploads that belong to this member and were confirmed are linked;
+  // the requested order is preserved so the first photo becomes the cover.
+  const requestedMediaIds = body.mediaUploadIds ?? [];
+  let linkedMedia: { id: number; publicUrl: string | null }[] = [];
+  if (requestedMediaIds.length > 0) {
+    const uploads = await getDb()
+      .select({
+        id: moneturaMediaUploads.id,
+        publicUrl: moneturaMediaUploads.publicUrl,
+      })
+      .from(moneturaMediaUploads)
+      .where(
+        and(
+          inArray(moneturaMediaUploads.id, requestedMediaIds),
+          eq(moneturaMediaUploads.uploaderId, memberId),
+          eq(moneturaMediaUploads.status, "uploaded")
+        )
+      );
+    const byId = new Map(uploads.map((u) => [u.id, u]));
+    linkedMedia = requestedMediaIds.flatMap((id) => {
+      const upload = byId.get(id);
+      return upload ? [upload] : [];
+    });
+  }
+  const coverImageUrl =
+    linkedMedia.find((m) => Boolean(m.publicUrl))?.publicUrl ?? null;
 
   // ── Build prompt ─────────────────────────────────────────────────────────
   const location = body.locationName ? ` at ${body.locationName}` : "";
@@ -194,7 +228,7 @@ Guidelines:
 
   // ── Save draft to DB ──────────────────────────────────────────────────────
   const title = generated.blogTitle || `${body.experienceType} experience${location}`;
-  await getDb()
+  const inserted = await getDb()
     .insert(moneturaContentPosts)
     .values({
       authorId: memberId,
@@ -202,6 +236,7 @@ Guidelines:
       slug,
       body: generated.blogBody,
       excerpt: generated.blogExcerpt,
+      coverImageUrl,
       status: "draft",
       contentType: "article",
       instagramCaption: generated.instagramCaption,
@@ -216,6 +251,29 @@ Guidelines:
       magazineIntro: generated.magazineIntro,
       aiCreditsUsed: 1,
     });
+
+  // ── Link uploaded media to the draft ──────────────────────────────────────
+  // Drizzle with mysql2 returns [ResultSetHeader, ...] — insertId is on index 0
+  const [insertHeader] = inserted as unknown as [{ insertId: number | bigint }];
+  const postId = Number(insertHeader.insertId);
+  if (Number.isInteger(postId) && postId > 0 && linkedMedia.length > 0) {
+    try {
+      await getDb().insert(moneturaPostMedia).values(
+        linkedMedia.map((m, index) => ({
+          postId,
+          mediaUploadId: m.id,
+          sortOrder: index,
+        }))
+      );
+    } catch (err) {
+      // The draft is saved and the cover is set; a failed link should not
+      // cost the member their generation. Surface it in logs instead.
+      console.error(
+        `[content/generate] Failed to link ${linkedMedia.length} media item(s) to post ${postId}:`,
+        err
+      );
+    }
+  }
 
   return NextResponse.json({
     success: true,

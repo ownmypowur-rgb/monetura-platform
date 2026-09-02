@@ -264,6 +264,24 @@ export default async function PostsPage({ searchParams }: PageProps) {
                     boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
                   }}
                 >
+                  {/* Cover image */}
+                  {post.coverImageUrl && (
+                    <img
+                      src={post.coverImageUrl}
+                      alt=""
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        height: 160,
+                        objectFit: "cover",
+                        borderRadius: 12,
+                        marginBottom: 12,
+                        border: `1px solid ${C.mocha}`,
+                        background: C.panel,
+                      }}
+                    />
+                  )}
+
                   {/* Top row */}
                   <div className="flex items-start gap-3 mb-3">
                     <div
