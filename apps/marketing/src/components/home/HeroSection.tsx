@@ -53,11 +53,22 @@ export default function HeroSection() {
               community, and income.
             </p>
 
-            <div className="mt-7 flex max-w-sm flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4 lg:mt-11">
-              <Link href="/founders/apply" className="btn-primary">
+            {/* max-w-sm is the mobile stack width. It has to be released once
+                the buttons sit side by side, or the two sm:w-auto pills share
+                384px, shrink below their natural ~596px and the labels wrap to
+                three lines. flex-wrap lets the second pill drop to its own row
+                on narrow tablets instead of overflowing. */}
+            <div className="mt-7 flex max-w-sm flex-col gap-3 sm:mt-10 sm:max-w-none sm:flex-row sm:flex-wrap sm:gap-5 lg:mt-11">
+              <Link
+                href="/founders/apply"
+                className="btn-primary whitespace-nowrap lg:px-10"
+              >
                 Apply for Founder Access
               </Link>
-              <Link href="#the-origin" className="btn-secondary">
+              <Link
+                href="#the-origin"
+                className="btn-secondary whitespace-nowrap lg:px-10"
+              >
                 Discover Monetura
               </Link>
             </div>
