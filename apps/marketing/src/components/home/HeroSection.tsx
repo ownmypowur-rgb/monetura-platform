@@ -30,17 +30,16 @@ export default function HeroSection() {
       <div className="page-shell relative z-10 flex min-h-[100svh] items-end pb-6 pt-24 sm:pb-16 sm:pt-32 lg:pt-36">
         <div className="grid w-full gap-8 sm:gap-10 lg:grid-cols-[minmax(0,680px)_1fr] lg:items-end xl:gap-12">
           <div className="max-w-[21rem] sm:max-w-[42rem]">
-            <p className="editorial-label">Monetura</p>
-            <h1 className="lux-heading max-w-[16rem] text-[2.05rem] text-monetura-cream sm:max-w-[32rem] sm:text-[3.25rem] lg:max-w-[36rem] lg:text-[4.15rem] xl:text-[4.4rem]">
-              Passion becomes creation.
-              <span className="mt-3 block text-monetura-champagne">
-                Creation becomes freedom.
-              </span>
+            <p className="editorial-label">MONETURA</p>
+            {/* Sized to read confident rather than shouting, and held to a
+                single line from lg upward. */}
+            <h1 className="lux-heading max-w-[18rem] text-5xl text-monetura-cream sm:max-w-[32rem] lg:max-w-none lg:whitespace-nowrap lg:text-6xl">
+              Find your way{" "}
+              <span className="text-monetura-champagne">back.</span>
             </h1>
             <p className="lux-body mt-6 max-w-[20rem] text-[13.5px] leading-6 text-monetura-cream/78 sm:mt-8 sm:max-w-[32rem] sm:text-[15px] sm:leading-8 lg:mt-9 lg:max-w-[34rem] lg:text-[15.5px]">
-              Monetura is the AI-powered platform that helps travellers turn every
-              trip into content, every post into income, and every experience
-              into something worth sharing.
+              Monetura turns the life you already want to live into content,
+              community, and income.
             </p>
 
             <div className="mt-7 flex max-w-sm flex-col gap-3 sm:mt-10 sm:flex-row sm:gap-4 lg:mt-11">

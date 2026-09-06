@@ -92,6 +92,11 @@ export default function StoryPage() {
           </div>
 
           <div className="mt-20 pt-16 border-t border-monetura-sand">
+            {/* Closing line. Sunset Gold is the brand's tagline colour on light
+                backgrounds; this section sits on cream. */}
+            <p className="font-garet text-monetura-sunset text-xl md:text-2xl leading-relaxed tracking-[0.04em] mb-12">
+              Passion becomes creation. Creation becomes freedom.
+            </p>
             <div className="flex flex-col sm:flex-row gap-6 items-start">
               <a href="/founders/apply" className="btn-champagne" style={{ borderColor: '#D4A853', color: '#D4A853' }}>
                 Apply for Founder Access
