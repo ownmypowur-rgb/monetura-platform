@@ -20,8 +20,22 @@ export default function HeroSection() {
         >
           <source src="/videos/hero-lagoon.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,20,18,0.94)_0%,rgba(25,20,18,0.76)_36%,rgba(25,20,18,0.44)_68%,rgba(25,20,18,0.7)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(44,36,32,0.72)_0%,rgba(44,36,32,0.34)_34%,rgba(44,36,32,0.84)_100%)]" />
+        {/* Single scrim, anchored to the bottom in absolute units rather than
+            percentages. The text block is a fixed height, so a percentage
+            gradient drifts off it as the viewport gets shorter — on a ~700px
+            laptop the headline sits ~10% higher in the frame and a percentage
+            ramp leaves it under-covered. Anchoring to the bottom tracks the
+            text on every viewport height, and confining the darkness to where
+            the copy actually is means the rest of the frame can be far lighter
+            than the old full-frame wash: the lagoon, canopy and backlight read
+            at close to full richness above it. The fixed navbar carries its own
+            from-monetura-charcoal/60 gradient and does not rely on this.
+            Mobile gets its own, deeper curve: the headline wraps to two lines
+            so the block reaches ~600px, and object-cover crops a 390px-wide
+            viewport to the middle ~26% of the frame — which is the sun flare.
+            It therefore holds its density much further up and can only be
+            lightened modestly; the desktop crop is where the real gain is. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[52rem] bg-[linear-gradient(to_top,rgba(25,20,18,0.74)_0%,rgba(25,20,18,0.7)_30%,rgba(25,20,18,0.6)_80%,rgba(25,20,18,0)_100%)] lg:h-[34rem] lg:bg-[linear-gradient(to_top,rgba(25,20,18,0.74)_0%,rgba(25,20,18,0.68)_30%,rgba(25,20,18,0.64)_68%,rgba(25,20,18,0)_100%)]" />
       </div>
 
       <div className="page-shell relative z-10 flex min-h-[100svh] items-end pb-6 pt-24 sm:pb-16 sm:pt-32 lg:pt-36">
