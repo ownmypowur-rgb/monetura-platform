@@ -16,12 +16,9 @@ export default function HeroSection() {
           loop
           playsInline
           preload="auto"
-          poster="/images/monetura-hero-reference.jpg"
+          poster="/videos/hero-lagoon-poster.jpg"
         >
-          <source
-            src="/videos/monetura-hero-preview-01-drifting.mp4"
-            type="video/mp4"
-          />
+          <source src="/videos/hero-lagoon.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(25,20,18,0.94)_0%,rgba(25,20,18,0.76)_36%,rgba(25,20,18,0.44)_68%,rgba(25,20,18,0.7)_100%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(44,36,32,0.72)_0%,rgba(44,36,32,0.34)_34%,rgba(44,36,32,0.84)_100%)]" />
