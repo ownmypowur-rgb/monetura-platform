@@ -1,10 +1,9 @@
 import {
   FOUNDER_TIERS,
-  formatTierPrice,
   type FounderTierId,
 } from "@monetura/config/src/tiers";
 
-// Marketing copy stays local; names, prices, and taglines come from the
+// Marketing copy stays local; names and taglines come from the
 // canonical tier definition in @monetura/config.
 const TIER_COPY: Record<
   FounderTierId,
@@ -60,10 +59,10 @@ const TIER_COPY: Record<
   },
 };
 
+// Prices are intentionally absent: founder pricing is shared on the webinar,
+// never on a public page. The canonical config keeps priceCad for internal use.
 const tiers = FOUNDER_TIERS.map((t) => ({
   name: t.name,
-  price: formatTierPrice(t),
-  currency: "CAD",
   tagline: t.tagline,
   cta: `Apply as ${t.name}`,
   ...TIER_COPY[t.id],
@@ -103,7 +102,7 @@ export default function TiersSection() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-px lg:bg-monetura-sand/10">
           {tiers.map(
-            ({ name, price, currency, tagline, description, features, highlight, cta }) => (
+            ({ name, tagline, description, features, highlight, cta }) => (
               <div
                 key={name}
                   className={`relative flex flex-col rounded-[1.6rem] p-6 sm:p-8 lg:rounded-none lg:p-10 ${
@@ -127,16 +126,11 @@ export default function TiersSection() {
                   <h3 className="mb-3 font-garet text-xl text-monetura-cream sm:mb-4">
                     {name}
                   </h3>
-                  <div className="mb-2 flex items-baseline gap-2">
-                    <span className="font-garet text-3xl text-monetura-cream">
-                      {price}
-                    </span>
-                    <span className="text-sm text-monetura-cream/40">
-                      {currency}
-                    </span>
-                  </div>
+                  <p className="mb-2 font-garet text-xl text-monetura-cream/90">
+                    One-time founding investment
+                  </p>
                   <p className="text-xs uppercase tracking-[0.1em] text-monetura-cream/40">
-                    One-time payment
+                    Pricing shared on the webinar
                   </p>
                 </div>
 

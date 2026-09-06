@@ -4,11 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   FOUNDER_TIERS,
-  formatTierPrice,
   type FounderTierId,
 } from "@monetura/config/src/tiers";
 
-// Marketing copy stays local; names, prices, and taglines come from the
+// Marketing copy stays local; names and taglines come from the
 // canonical tier definition in @monetura/config.
 const TIER_COPY: Record<
   FounderTierId,
@@ -67,10 +66,11 @@ const TIER_COPY: Record<
   },
 };
 
+// Prices are intentionally absent: founder pricing is shared on the webinar,
+// never on a public page. The canonical config keeps priceCad for internal use.
 const tiers = FOUNDER_TIERS.map((t) => ({
   id: t.id,
   name: t.name,
-  price: `${formatTierPrice(t)} CAD`,
   tagline: t.tagline,
   ...TIER_COPY[t.id],
 }));
@@ -88,7 +88,7 @@ export default function TierSelector() {
 
         {/* Tab selector */}
         <div className="flex flex-wrap gap-px mb-16 bg-monetura-sand/10">
-          {tiers.map(({ id, name, price }) => (
+          {tiers.map(({ id, name, tagline }) => (
             <button
               key={id}
               onClick={() => setSelected(id)}
@@ -114,7 +114,7 @@ export default function TierSelector() {
                     : "text-monetura-cream/40"
                 }`}
               >
-                {price}
+                {tagline}
               </p>
             </button>
           ))}
@@ -134,13 +134,13 @@ export default function TierSelector() {
                 {activeTier.description}
               </p>
 
-              <div className="flex items-baseline gap-2 mb-10">
-                <span className="font-garet font-bold text-4xl text-monetura-cream">
-                  {activeTier.price}
-                </span>
-                <span className="text-monetura-cream/40 text-sm">
-                  one-time
-                </span>
+              <div className="mb-10">
+                <p className="font-garet font-bold text-2xl text-monetura-cream">
+                  One-time founding investment
+                </p>
+                <p className="text-monetura-cream/40 text-sm mt-1">
+                  Pricing is shared on the founder webinar.
+                </p>
               </div>
 
               <Link

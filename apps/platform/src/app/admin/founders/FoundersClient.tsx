@@ -72,7 +72,7 @@ function formatDate(date: Date): string {
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { label: string; bg: string; color: string }> = {
-    pending: { label: "Pending Review", bg: "rgba(139,110,82,0.15)", color: "#C17A4A" },
+    pending: { label: "Pending Review", bg: "rgba(139,110,82,0.15)", color: "#D89A6A" },
     awaiting_payment: { label: "Awaiting Payment", bg: "rgba(212,168,83,0.12)", color: "#D4A853" },
     active: { label: "Active", bg: "rgba(34,197,94,0.12)", color: "#4ade80" },
     suspended: { label: "Suspended", bg: "rgba(220,38,38,0.12)", color: "#f87171" },
@@ -125,11 +125,11 @@ function ApplicationCard({
           <p className="font-semibold text-base" style={{ color: "#FBF5ED", fontFamily: "var(--font-heading)" }}>
             {member.name}
           </p>
-          <p className="text-sm mt-0.5" style={{ color: "#8B6E52" }}>
+          <p className="text-sm mt-0.5" style={{ color: "#C4A882" }}>
             {member.email}
           </p>
           {member.phone && (
-            <p className="text-xs mt-0.5" style={{ color: "#4A3728" }}>
+            <p className="text-xs mt-0.5" style={{ color: "#B99B74" }}>
               {member.phone}
             </p>
           )}
@@ -141,7 +141,7 @@ function ApplicationCard({
       <div className="grid grid-cols-2 gap-3 text-sm">
         {(member.province ?? member.country) && (
           <div>
-            <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#4A3728" }}>
+            <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#B99B74" }}>
               Province / Region
             </p>
             <p style={{ color: "#E8DCCB" }}>{member.province ?? member.country}</p>
@@ -150,7 +150,7 @@ function ApplicationCard({
 
         {member.tierInterest && (
           <div>
-            <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#4A3728" }}>
+            <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#B99B74" }}>
               Tier Interest
             </p>
             <p
@@ -163,7 +163,7 @@ function ApplicationCard({
         )}
 
         <div>
-          <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#4A3728" }}>
+          <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#B99B74" }}>
             Submitted
           </p>
           <p style={{ color: "#E8DCCB" }}>{formatDate(member.createdAt)}</p>
@@ -171,7 +171,7 @@ function ApplicationCard({
 
         {member.heardAbout && (
           <div>
-            <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#4A3728" }}>
+            <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "#B99B74" }}>
               How they heard
             </p>
             <p style={{ color: "#E8DCCB" }}>{member.heardAbout}</p>
@@ -258,7 +258,7 @@ function ConfirmModal({ member, onConfirm, onClose, loading }: ConfirmModalProps
           >
             Confirm Payment
           </h2>
-          <p style={{ color: "#8B6E52", fontSize: "14px" }}>
+          <p style={{ color: "#C4A882", fontSize: "14px" }}>
             Activating founder account for{" "}
             <span style={{ color: "#D4A853" }}>{member.name}</span>
           </p>
@@ -268,7 +268,7 @@ function ConfirmModal({ member, onConfirm, onClose, loading }: ConfirmModalProps
         <div>
           <label
             className="block text-xs tracking-widest uppercase mb-2"
-            style={{ color: "#8B6E52" }}
+            style={{ color: "#C4A882" }}
           >
             Founder Tier
           </label>
@@ -297,7 +297,7 @@ function ConfirmModal({ member, onConfirm, onClose, loading }: ConfirmModalProps
           style={{
             background: "rgba(212,168,83,0.06)",
             border: "1px solid rgba(212,168,83,0.15)",
-            color: "#8B6E52",
+            color: "#C4A882",
           }}
         >
           This will activate the account, assign a founder number, and send a
@@ -312,7 +312,7 @@ function ConfirmModal({ member, onConfirm, onClose, loading }: ConfirmModalProps
             className="flex-1 py-3 rounded-xl text-sm font-semibold tracking-wider uppercase transition-all"
             style={{
               background: "transparent",
-              color: "#8B6E52",
+              color: "#C4A882",
               border: "1px solid #3D2E26",
               fontFamily: "var(--font-heading)",
             }}
@@ -347,7 +347,7 @@ function ActiveFoundersTable({ founders }: { founders: ApplicationMember[] }) {
         className="rounded-2xl px-6 py-16 text-center"
         style={{ background: "#1A0F0A", border: "1px solid #3D2E26" }}
       >
-        <p className="text-sm" style={{ color: "#4A3728" }}>
+        <p className="text-sm" style={{ color: "#B99B74" }}>
           No active founders yet.
         </p>
       </div>
@@ -369,7 +369,7 @@ function ActiveFoundersTable({ founders }: { founders: ApplicationMember[] }) {
                   <th
                     key={h}
                     className="px-5 py-3.5 text-left text-[10px] tracking-widest uppercase"
-                    style={{ color: "#4A3728", fontFamily: "var(--font-heading)" }}
+                    style={{ color: "#B99B74", fontFamily: "var(--font-heading)" }}
                   >
                     {h}
                   </th>
@@ -397,7 +397,7 @@ function ActiveFoundersTable({ founders }: { founders: ApplicationMember[] }) {
                 <td className="px-5 py-4" style={{ color: "#FBF5ED" }}>
                   {f.name}
                 </td>
-                <td className="px-5 py-4" style={{ color: "#8B6E52" }}>
+                <td className="px-5 py-4" style={{ color: "#C4A882" }}>
                   {f.email}
                 </td>
                 <td className="px-5 py-4">
@@ -406,10 +406,10 @@ function ActiveFoundersTable({ founders }: { founders: ApplicationMember[] }) {
                       {TIER_LABELS[f.tierInterest]}
                     </span>
                   ) : (
-                    <span style={{ color: "#4A3728" }}>—</span>
+                    <span style={{ color: "#B99B74" }}>—</span>
                   )}
                 </td>
-                <td className="px-5 py-4" style={{ color: "#8B6E52" }}>
+                <td className="px-5 py-4" style={{ color: "#C4A882" }}>
                   {formatDate(f.createdAt)}
                 </td>
                 <td className="px-5 py-4">
@@ -432,13 +432,13 @@ function ActiveFoundersTable({ founders }: { founders: ApplicationMember[] }) {
               <StatusBadge status={f.status} />
             </div>
             <p className="font-medium" style={{ color: "#FBF5ED" }}>{f.name}</p>
-            <p className="text-sm" style={{ color: "#8B6E52" }}>{f.email}</p>
+            <p className="text-sm" style={{ color: "#C4A882" }}>{f.email}</p>
             {f.tierInterest && (
               <p className="text-sm" style={{ color: TIER_COLORS[f.tierInterest] }}>
                 {TIER_LABELS[f.tierInterest]}
               </p>
             )}
-            <p className="text-xs" style={{ color: "#4A3728" }}>
+            <p className="text-xs" style={{ color: "#B99B74" }}>
               Joined {formatDate(f.createdAt)}
             </p>
           </div>
@@ -597,14 +597,14 @@ export function FoundersClient({ initialData }: FoundersClientProps) {
             <Link
               href="/dashboard"
               className="text-sm transition-colors lg:hidden"
-              style={{ color: "#8B6E52" }}
+              style={{ color: "#C4A882" }}
             >
               ← Dashboard
             </Link>
             <div>
               <p
                 className="text-xs tracking-[0.2em] uppercase mb-1"
-                style={{ color: "#8B6E52" }}
+                style={{ color: "#C4A882" }}
               >
                 Admin Console
               </p>
@@ -614,7 +614,7 @@ export function FoundersClient({ initialData }: FoundersClientProps) {
               >
                 Founder Applications
               </h1>
-              <p className="text-sm mt-1" style={{ color: "#4A3728" }}>
+              <p className="text-sm mt-1" style={{ color: "#B99B74" }}>
                 Manage incoming applications and activate founder accounts
               </p>
             </div>
@@ -647,7 +647,7 @@ export function FoundersClient({ initialData }: FoundersClientProps) {
                     </p>
                     <p
                       className="text-[11px] tracking-wide uppercase"
-                      style={{ color: "#4A3728" }}
+                      style={{ color: "#B99B74" }}
                     >
                       {stat.label}
                     </p>
@@ -706,7 +706,7 @@ export function FoundersClient({ initialData }: FoundersClientProps) {
                       className="rounded-2xl px-6 py-16 text-center"
                       style={{ background: "#1A0F0A", border: "1px solid #3D2E26" }}
                     >
-                      <p className="text-sm" style={{ color: "#4A3728" }}>
+                      <p className="text-sm" style={{ color: "#B99B74" }}>
                         No pending applications.
                       </p>
                     </div>
@@ -731,7 +731,7 @@ export function FoundersClient({ initialData }: FoundersClientProps) {
                       className="rounded-2xl px-6 py-16 text-center"
                       style={{ background: "#1A0F0A", border: "1px solid #3D2E26" }}
                     >
-                      <p className="text-sm" style={{ color: "#4A3728" }}>
+                      <p className="text-sm" style={{ color: "#B99B74" }}>
                         No applications awaiting payment.
                       </p>
                     </div>

@@ -52,6 +52,41 @@ function TikTokIcon({ size = 20 }: { size?: number }) {
   );
 }
 
+/**
+ * What each network actually requires before it will accept an API post.
+ * Members were hitting this as a wall at connect time: Facebook's API cannot
+ * post to a personal profile at all, and Instagram refuses unless the account
+ * is Professional. Saying so up front is cheaper than a failed publish.
+ */
+const ACCOUNT_REQUIREMENTS: { id: string; label: string; requirement: string }[] = [
+  {
+    id: "instagram",
+    label: "Instagram",
+    requirement:
+      "Must be a Professional account (Business or Creator) linked to a Facebook Page. Switch in the Instagram app under Settings → Account type and tools.",
+  },
+  {
+    id: "facebook",
+    label: "Facebook",
+    requirement:
+      "You connect a Facebook Page, not your personal profile — Facebook's API cannot post to personal profiles. Creating a Page takes about a minute and it stays separate from your profile.",
+  },
+  {
+    id: "linkedin",
+    label: "LinkedIn",
+    requirement:
+      "Your personal profile works as-is. Company Pages work too if you'd rather publish there.",
+  },
+  {
+    id: "tiktok",
+    label: "TikTok",
+    requirement:
+      "Any account works. Photo posts publish as an image post to your profile.",
+  },
+];
+
+const FACEBOOK_PAGE_URL = "https://www.facebook.com/pages/create";
+
 const PLATFORMS: PlatformConfig[] = [
   { id: "instagram", label: "Instagram", color: "#E1306C", icon: <InstagramIcon /> },
   { id: "facebook",  label: "Facebook",  color: "#1877F2", icon: <FacebookIcon /> },
@@ -161,9 +196,63 @@ export function SocialSettingsClient() {
         >
           Social Accounts
         </h1>
-        <p className="text-sm" style={{ color: "#8B6E52" }}>
+        <p className="text-sm" style={{ color: "#C4A882" }}>
           Connect your social media accounts to publish content automatically
         </p>
+      </div>
+
+      {/* Get creator-ready — account-type requirements */}
+      <div
+        className="rounded-2xl overflow-hidden mb-6"
+        style={{ background: "#2C2420", border: "1px solid #4A3728" }}
+      >
+        <div
+          className="h-px w-full"
+          style={{ background: "linear-gradient(90deg, #D4A853 0%, transparent 100%)" }}
+        />
+        <div className="p-5">
+          <p
+            className="text-xs tracking-[0.2em] uppercase mb-1.5"
+            style={{ color: "#D4A853" }}
+          >
+            Get creator-ready
+          </p>
+          <p className="text-sm mb-4" style={{ color: "#C4A882" }}>
+            Each network has its own rules about which kind of account can be
+            published to. Two minutes here saves a failed post later.
+          </p>
+
+          <ul className="space-y-3">
+            {ACCOUNT_REQUIREMENTS.map(({ id, label, requirement }) => (
+              <li
+                key={id}
+                className="rounded-xl px-3.5 py-3"
+                style={{ background: "#1A0F0A", border: "1px solid #4A3728" }}
+              >
+                <p
+                  className="text-sm font-medium mb-1"
+                  style={{ color: "#FBF5ED" }}
+                >
+                  {label}
+                </p>
+                <p className="text-sm leading-relaxed" style={{ color: "#C4A882" }}>
+                  {requirement}
+                </p>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href={FACEBOOK_PAGE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 mt-4 text-sm font-medium"
+            style={{ color: "#D4A853" }}
+          >
+            Create a Facebook Page
+            <span aria-hidden="true">&#8599;</span>
+          </a>
+        </div>
       </div>
 
       {/* Platform cards */}

@@ -8,6 +8,18 @@ import Link from "next/link";
 type Platform = "instagram" | "facebook" | "linkedin" | "tiktok" | "blog" | "magazine";
 type PostStatus = "draft" | "publishing" | "published" | "failed" | "archived";
 
+/**
+ * A place the member can go to re-share what was just published.
+ * The networks' APIs cannot post to personal profiles, so publishing lands on a
+ * Page or Business account and the member re-shares from there by hand — this
+ * turns that step into one tap.
+ */
+interface ShareTarget {
+  platform: string;
+  username: string;
+  url: string;
+}
+
 export interface PostMediaItem {
   id: number;
   url: string;
@@ -83,6 +95,16 @@ const PLATFORMS: { id: Platform; label: string }[] = [
   { id: "magazine", label: "Magazine" },
 ];
 
+function platformLabel(platform: string): string {
+  const labels: Record<string, string> = {
+    instagram: "Instagram",
+    facebook: "Facebook",
+    linkedin: "LinkedIn",
+    tiktok: "TikTok",
+  };
+  return labels[platform] ?? platform;
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function PostDetail({ post }: { post: PostDetailData }) {
@@ -94,6 +116,7 @@ export function PostDetail({ post }: { post: PostDetailData }) {
       ? "Publishing failed — we're on it. Your post is safe and you can retry any time."
       : null
   );
+  const [shareTargets, setShareTargets] = useState<ShareTarget[]>([]);
   const badge = statusBadge(status);
   const isPublished = status === "published";
 
@@ -115,7 +138,11 @@ export function PostDetail({ post }: { post: PostDetailData }) {
       });
 
       if (res.ok) {
+        const data = (await res.json().catch(() => null)) as {
+          shareTargets?: ShareTarget[];
+        } | null;
         setStatus("published");
+        setShareTargets(data?.shareTargets ?? []);
       } else {
         const data = (await res.json().catch(() => null)) as {
           error?: string;
@@ -389,6 +416,50 @@ export function PostDetail({ post }: { post: PostDetailData }) {
             }}
           >
             {publishError}
+          </div>
+        )}
+
+        {/* Share step — the distribution path the APIs can't take */}
+        {isPublished && shareTargets.length > 0 && (
+          <div
+            className="px-4 py-4 rounded-xl"
+            style={{
+              background: C.panel,
+              border: `1px solid ${C.mocha}`,
+            }}
+          >
+            <p
+              className="text-sm mb-1"
+              style={{ color: C.gold, fontFamily: "var(--font-heading)" }}
+            >
+              You&rsquo;re live. One more step.
+            </p>
+            <p className="text-sm mb-3" style={{ color: C.sand }}>
+              Social networks don&rsquo;t allow posting straight to a personal
+              profile, so this went out on your connected page. Re-share it to
+              your own profile to reach the people who follow you.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {shareTargets.map((t) => (
+                <a
+                  key={`${t.platform}-${t.username}`}
+                  href={t.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm"
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 10,
+                    border: `1px solid ${C.gold}55`,
+                    color: C.gold,
+                    textDecoration: "none",
+                  }}
+                >
+                  Share on {platformLabel(t.platform)}
+                  <span aria-hidden="true">&#8599;</span>
+                </a>
+              ))}
+            </div>
           </div>
         )}
 

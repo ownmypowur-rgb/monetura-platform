@@ -28,7 +28,7 @@ const steps = [
     number: "03",
     title: "Accept & Choose Your Tier",
     subtitle: "One payment. Lifetime access.",
-    body: "Approved founders choose their tier — Explorer ($2,500), Trailblazer ($3,500), or Luminary ($5,500) — and complete their one-time payment via e-transfer or wire to ATB Bank.",
+    body: "Approved founders choose their tier — Explorer, Trailblazer, Pioneer, or Luminary — and complete their one-time payment via e-transfer or wire to ATB Bank. Pricing is walked through personally on the founder webinar.",
     detail:
       "Payment is not processed through Stripe or any payment platform. This is intentional. Founder access is a relationship, not a transaction.",
   },

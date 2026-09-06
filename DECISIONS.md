@@ -196,3 +196,37 @@ Format per entry:
 - Decision made: both read `SEED_ADMIN_PASSWORD` / `SEED_DEMO_PASSWORD` with no default, exit with instructions when unset, and no longer print the password. Documented in `.env.local.example`.
 - **Not fixed by this change, and it needs the owner:** both literals remain in git history, and the `admin@monetura.com` account on the live database still has the old password — which grants the admin console, including founder activation. **The owner must rotate that password manually** (sign in and use "Forgot your password?", or re-run the seed against a fresh value). Removing them from history would require a force-push rewrite of a shared branch, which is out of scope for an autonomous sprint.
 - Reversible? yes.
+
+## [Sprint 9] Admin contrast: two AA-safe warm tones replace the failing browns
+- Context: `#8B6E52` (Canyon Earth) and `#4A3728` (Deep Mocha) were used as *text* across `/admin/founders` and `/admin/submissions`. Measured against the four admin backgrounds (#130D0A, #1A0F0A, #2C2420, #3D2E26) they score 2.75–4.08 and 1.16–1.71 respectively — `#4A3728` field labels ("PHONE", "PROVINCE") were effectively invisible.
+- Options considered: (a) lighten the backgrounds; (b) move everything to cream, flattening the type hierarchy; (c) introduce two new warm tones that clear AA on every admin surface.
+- Decision made: (c). Secondary text `#8B6E52 → #C4A882` (min 5.73:1) and tertiary/label text `#4A3728 → #B99B74` (min 4.95:1); the "Pending Review" badge `#C17A4A → #D89A6A` (was 4.46:1 on #2C2420, just under AA). `#4A3728` is untouched where it is a border or background. Every remaining admin text colour was then re-measured: all ≥4.5:1.
+- Reasoning: (c) keeps the brand's warm sand/champagne family and the three-level hierarchy while making small uppercase labels legible; (a) would have changed the whole admin look for a text problem.
+- Reversible? yes — two hex values.
+- Adjacent: the `/settings/social` subtitle used the same failing `#8B6E52`; it was raised in the same pass because the new explainer panel sits directly beneath it.
+
+## [Sprint 9] Public pricing removed; the concierge is treated as a public surface
+- Context: the brief named `/founders/apply`, TiersSection and TierSelector. `how-it-works` also carried hardcoded prices (and a stale three-tier list omitting Pioneer), and the concierge system prompt injected every tier price.
+- Decision made: prices removed from all four. The concierge is behind login, but it is a generative surface that will restate anything in its prompt, so it now lists tier *names* only plus an explicit instruction never to quote prices and to offer to book a webinar instead. Tier cards now read "One-time founding investment / Pricing shared on the webinar"; the apply dropdown and tier cards show names and taglines.
+- Kept: `priceCad` in `packages/config/src/tiers.ts` and the price in the internal owner-notification email — the brief's "internal/admin use only" carve-out.
+- Reasoning: a member relaying a price the AI quoted is the same leak as publishing it; "webinar only" has to hold everywhere the number could surface.
+- Reversible? yes — the canonical config is unchanged.
+
+## [Sprint 9] Share step links to the member's profile, not to the post
+- Context: the brief asked for the live post URL "where available". bundle.social's create-post response returns only an internal `id`, and posts are created as SCHEDULED, so no permalink exists at publish time.
+- Decision made: `/api/content/publish` returns `shareTargets` built from the member's connected accounts via a new `bundleProfileUrl(platform, username)`; `PostDetail` renders "Share on <platform>" buttons after a successful publish. LinkedIn resolves to the member's feed rather than a guessed `/in/` vs `/company/` path, and an unusable handle yields no link rather than a URL that 404s. Building the targets is wrapped in try/catch — the post is already live, so this can never fail the publish.
+- Reasoning: the whole point of the step is that the APIs cannot reach a personal profile, so the destination that matters is where the member goes to re-share. Storing the returned `bundlePostId` for a real permalink later is follow-up work.
+- Reversible? yes — additive response field.
+
+## [Sprint 9] "Save this trip" copies instead of pretending to save
+- Context: the button called `console.log` and gave the member no feedback at all. A real save needs `monetura_travel_bookings` wiring, which is Tier 3 backlog, not a nav sanity check.
+- Options considered: (a) leave it inert; (b) build the booking backend; (c) make it do something real and small.
+- Decision made: (c) — it copies a formatted trip summary to the clipboard with "Copied to clipboard ✓" / failure states, and the label now reads "Copy trip summary" so it describes what it does. Persisting trips stays on the backlog.
+- Reasoning: a button that silently does nothing is worse than either a working one or no button; this is honest, needs no schema, and does not pre-empt the real feature.
+- Reversible? yes.
+
+## [Sprint 9] Nav audit result: one knowingly-inert control remains
+- Every internal `href` in the platform resolves to an existing route (checked static and template literals: /admin/founders, /admin/submissions, /create, /dashboard, /earnings, /events, /events/[slug], /forgot-password, /login, /marketplace, /marketplace/[slug], /marketplace/submit, /posts, /posts/[id], /settings/social, /travel). `/` correctly redirects to /dashboard or /login. No dead links found.
+- The TopBar avatar was an inert button; it is now a link to `/settings/social`, the only account surface that exists.
+- **Still inert by decision:** the TopBar notification bell. Sprint 6 deliberately kept it and removed only its always-on dot; there is no notifications table. Left as-is rather than churning a logged decision.
+- The `onTabChange={() => {}}` props on SidebarNav/BottomNav are the vestigial props Sprint 6 kept so call sites did not churn — navigation is pathname-driven and these are ignored by design, not dead handlers.

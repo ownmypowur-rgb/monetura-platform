@@ -188,6 +188,10 @@ export function TripSavingsCalculator() {
     currency: "CAD",
   });
 
+  const [saveState, setSaveState] = useState<"idle" | "copied" | "failed">(
+    "idle"
+  );
+
   function set(field: keyof TripInputs, value: string | boolean) {
     setInputs((prev) => ({ ...prev, [field]: value }));
   }
@@ -232,14 +236,32 @@ export function TripSavingsCalculator() {
     });
   }
 
-  function handleSave() {
-    console.log("Save trip:", {
-      inputs,
-      accommodationSavings,
-      totalTripCost,
-      taxSavings,
-      grandTotalBenefit,
-    });
+  /**
+   * There is no trip-booking backend yet, so "save" copies the worked-out
+   * numbers to the clipboard instead of pretending to store them. A button
+   * that silently did nothing was worse than one that does something small
+   * and real; persisting trips is tracked in the backlog.
+   */
+  async function handleSave() {
+    const money = (n: number): string =>
+      `$${fmt(n, inputs.currency)} ${inputs.currency}`;
+    const summary = [
+      "Monetura — Trip Savings Estimate",
+      `Accommodation savings: ${money(accommodationSavings)}`,
+      `Total trip cost: ${money(totalTripCost)}`,
+      inputs.isBusiness ? `Estimated tax savings: ${money(taxSavings)}` : null,
+      `Total benefit: ${money(grandTotalBenefit)}`,
+    ]
+      .filter((line): line is string => line !== null)
+      .join("\n");
+
+    try {
+      await navigator.clipboard.writeText(summary);
+      setSaveState("copied");
+    } catch {
+      setSaveState("failed");
+    }
+    window.setTimeout(() => setSaveState("idle"), 2500);
   }
 
   return (
@@ -644,7 +666,11 @@ export function TripSavingsCalculator() {
               e.currentTarget.style.background = "#D4A853";
             }}
           >
-            Save this trip
+            {saveState === "copied"
+              ? "Copied to clipboard ✓"
+              : saveState === "failed"
+              ? "Couldn't copy — try again"
+              : "Copy trip summary"}
           </button>
         </div>
       </div>

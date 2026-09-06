@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { BellIcon } from "./icons";
 import type { DashboardUser } from "./types";
 
@@ -74,18 +75,22 @@ export function TopBar({ user }: TopBarProps) {
           <BellIcon size={18} />
         </button>
 
-        <button
+        {/* Settings is the only account surface today, so the avatar goes there
+            rather than being a button that does nothing. */}
+        <Link
+          href="/settings/social"
           className="flex items-center justify-center w-10 h-10 rounded-full text-sm font-semibold tracking-wide"
           style={{
             background: "linear-gradient(135deg, #4A3728 0%, #2C2420 100%)",
             border: "1px solid #D4A853",
             color: "#D4A853",
             fontFamily: "var(--font-heading)",
+            textDecoration: "none",
           }}
-          aria-label="Profile"
+          aria-label="Account settings"
         >
           {initials}
-        </button>
+        </Link>
       </div>
     </header>
   );

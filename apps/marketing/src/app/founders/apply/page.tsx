@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import {
   FOUNDER_TIERS,
-  formatTierPrice,
   type FounderTierId,
 } from "@monetura/config/src/tiers";
 
@@ -25,12 +24,13 @@ const TIER_PERKS: Record<FounderTierId, readonly string[]> = {
   ],
 };
 
-// Names, taglines, and prices come from the canonical tier definition.
+// Names and taglines come from the canonical tier definition. Prices are
+// deliberately NOT surfaced here: founder pricing is discussed on the webinar,
+// never published. The canonical config still carries priceCad for internal use.
 const TIERS = FOUNDER_TIERS.map((t) => ({
   id: t.id,
   name: t.name,
   tagline: t.tagline,
-  price: `${formatTierPrice(t)} CAD`,
   perks: TIER_PERKS[t.id],
 }));
 
@@ -139,7 +139,7 @@ function WebinarForm() {
             Choose Your Level
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {TIERS.map(({ id, name, price, tagline, perks }) => (
+            {TIERS.map(({ id, name, tagline, perks }) => (
               <div
                 key={id}
                 className="lux-panel p-6 flex flex-col gap-4"
@@ -148,7 +148,6 @@ function WebinarForm() {
                   <p className="font-garet font-bold text-monetura-cream text-base mb-1">
                     {name}
                   </p>
-                  <p className="text-monetura-champagne/80 text-xs mb-1">{price}</p>
                   <p className="text-monetura-cream/40 text-xs">{tagline}</p>
                 </div>
                 <ul className="space-y-1.5 flex-1">
@@ -224,9 +223,9 @@ function WebinarForm() {
               required
               options={[
                 { value: "", label: "Which tier interests you?" },
-                ...TIERS.map(({ id, name, price }) => ({
+                ...TIERS.map(({ id, name }) => ({
                   value: id,
-                  label: `${name} — ${price}`,
+                  label: name,
                 })),
               ]}
             />

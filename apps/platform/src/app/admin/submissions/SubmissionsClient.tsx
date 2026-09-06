@@ -26,7 +26,8 @@ const C = {
   gold: "#D4A853",
   cream: "#FBF5ED",
   sand: "#E8DCCB",
-  mid: "#8B6E52",
+  // Raised from #8B6E52 (3.2:1 on the card) to meet WCAG AA on every admin surface.
+  mid: "#C4A882",
 };
 
 export function SubmissionsClient({

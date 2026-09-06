@@ -98,6 +98,44 @@ export interface BundleAccount {
   status: string;
 }
 
+/**
+ * Public profile URL for a connected account.
+ *
+ * bundle.social's create-post response returns only an internal post id, and a
+ * scheduled post has no permalink at creation time, so there is no live post
+ * URL to hand back. The member's own profile/page is the next best destination:
+ * the APIs cannot post to personal profiles, so the distribution step is the
+ * member re-sharing from their Page or account by hand.
+ *
+ * Returns null when the handle is unusable (LinkedIn Company Pages and Facebook
+ * Pages can surface a display name rather than a URL slug, and guessing a URL
+ * that 404s is worse than showing no link).
+ */
+export function bundleProfileUrl(
+  platform: string,
+  username: string | null
+): string | null {
+  const handle = (username ?? "").trim().replace(/^@/, "");
+  if (!handle || /\s/.test(handle)) return null;
+  const encoded = encodeURIComponent(handle);
+
+  switch (platform) {
+    case "instagram":
+      return `https://www.instagram.com/${encoded}/`;
+    case "tiktok":
+      return `https://www.tiktok.com/@${encoded}`;
+    case "facebook":
+      return `https://www.facebook.com/${encoded}`;
+    case "linkedin":
+      // A handle here may be a person or a Company Page and the path segment
+      // differs (/in/ vs /company/). Send them to their own feed instead of
+      // guessing wrong.
+      return "https://www.linkedin.com/feed/";
+    default:
+      return null;
+  }
+}
+
 // ── Publishing ───────────────────────────────────────────────────────────────
 
 export type BundleSocialPlatform =

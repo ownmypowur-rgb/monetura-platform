@@ -9,6 +9,8 @@ import {
   moneturaMediaUploads,
   moneturaPostMedia,
   publishBundlePost,
+  getBundleAccounts,
+  bundleProfileUrl,
   type BundlePublishMedia,
   type BundleSocialPlatform,
 } from "@monetura/db";
@@ -95,6 +97,7 @@ export async function POST(request: Request) {
   }
 
   const hasSocial = Object.keys(content).length > 0;
+  const platformsRequested = new Set(Object.keys(content));
 
   // Blog/magazine are published on Monetura itself — no external call needed.
   if (!hasSocial) {
@@ -168,5 +171,22 @@ export async function POST(request: Request) {
     })
     .where(eq(moneturaContentPosts.id, post.id));
 
-  return NextResponse.json({ success: true, slug: body.slug });
+  // ── Where the member can go and re-share ──────────────────────────────────
+  // The networks' APIs cannot post to a personal profile, so publishing lands
+  // on a Page/Business account. Handing back profile links makes the manual
+  // re-share — the actual distribution step — one tap instead of a hunt.
+  // Never let this fail the publish: the post is already live.
+  let shareTargets: { platform: string; username: string; url: string }[] = [];
+  try {
+    const accounts = await getBundleAccounts(session.user.memberId);
+    shareTargets = accounts.flatMap((a) => {
+      if (!platformsRequested.has(a.platform)) return [];
+      const url = bundleProfileUrl(a.platform, a.username);
+      return url ? [{ platform: a.platform, username: a.username, url }] : [];
+    });
+  } catch (err) {
+    console.error("[content/publish] Could not build share targets:", err);
+  }
+
+  return NextResponse.json({ success: true, slug: body.slug, shareTargets });
 }

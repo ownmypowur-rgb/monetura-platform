@@ -132,3 +132,18 @@ STATUS: COMPLETE
 > previously raw interpolation of public input — now escapes through them. `appBaseUrl()` throws instead of silently falling back to a preview
 > domain, resolved before any mutation. Seed passwords read from env with no defaults; `.vercel/`, `*.tsbuildinfo`, `next-env.d.ts` untracked.
 > Typecheck: 6/6 green. NOTE: the live admin password still requires manual rotation by the owner — see DECISIONS.md.
+
+---
+
+## SPRINT 9 — MEMBER EXPERIENCE POLISH
+STATUS: COMPLETE
+> Summary: admin contrast fixed by measurement — `#8B6E52` (as low as 2.75:1) and `#4A3728` text (1.16:1, labels were invisible) replaced with
+> `#C4A882` / `#B99B74`, pending badge to `#D89A6A`; every remaining admin text colour re-measured at ≥4.5:1 on all four admin backgrounds.
+> Public tier prices removed from /founders/apply, TiersSection, TierSelector and /how-it-works (which also had a stale 3-tier list), and from
+> the concierge prompt, which is now instructed never to quote pricing and to offer a webinar — `priceCad` stays in the canonical config for the
+> internal owner email. New "Get creator-ready" panel on /settings/social explains the account type each network requires (Facebook Pages,
+> Instagram Professional) with a Create-a-Page link; the same guidance is in the concierge prompt. After a successful publish, /api/content/
+> publish returns `shareTargets` and PostDetail shows "Share on <platform>" buttons — bundle.social returns no permalink, so these point at the
+> member's own profile, which is where the manual re-share happens. Nav audit: every href resolves, / redirects correctly; avatar now links to
+> settings; only the notification bell stays inert (Sprint 6 decision). "Save this trip" now copies a real summary instead of console.log.
+> Typecheck: 6/6 green.
