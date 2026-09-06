@@ -25,3 +25,8 @@ Thumbs.db
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Build artifacts (generated — must not be tracked)
+.vercel
+*.tsbuildinfo
+next-env.d.ts

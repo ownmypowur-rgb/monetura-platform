@@ -47,6 +47,19 @@ export async function POST(req: Request): Promise<Response> {
 
   const email = parsed.data.email.trim();
 
+  // Resolve the email base URL first. This route must always answer {success:
+  // true} so it never reveals whether an account exists, which means a config
+  // error would otherwise vanish silently — log it explicitly instead.
+  let baseUrl: string | null = null;
+  try {
+    baseUrl = appBaseUrl();
+  } catch (err) {
+    console.error(
+      "[forgot-password] CONFIG ERROR — no reset email can be sent:",
+      err
+    );
+  }
+
   // Always return success — never reveal whether an account exists.
   try {
     const users = await getDb()
@@ -56,9 +69,9 @@ export async function POST(req: Request): Promise<Response> {
       .limit(1);
 
     const user = users[0];
-    if (user) {
+    if (user && baseUrl) {
       const token = await createPasswordToken(user.id, "reset_password");
-      const resetUrl = `${appBaseUrl()}/reset-password?token=${token}`;
+      const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
       const { error: emailError } = await getResend().emails.send({
         from: "Monetura <noreply@monetura.com>",

@@ -25,7 +25,10 @@ import { moneturaMembers } from "../../../drizzle/monetura-schema";
 
 const ADMIN_EMAIL = "admin@monetura.com";
 const ADMIN_NAME = "Monetura Admin";
-const ADMIN_PASSWORD = "MoneturaAdmin2024!";
+// Password is read from SEED_ADMIN_PASSWORD — never hardcoded. The historical
+// literal is still in git history, so the live admin password must be
+// rotated manually by the owner (see DECISIONS.md, Sprint 8).
+const ADMIN_PASSWORD = process.env["SEED_ADMIN_PASSWORD"] ?? "";
 const ADMIN_OPEN_ID = `local:${ADMIN_EMAIL}`;
 
 async function seed(): Promise<void> {
@@ -34,6 +37,15 @@ async function seed(): Promise<void> {
     console.error(
       "ERROR: DATABASE_URL is not set.\n" +
         "Create apps/platform/.env.local or ensure the root .env.local has DATABASE_URL."
+    );
+    process.exit(1);
+  }
+
+  if (!ADMIN_PASSWORD) {
+    console.error(
+      "ERROR: SEED_ADMIN_PASSWORD is not set.\n" +
+        "Set it to the password this account should have, then re-run:\n" +
+        '  SEED_ADMIN_PASSWORD="<strong-password>" pnpm tsx scripts/seed-admin-user.ts'
     );
     process.exit(1);
   }
@@ -57,7 +69,6 @@ async function seed(): Promise<void> {
     if (existingUsers.length > 0) {
       console.log("Admin user already exists — skipping insertion.");
       console.log(`\n  Email:    ${ADMIN_EMAIL}`);
-      console.log(`  Password: ${ADMIN_PASSWORD}`);
       return;
     }
 
@@ -109,7 +120,6 @@ async function seed(): Promise<void> {
     console.log("\n✅ Admin seed complete!");
     console.log("─────────────────────────────────────────");
     console.log(`  Email:    ${ADMIN_EMAIL}`);
-    console.log(`  Password: ${ADMIN_PASSWORD}`);
     console.log(`  Tier:     admin`);
     console.log("─────────────────────────────────────────");
     console.log("  → Visit /login and sign in\n");

@@ -31,7 +31,10 @@ import {
 
 const DEMO_EMAIL = "demo@monetura.com";
 const DEMO_NAME = "Sarah Mitchell";
-const DEMO_PASSWORD = "Monetura2024!";
+// Password is read from SEED_DEMO_PASSWORD — never hardcoded. The historical
+// literal is still in git history, so the live demo password must be
+// rotated manually by the owner (see DECISIONS.md, Sprint 8).
+const DEMO_PASSWORD = process.env["SEED_DEMO_PASSWORD"] ?? "";
 const DEMO_FOUNDER_KEY = "FOUNDER-DEMO-0001";
 // openId is required NOT NULL in the ApexCRM users table.
 // For a local-credential user we use a deterministic prefix so re-runs are idempotent.
@@ -43,6 +46,15 @@ async function seed(): Promise<void> {
     console.error(
       "ERROR: DATABASE_URL is not set.\n" +
         "Create apps/platform/.env.local or ensure the root .env.local has DATABASE_URL."
+    );
+    process.exit(1);
+  }
+
+  if (!DEMO_PASSWORD) {
+    console.error(
+      "ERROR: SEED_DEMO_PASSWORD is not set.\n" +
+        "Set it to the password this account should have, then re-run:\n" +
+        '  SEED_DEMO_PASSWORD="<strong-password>" pnpm tsx scripts/seed-demo-user.ts'
     );
     process.exit(1);
   }
@@ -68,7 +80,6 @@ async function seed(): Promise<void> {
     if (existingUsers.length > 0) {
       console.log("Demo user already exists — skipping insertion.");
       console.log(`\n  Email:    ${DEMO_EMAIL}`);
-      console.log(`  Password: ${DEMO_PASSWORD}`);
       return;
     }
 
@@ -167,7 +178,6 @@ async function seed(): Promise<void> {
     console.log("\n✅ Demo seed complete!");
     console.log("─────────────────────────────────────────");
     console.log(`  Email:         ${DEMO_EMAIL}`);
-    console.log(`  Password:      ${DEMO_PASSWORD}`);
     console.log(`  Member tier:   founder`);
     console.log(`  Founder #:     ${founderNumber}`);
     console.log(`  Instagram:     @sarah.explores`);

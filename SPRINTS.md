@@ -119,3 +119,16 @@ Goal: content areas run from the database; inert CTAs work. See audit Recommenda
 - Admin: extend the existing /admin area with a simple Submissions review screen (list pending marketplace submissions, Approve → creates product row unpublished, Reject → status rejected).
 - BottomNav (mobile): replace the dead Home/Community state-button pattern with real links and add a "More" sheet or fifth tab so Events, Marketplace, Posts, Settings are reachable on mobile (judgment call on pattern — log it).
 - TopBar bell: remove the always-on dot (leave the bell inert for now).
+
+---
+
+## SPRINT 8 — HARDENING AND QUICK WINS
+STATUS: COMPLETE
+> Summary: both Anthropic calls moved to `claude-sonnet-5` (cheaper and newer than Sonnet 4.6); no other model string exists in the repo.
+> `deductCredit` is now atomic — a transaction taking `SELECT … FOR UPDATE` on the member row — and `content/generate` debits *before* the paid
+> call, refunding via new `refundCredit` on every failure path. Founder activation and `auth/register` run in transactions, so concurrent
+> activations can no longer issue duplicate founder numbers and a half-written account rolls back. The concierge now costs 1 credit per exchange
+> and answers in-chat when a member runs out. Email templates moved to `@monetura/config/src/email` and the marketing owner notification —
+> previously raw interpolation of public input — now escapes through them. `appBaseUrl()` throws instead of silently falling back to a preview
+> domain, resolved before any mutation. Seed passwords read from env with no defaults; `.vercel/`, `*.tsbuildinfo`, `next-env.d.ts` untracked.
+> Typecheck: 6/6 green. NOTE: the live admin password still requires manual rotation by the owner — see DECISIONS.md.

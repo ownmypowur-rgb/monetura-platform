@@ -10,7 +10,7 @@ import {
   moneturaMediaUploads,
   moneturaPostMedia,
 } from "@monetura/db";
-import { getRemainingCredits, deductCredit } from "@monetura/db";
+import { deductCredit, refundCredit, INSUFFICIENT_CREDITS } from "@monetura/db";
 import type { MemberTier } from "@/types/next-auth";
 
 const bodySchema = z.object({
@@ -53,15 +53,6 @@ export async function POST(request: Request) {
     body = bodySchema.parse(await request.json());
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-  }
-
-  // ── Credit check ──────────────────────────────────────────────────────────
-  const remaining = await getRemainingCredits(memberId, memberTier as MemberTier);
-  if (remaining <= 0) {
-    return NextResponse.json(
-      { error: "No AI credits remaining this month", creditsRemaining: 0 },
-      { status: 402 }
-    );
   }
 
   // ── Resolve uploaded media (ownership + status checked) ───────────────────
@@ -128,6 +119,37 @@ Guidelines:
 - Magazine title: Premium editorial-style headline
 - Magazine intro: 100-150 words, polished editorial voice like a luxury lifestyle magazine`;
 
+  // ── Debit the credit BEFORE the paid call ─────────────────────────────────
+  // deductCredit is atomic (member-row lock), so parallel generations cannot
+  // overspend. Every failure path below refunds it — the member is only
+  // charged for a generation that actually reached their drafts.
+  const slug = `draft-${memberId}-${Date.now()}`;
+  const creditReason = `AI content generation: ${body.experienceType}${location}`;
+  let creditsRemaining: number;
+  try {
+    creditsRemaining = await deductCredit(
+      memberId,
+      memberTier as MemberTier,
+      creditReason,
+      slug
+    );
+  } catch (err) {
+    if (err instanceof Error && err.message === INSUFFICIENT_CREDITS) {
+      return NextResponse.json(
+        { error: "No AI credits remaining this month", creditsRemaining: 0 },
+        { status: 402 }
+      );
+    }
+    console.error("[content/generate] Credit deduction failed:", err);
+    return NextResponse.json(
+      { error: "Content generation failed" },
+      { status: 500 }
+    );
+  }
+
+  const refund = (why: string): Promise<void> =>
+    refundCredit(memberId, `Refund — ${why}`, slug);
+
   // ── Anthropic call ────────────────────────────────────────────────────────
   const client = new Anthropic();
   let generated: {
@@ -146,7 +168,7 @@ Guidelines:
   let message: Anthropic.Message;
   try {
     message = await client.messages.create({
-      model: "claude-sonnet-4-6",
+      model: "claude-sonnet-5",
       max_tokens: 2048,
       messages: [{ role: "user", content: prompt }],
     });
@@ -169,6 +191,7 @@ Guidelines:
     } else {
       console.error("[content/generate] Anthropic call failed:", err);
     }
+    await refund("generation request failed");
     return NextResponse.json(
       { error: "Content generation failed" },
       { status: 500 }
@@ -180,6 +203,7 @@ Guidelines:
       "[content/generate] Model refused the request. stop_reason=refusal content=",
       JSON.stringify(message.content)
     );
+    await refund("model declined the request");
     return NextResponse.json(
       { error: "Content generation failed" },
       { status: 500 }
@@ -203,26 +227,10 @@ Guidelines:
       "\nraw model output:\n",
       rawText
     );
+    await refund("generated content could not be read");
     return NextResponse.json(
       { error: "Content generation failed" },
       { status: 500 }
-    );
-  }
-
-  // ── Deduct credit ─────────────────────────────────────────────────────────
-  const slug = `draft-${memberId}-${Date.now()}`;
-  let creditsRemaining: number;
-  try {
-    creditsRemaining = await deductCredit(
-      memberId,
-      memberTier as MemberTier,
-      `AI content generation: ${body.experienceType}${location}`,
-      slug
-    );
-  } catch {
-    return NextResponse.json(
-      { error: "No AI credits remaining this month", creditsRemaining: 0 },
-      { status: 402 }
     );
   }
 

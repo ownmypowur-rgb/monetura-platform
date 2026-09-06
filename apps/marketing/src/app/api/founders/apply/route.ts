@@ -10,6 +10,7 @@ import {
 import { apexcrmUsers } from "@/lib/apexcrm-users";
 import { eq } from "drizzle-orm";
 import { founderTierById, formatTierPrice } from "@monetura/config/src/tiers";
+import { brandedEmailHtml } from "@monetura/config/src/email";
 
 export const dynamic = "force-dynamic";
 
@@ -110,28 +111,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (resendKey) {
     try {
       const resend = new Resend(resendKey);
+      const tierDef = founderTierById(tier);
+      const tierLabel = tierDef
+        ? `${tierDef.name} (${formatTierPrice(tierDef)} CAD)`
+        : tier;
+
+      // brandedEmailHtml escapes every value it is given. The applicant's name,
+      // phone and referral text are unauthenticated public input and must never
+      // be interpolated into HTML by hand.
       await resend.emails.send({
         from: "noreply@monetura.com",
         to: ownerEmail,
-        subject: `New Webinar Request — ${name} — Interested in ${founderTierById(tier)?.name ?? tier}`,
-        html: `
-          <h2>New Founder Webinar Request</h2>
-          <table cellpadding="8" style="border-collapse:collapse;font-family:sans-serif;font-size:14px;">
-            <tr><td><strong>Name</strong></td><td>${name}</td></tr>
-            <tr><td><strong>Email</strong></td><td>${email}</td></tr>
-            <tr><td><strong>Phone</strong></td><td>${phone}</td></tr>
-            <tr><td><strong>Province</strong></td><td>${province}</td></tr>
-            <tr><td><strong>Tier Interest</strong></td><td>${
-              founderTierById(tier)
-                ? `${founderTierById(tier)?.name} (${formatTierPrice(founderTierById(tier)!)} CAD)`
-                : tier
-            }</td></tr>
-            <tr><td><strong>Referral Source</strong></td><td>${referral ?? "—"}</td></tr>
-          </table>
-          <p style="margin-top:20px;color:#888;font-size:12px;">
-            Submitted via monetura.com/founders/apply
-          </p>
-        `,
+        subject: `New Webinar Request — ${name} — Interested in ${tierDef?.name ?? tier}`,
+        html: brandedEmailHtml({
+          heading: "New Founder Webinar Request",
+          paragraphs: ["A new application came in through monetura.com/founders/apply."],
+          panelLines: [
+            `Name: ${name}`,
+            `Email: ${email}`,
+            `Phone: ${phone}`,
+            `Province: ${province}`,
+            `Tier Interest: ${tierLabel}`,
+            `Referral Source: ${referral ?? "—"}`,
+          ],
+          footerNote: "Submitted via monetura.com/founders/apply",
+        }),
       });
     } catch (err) {
       console.error("Resend email error:", err);

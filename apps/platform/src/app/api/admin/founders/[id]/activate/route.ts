@@ -50,6 +50,20 @@ export async function POST(
   const memberId = parseInt(parsed.data.id, 10);
   const db = getDb();
 
+  // Resolve the email base URL up front. appBaseUrl() throws when the app URL
+  // is not configured; failing here means the member is untouched, rather than
+  // being activated and then 500-ing on the welcome email.
+  let baseUrl: string;
+  try {
+    baseUrl = appBaseUrl();
+  } catch (err) {
+    console.error("[activate] Cannot build email links:", err);
+    return NextResponse.json(
+      { error: "Server email configuration is incomplete. Activation aborted." },
+      { status: 500 }
+    );
+  }
+
   // Fetch member
   const members = await db
     .select({
@@ -74,13 +88,6 @@ export async function POST(
     );
   }
 
-  // Determine next founder number
-  const result = await db
-    .select({ maxNumber: max(moneturaMembers.founderNumber) })
-    .from(moneturaMembers);
-  const currentMax = result[0]?.maxNumber ?? 0;
-  const founderNumber = (currentMax ?? 0) + 1;
-
   // Map tier interest to founder key tier
   const effectiveTier = body.tierOverride ?? member.tierInterest ?? "entry";
   const founderKeyTier: "bronze" | "silver" | "gold" =
@@ -90,26 +97,47 @@ export async function POST(
       ? "silver"
       : "bronze";
 
-  // Generate unique key code
-  const keyCode = `FOUNDER-${String(founderNumber).padStart(4, "0")}-${Date.now().toString(36).toUpperCase()}`;
+  // Assign the founder number, flip the member to active, and mint the founder
+  // key as one atomic unit. The number is derived from MAX(founder_number) + 1,
+  // so two admins activating at the same moment could previously hand out the
+  // same number — the SELECT … FOR UPDATE serializes them, and the transaction
+  // means a mid-way failure never leaves an active member without a key.
+  let founderNumber: number;
+  try {
+    founderNumber = await db.transaction(async (tx) => {
+      const result = await tx
+        .select({ maxNumber: max(moneturaMembers.founderNumber) })
+        .from(moneturaMembers)
+        .for("update");
+      const nextNumber = (result[0]?.maxNumber ?? 0) + 1;
 
-  // Update monetura_members
-  await db
-    .update(moneturaMembers)
-    .set({
-      status: "active",
-      membershipTier: "founder",
-      founderNumber,
-    })
-    .where(eq(moneturaMembers.id, memberId));
+      const keyCode = `FOUNDER-${String(nextNumber).padStart(4, "0")}-${Date.now().toString(36).toUpperCase()}`;
 
-  // Insert founder key record
-  await db.insert(moneturaFounderKeys).values({
-    memberId,
-    keyCode,
-    founderTier: founderKeyTier,
-    activatedAt: new Date(),
-  });
+      await tx
+        .update(moneturaMembers)
+        .set({
+          status: "active",
+          membershipTier: "founder",
+          founderNumber: nextNumber,
+        })
+        .where(eq(moneturaMembers.id, memberId));
+
+      await tx.insert(moneturaFounderKeys).values({
+        memberId,
+        keyCode,
+        founderTier: founderKeyTier,
+        activatedAt: new Date(),
+      });
+
+      return nextNumber;
+    });
+  } catch (err) {
+    console.error("[activate] Activation failed, rolled back:", err);
+    return NextResponse.json(
+      { error: "Activation failed. The member was not changed — please retry." },
+      { status: 500 }
+    );
+  }
 
   // Fire n8n WF-01 webhook (fire and forget — never await)
   const n8nBase = process.env["N8N_WEBHOOK_BASE_URL"];
@@ -163,7 +191,7 @@ export async function POST(
 
     if (userId !== null) {
       const token = await createPasswordToken(userId, "set_password");
-      setPasswordUrl = `${appBaseUrl()}/set-password?token=${token}`;
+      setPasswordUrl = `${baseUrl}/set-password?token=${token}`;
     }
   } catch (err) {
     console.error("Set-password token creation failed (non-blocking):", err);
@@ -183,7 +211,7 @@ export async function POST(
       ],
       button: setPasswordUrl
         ? { label: "Choose Your Password", url: setPasswordUrl }
-        : { label: "Go to Your Dashboard", url: `${appBaseUrl()}/login` },
+        : { label: "Go to Your Dashboard", url: `${baseUrl}/login` },
       footerNote: setPasswordUrl
         ? "This link is valid for 7 days. If it expires, use “Forgot your password?” on the sign-in page."
         : undefined,

@@ -151,3 +151,48 @@ Format per entry:
 - Context: posts created before this sprint have neither; posts created by an older client that sends no ids have neither; only new posts have both.
 - Decision made: `/posts` cards render `cover_image_url` when present. `/posts/[id]` renders the join-table media (cover first, thumbnails strip for the rest) and falls back to the cover alone; plain `<img>` tags, matching the events/marketplace pages (no `next/image` remote-pattern config change).
 - Reversible? yes.
+
+## [Sprint 8] Concierge costs 1 credit per exchange
+- Context: every concierge message is a paid model call with no member cost. A price had to be chosen, and `monetura_credit_usage.credits` is an `int` — fractional pricing is not representable without a schema change.
+- Options considered: (a) 1 credit per exchange; (b) 1 credit per N messages, needing a counter column or a per-conversation row; (c) a separate cheaper currency for chat.
+- Decision made: (a), `CONCIERGE_CREDIT_COST = 1` in `api/concierge/route.ts`. The concierge system prompt now states the cost, so members are told before they spend.
+- Reasoning: the platform already teaches "1 credit per AI action" in the create flow, and matching that is the least surprising rule. (b) and (c) both need schema work, which exceeds a hardening sprint. Founders get 500/month, so 30 messages (the rate-limit ceiling per 5 min) is 6% of a month.
+- Reversible? yes — one constant; deductCredit already takes a credit count.
+
+## [Sprint 8] Running out of credits answers in the chat rather than erroring
+- Context: the widget throws on any non-2xx and shows a generic failure. Exhaustion is a normal product state, not a fault.
+- Decision made: on INSUFFICIENT_CREDITS the route returns HTTP 200 with a plain-text concierge-voice explanation (limit, reset date, reassurance that the rest of the dashboard is unaffected) plus an `X-Monetura-Credits: exhausted` header for any future client that wants to branch. Members on a 0-credit tier get an upgrade-shaped message instead.
+- Reasoning: a friendly in-chat reply needs no widget change and reads as the concierge talking, not as a broken app. The header keeps the state machine-readable.
+- Reversible? yes.
+
+## [Sprint 8] deductCredit serializes on the member row; refunds are ledger rows
+- Context: `deductCredit` was check-then-insert over a `SUM()`, so parallel generations could both pass a stale balance check and overspend. Credits also had to be debited *before* the paid call and returned if it failed.
+- Options considered: (a) a cached `balance` column with a conditional `UPDATE … WHERE balance > 0` (fastest, but adds a column and a second source of truth against the ledger); (b) `INSERT … SELECT` with a guard subquery (MySQL permits it, but it does not lock against concurrent inserts, so the phantom remains); (c) a transaction that takes `SELECT … FOR UPDATE` on the member row before reading the balance.
+- Decision made: (c). Contention is per-member, so different members never block each other, and the ledger stays the only source of truth. Refunds are `direction: "credit"` rows; `getMonthlyUsed` now nets debits against credits.
+- Reasoning: (a) is the right answer at 20k members but is a schema change plus a backfill; (c) is correct today and does not preclude it. `refundCredit` deliberately never throws — a failed refund must not mask the error that caused it.
+- Reversible? yes — the extra rows are additive; nothing else reads `direction` yet.
+
+## [Sprint 8] Founder activation runs in one transaction with a locked read
+- Context: `MAX(founder_number) + 1` → `UPDATE` → `INSERT` was three unguarded statements. Two simultaneous activations could issue the same founder number, which appears on the welcome email and the dashboard badge and cannot be quietly corrected.
+- Decision made: the whole assignment runs inside `db.transaction` with `.for("update")` on the `MAX` read. `register` got the same treatment for its ApexCRM-user + member pair. Both roll back and return a 500 that states the member was not changed.
+- Reasoning: an auto-increment column would be cleaner but founder numbers are business data already populated on live rows; locking the read is additive and needs no DDL.
+- Reversible? yes.
+
+## [Sprint 8] Email templates moved to @monetura/config, not duplicated
+- Context: the marketing apply route hand-built email HTML and interpolated `name`, `phone`, `province` and `referral` — unauthenticated public input — with no escaping. The platform already had a correct escaping template the marketing app could not import across app boundaries.
+- Options considered: (a) copy `escapeHtml` into the marketing app; (b) move the templates into a shared package.
+- Decision made: (b) — `packages/config/src/email.ts`, following the existing `@monetura/config/src/tiers` deep-import pattern that marketing already uses. `apps/platform/src/lib/email-templates.ts` re-exports it so no platform call site changed. The owner notification is now a branded panel built from `panelLines`, which escapes every value.
+- Reasoning: (a) is how the codebase acquired its duplicate `MemberTier` and `apexcrmUsers` stubs; a second copy of a security control is the worst kind to have. `@monetura/db` was rejected because these are pure string helpers with no database or `server-only` requirement.
+- Reversible? yes.
+
+## [Sprint 8] appBaseUrl throws; callers resolve it before mutating
+- Context: `appBaseUrl()` fell back to a Vercel preview domain, so a production deploy without `NEXT_PUBLIC_APP_URL` would mail every founder a set-password link pointing at the wrong host, with nothing failing.
+- Decision made: it now throws. `activate` resolves the URL immediately after the admin check — before any DB write — and returns a 500 saying the member was not changed, so a config error can never activate someone and then fail on the email. `forgot-password` must always answer `{success:true}` (it must not reveal whether an account exists), so it logs a loud `CONFIG ERROR` and skips the send rather than throwing.
+- Reasoning: failing at the point of misconfiguration beats a silently wrong link; ordering the check before mutation keeps the failure clean.
+- Reversible? yes.
+
+## [Sprint 8] Seed passwords read from env; live admin password still needs manual rotation
+- Context: `MoneturaAdmin2024!` and `Monetura2024!` were literals in the seed scripts and were echoed to stdout on every run.
+- Decision made: both read `SEED_ADMIN_PASSWORD` / `SEED_DEMO_PASSWORD` with no default, exit with instructions when unset, and no longer print the password. Documented in `.env.local.example`.
+- **Not fixed by this change, and it needs the owner:** both literals remain in git history, and the `admin@monetura.com` account on the live database still has the old password — which grants the admin console, including founder activation. **The owner must rotate that password manually** (sign in and use "Forgot your password?", or re-run the seed against a fresh value). Removing them from history would require a force-push rewrite of a shared branch, which is out of scope for an autonomous sprint.
+- Reversible? yes.

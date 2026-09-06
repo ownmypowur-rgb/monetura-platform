@@ -2,7 +2,21 @@ import "server-only";
 import { z } from "zod";
 import Anthropic from "@anthropic-ai/sdk";
 import { auth } from "@/auth";
-import { checkRateLimit, TIER_LIMITS } from "@monetura/db";
+import {
+  checkRateLimit,
+  deductCredit,
+  refundCredit,
+  INSUFFICIENT_CREDITS,
+  TIER_LIMITS,
+} from "@monetura/db";
+import type { MemberTier } from "@/types/next-auth";
+
+/**
+ * Credits charged per concierge exchange. Every message is a paid model call,
+ * so it carries the same 1-credit price as a content generation — one credit
+ * per AI action is the model members already know from the create flow.
+ */
+const CONCIERGE_CREDIT_COST = 1;
 import { FOUNDER_TIERS, formatTierPrice } from "@monetura/config/src/tiers";
 
 const messageSchema = z.object({
@@ -20,7 +34,7 @@ function buildSystemPrompt(memberName: string, memberTier: string): string {
 1. MONETURA PLATFORM EXPERT:
 You know everything about the Monetura platform:
 - Content creation: Members upload photos, write notes, AI generates captions for Instagram, Facebook, LinkedIn, TikTok, Blog, and Magazine
-- Credits: Each content generation uses 1 credit. Credits reset on the 1st of each month. Monthly limits: founders ${TIER_LIMITS.founder}, software members ${TIER_LIMITS.software}, community members ${TIER_LIMITS.community}.
+- Credits: Each content generation uses 1 credit, and each message to this concierge uses ${CONCIERGE_CREDIT_COST} credit. Credits reset on the 1st of each month. Monthly limits: founders ${TIER_LIMITS.founder}, software members ${TIER_LIMITS.software}, community members ${TIER_LIMITS.community}.
 - Affiliate links: Each member has a unique MTR code (e.g. MTR-00247). Share it to earn commissions. 3 referrals = free membership.
 - Social publishing: Connect Instagram, Facebook, LinkedIn, TikTok via Settings → Social Accounts. Posts publish automatically after you approve.
 - Earnings: Track commissions in the Earnings Hub on your dashboard.
@@ -72,8 +86,10 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
+  const memberId = session.user.memberId;
   const memberName = session.user.name ?? "Member";
-  const memberTier = session.user.memberTier ?? "member";
+  const creditTier: MemberTier = session.user.memberTier ?? "free";
+  const memberTier: string = creditTier;
 
   // ── Parse body ────────────────────────────────────────────────────────────
   let body: z.infer<typeof bodySchema>;
@@ -86,16 +102,54 @@ export async function POST(request: Request): Promise<Response> {
     });
   }
 
+  const encoder = new TextEncoder();
+
+  // ── Charge the exchange ───────────────────────────────────────────────────
+  // Every message is a paid model call, so it costs a credit. Running out is a
+  // normal product state, not an error: reply in the chat the way the concierge
+  // would, so the member sees an explanation instead of a failure toast.
+  try {
+    await deductCredit(
+      memberId,
+      creditTier,
+      "AI Concierge message",
+      `concierge-${memberId}-${Date.now()}`,
+      CONCIERGE_CREDIT_COST
+    );
+  } catch (err) {
+    if (err instanceof Error && err.message === INSUFFICIENT_CREDITS) {
+      const limit = TIER_LIMITS[creditTier] ?? 0;
+      const note =
+        limit > 0
+          ? `You've used all ${limit} of your AI credits for this month, so I need to pause here. They reset on the 1st. In the meantime everything else on your dashboard still works — your posts, earnings and travel access are all unaffected.`
+          : "Your membership doesn't include AI credits yet, so I can't chat just now. Upgrading unlocks the concierge along with AI content creation.";
+      return new Response(encoder.encode(note), {
+        status: 200,
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Content-Type-Options": "nosniff",
+          "Cache-Control": "no-cache",
+          "X-Monetura-Credits": "exhausted",
+        },
+      });
+    }
+    console.error("[concierge] Credit deduction failed:", err);
+    return new Response(
+      JSON.stringify({ error: "Something went wrong. Please try again." }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   // ── Stream from Claude ────────────────────────────────────────────────────
   const client = new Anthropic();
   const systemPrompt = buildSystemPrompt(memberName, memberTier);
 
-  const encoder = new TextEncoder();
   const readable = new ReadableStream({
     async start(controller) {
+      let emittedText = false;
       try {
         const stream = client.messages.stream({
-          model: "claude-sonnet-4-6",
+          model: "claude-sonnet-5",
           max_tokens: 1024,
           system: systemPrompt,
           messages: body.messages,
@@ -106,11 +160,21 @@ export async function POST(request: Request): Promise<Response> {
             event.type === "content_block_delta" &&
             event.delta.type === "text_delta"
           ) {
+            emittedText = true;
             controller.enqueue(encoder.encode(event.delta.text));
           }
         }
       } catch (err) {
         console.error("[concierge] stream error:", err);
+        // Nothing was delivered, so the member should not pay for it.
+        if (!emittedText) {
+          await refundCredit(
+            memberId,
+            "Refund — concierge reply failed",
+            undefined,
+            CONCIERGE_CREDIT_COST
+          );
+        }
         controller.enqueue(
           encoder.encode("Sorry, I'm having trouble connecting. Please try again.")
         );

@@ -82,32 +82,44 @@ export async function POST(req: Request): Promise<Response> {
     }
   }
 
-  // Create ApexCRM user record (required for login via auth.ts)
+  // Create the ApexCRM user and the member row together. Both writes are
+  // required for a usable account: a user without a member row cannot log in,
+  // and a member row without a user has no credentials. A transaction means a
+  // failure leaves neither behind instead of an orphaned half-account.
   const openId = crypto.randomUUID();
-  await db.insert(apexcrmUsers).values({
-    openId,
-    email,
-    name,
-    passwordHash,
-    loginMethod: "credentials",
-  });
+  let newMemberId: number | null = null;
+  try {
+    newMemberId = await db.transaction(async (tx) => {
+      await tx.insert(apexcrmUsers).values({
+        openId,
+        email,
+        name,
+        passwordHash,
+        loginMethod: "credentials",
+      });
 
-  // Create monetura_members record
-  await db.insert(moneturaMembers).values({
-    email,
-    name,
-    status: "pending",
-    referredBy: referrerLink?.code ?? null,
-  });
+      await tx.insert(moneturaMembers).values({
+        email,
+        name,
+        status: "pending",
+        referredBy: referrerLink?.code ?? null,
+      });
 
-  // Fetch the newly created member record to get the ID
-  const newMembers = await db
-    .select({ id: moneturaMembers.id })
-    .from(moneturaMembers)
-    .where(eq(moneturaMembers.email, email))
-    .limit(1);
+      const created = await tx
+        .select({ id: moneturaMembers.id })
+        .from(moneturaMembers)
+        .where(eq(moneturaMembers.email, email))
+        .limit(1);
 
-  const newMemberId = newMembers[0]?.id ?? null;
+      return created[0]?.id ?? null;
+    });
+  } catch (err) {
+    console.error("[register] account creation failed, rolled back:", err);
+    return NextResponse.json(
+      { error: "Could not create your account. Please try again." },
+      { status: 500 }
+    );
+  }
 
   // Handle referral milestone for the referrer
   if (referrerLink && newMemberId !== null) {
