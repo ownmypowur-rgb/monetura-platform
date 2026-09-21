@@ -2,6 +2,9 @@
   "name": "monetura-platform",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "packageManager": "pnpm@9.15.4",
   "scripts": {
     "build": "turbo run build",
