@@ -7,6 +7,8 @@ import type {
   PAYMENT_METHODS,
   EVIDENCE_TYPES,
   ATTACHMENT_TYPES,
+  TRANSCRIPT_STATUSES,
+  SUMMARY_STATUSES,
 } from "@monetura/db";
 
 export type TripType = (typeof TRIP_TYPES)[number];
@@ -15,6 +17,8 @@ export type RateSource = (typeof RATE_SOURCES)[number];
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 export type EvidenceType = (typeof EVIDENCE_TYPES)[number];
 export type AttachmentType = (typeof ATTACHMENT_TYPES)[number];
+export type TranscriptStatus = (typeof TRANSCRIPT_STATUSES)[number];
+export type SummaryStatus = (typeof SUMMARY_STATUSES)[number];
 
 /** Shown on every Trip Records page and on the PDF export. Wording is fixed. */
 export const TRIP_RECORDS_DISCLAIMER =
@@ -102,3 +106,9 @@ export const COMMON_CURRENCIES: string[] = [
 ];
 
 export const MAX_EXPENSE_NOTE_LENGTH = 2000;
+
+/** Label required wherever the AI summary is shown (UI and PDF). */
+export const AI_SUMMARY_LABEL = "AI summary of the member's original entry";
+
+/** Browser recording cap for voice notes. */
+export const MAX_RECORDING_SECONDS = 600;

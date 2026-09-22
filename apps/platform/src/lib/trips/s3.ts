@@ -5,6 +5,7 @@ import {
   GetObjectCommand,
   HeadObjectCommand,
   DeleteObjectCommand,
+  ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -114,4 +115,37 @@ export async function deleteTripObject(s3: S3Config, bucket: string, key: string
   } catch (err) {
     console.error(`[trips/s3] Failed to delete ${key}:`, err);
   }
+}
+
+// ── Export packages ──────────────────────────────────────────────────────────
+// Vercel functions cap response bodies at 4.5 MB, and a ZIP of receipt photos
+// passes that quickly. ZIPs are written to a per-member exports/ prefix and
+// handed to the browser as a presigned download; exports older than an hour
+// are removed on the member's next export.
+
+const EXPORT_TTL_MS = 60 * 60 * 1000;
+
+export async function storeExport(
+  s3: S3Config,
+  userId: string,
+  fileName: string,
+  bytes: Uint8Array,
+  contentType: string
+): Promise<string> {
+  const prefix = `monetura/members/${userId}/exports/`;
+  try {
+    const listed = await s3.client.send(new ListObjectsV2Command({ Bucket: s3.bucket, Prefix: prefix }));
+    const stale = (listed.Contents ?? []).filter(
+      (o) => o.Key && o.LastModified && Date.now() - o.LastModified.getTime() > EXPORT_TTL_MS
+    );
+    await Promise.all(stale.map((o) => deleteTripObject(s3, s3.bucket, o.Key as string)));
+  } catch (err) {
+    console.error("[trips/s3] Export cleanup failed (continuing):", err);
+  }
+
+  const key = `${prefix}${Date.now()}_${sanitizeFileName(fileName)}`;
+  await s3.client.send(
+    new PutObjectCommand({ Bucket: s3.bucket, Key: key, Body: bytes, ContentType: contentType })
+  );
+  return presignTripGet(s3, s3.bucket, key, fileName);
 }

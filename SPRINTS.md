@@ -171,3 +171,25 @@ Goal: members keep trip receipts and expenses in a form they can hand to an acco
 - Camera-direct receipt capture to S3; "Read receipt with AI" prefills, member confirms every field; never auto-saved.
 - Cash / no-receipt path: vendor note photo, finger signature pad with vendor name, tip line.
 - /trips, /trips/new, /trips/[id] tabs; ledger by day with category and trip totals; Meals flagged; edit-after-24h audit; delete with six-year warning.
+
+---
+
+## SPRINT 11 — TRIP RECORDS: VOICE JOURNAL, AI POLISH, ACCOUNTANT EXPORT
+STATUS: COMPLETE
+> Summary: `monetura_trip_journal_entries` (raw text, audio attachment, verbatim transcript + status, first AI summary, current summary +
+> status, timestamps) — migration `0008_huge_spyke` applied live. In-browser voice notes via MediaRecorder (mp4/AAC on iOS Safari, webm/Opus
+> on Chrome), visible timer, 10-minute auto-stop, listen-back and re-record before save; audio to private S3. Transcription through OpenAI
+> (`gpt-4o-transcribe`, 1 credit, debit/refund) starts automatically after save; without `OPENAI_API_KEY` the audio is kept, the member sees
+> "Transcription not yet enabled" and types instead, at no charge. "Make it professional" (Claude, 1 credit) rewrites transcript + typed notes
+> + that day's expenses into a first-person business log under the brief's rules, with an output guard that discards any tax language;
+> originals are never written by it, the first AI version is kept, the member can edit the summary, and it is shown beside the original
+> labelled "AI summary of the member's original entry". Export tab + tax-year export on /trips: PDF (cover, ledger by day with currency /
+> rate / source / CAD, category totals with the Meals label, day-by-day journal with summary over verbatim transcript, disclaimer on every
+> page), CSV (every field, BOM, formula-injection guard), ZIP (PDF + CSV + every photo/signature/voice note named by date, vendor and amount,
+> delivered via a presigned S3 download to get past Vercel's 4.5 MB response cap). `OPENAI_API_KEY` documented. Verified live (35/35 checks,
+> PDFs inspected visually, test data removed). Typecheck 6/6, `next build` green.
+
+Goal: a member can talk through each day, get a clean professional log without losing their own words, and hand an accountant one package.
+- monetura_trip_journal_entries; MediaRecorder voice notes (iOS Safari + Chrome), 10-min cap, timer, re-record; upload to S3; OpenAI transcription or graceful "not yet enabled".
+- "Make it professional": Claude rewrite per the stated rules; originals never overwritten; side-by-side display with the required label; editable, first AI version kept.
+- Export per trip and per calendar tax year: PDF, CSV, ZIP with attachments; disclaimer on the PDF.

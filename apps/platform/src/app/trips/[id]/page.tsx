@@ -6,12 +6,15 @@ import {
   getRevisionCounts,
   getTripAttachments,
   getTripExpenses,
+  getTripJournal,
   parseId,
 } from "@/lib/trips/server";
 import { TRIP_TYPE_LABELS } from "@/lib/trips/constants";
 import { BackLink, Card, formatDateRange } from "@/components/trips/ui";
 import { AddExpenseButtons } from "@/components/trips/AddExpenseButtons";
 import { ExpenseLedger } from "@/components/trips/ExpenseLedger";
+import { JournalList } from "@/components/trips/JournalList";
+import { ExportLinks } from "@/components/trips/ExportLinks";
 
 export const dynamic = "force-dynamic";
 
@@ -76,8 +79,8 @@ export default async function TripDetailPage({ params, searchParams }: PageProps
       </nav>
 
       {tab === "expenses" && <ExpensesTab memberId={memberId} tripId={trip.id} />}
-      {tab === "journal" && <ComingSoon what="The daily journal" />}
-      {tab === "export" && <ComingSoon what="Accountant export" />}
+      {tab === "journal" && <JournalTab memberId={memberId} tripId={trip.id} />}
+      {tab === "export" && <ExportTab tripId={trip.id} />}
     </>
   );
 }
@@ -105,10 +108,24 @@ async function ExpensesTab({ memberId, tripId }: { memberId: number; tripId: num
   );
 }
 
-function ComingSoon({ what }: { what: string }) {
+async function JournalTab({ memberId, tripId }: { memberId: number; tripId: number }) {
+  const entries = await getTripJournal(memberId, tripId);
+  return <JournalList tripId={tripId} entries={entries} />;
+}
+
+function ExportTab({ tripId }: { tripId: number }) {
   return (
-    <Card className="p-8 text-center">
-      <p className="text-base text-monetura-sand">{what} arrives in the next update.</p>
-    </Card>
+    <div className="space-y-4">
+      <Card className="p-4">
+        <p className="text-base text-monetura-sand">
+          An accountant-ready package for this trip. Amounts are shown in the original currency and in CAD, with the
+          exchange rate and its source for every expense.
+        </p>
+      </Card>
+      <ExportLinks baseUrl={`/api/trips/${tripId}/export`} />
+      <p className="text-sm text-[#C4A882]">
+        Need a whole year across every trip? Use the tax-year export on the <a href="/trips" className="text-monetura-champagne underline">Trips</a> page.
+      </p>
+    </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   moneturaTrips,
   moneturaTripExpenses,
   moneturaTripAttachments,
+  moneturaTripJournalEntries,
 } from "@monetura/db";
 import {
   firstIssue,
@@ -84,7 +85,16 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
     .from(moneturaTripAttachments)
     .where(and(eq(moneturaTripAttachments.tripId, tripId), eq(moneturaTripAttachments.memberId, memberId)));
 
-  if (Number(expenses?.n ?? 0) > 0 || attachments.some((a) => a.journalEntryId !== null)) {
+  const [journal] = await getDb()
+    .select({ n: count() })
+    .from(moneturaTripJournalEntries)
+    .where(and(eq(moneturaTripJournalEntries.tripId, tripId), eq(moneturaTripJournalEntries.memberId, memberId)));
+
+  if (
+    Number(expenses?.n ?? 0) > 0 ||
+    Number(journal?.n ?? 0) > 0 ||
+    attachments.some((a) => a.journalEntryId !== null)
+  ) {
     return NextResponse.json(
       { error: "Delete this trip's expenses and journal entries first." },
       { status: 409 }

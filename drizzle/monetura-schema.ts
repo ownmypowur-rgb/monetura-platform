@@ -890,6 +890,46 @@ export const moneturaTripAttachments = mysqlTable(
 );
 
 // ---------------------------------------------------------------------------
+// monetura_trip_journal_entries — daily journal (Sprint 11).
+// raw_text, the audio attachment and the verbatim transcript are the member's
+// original record: the AI summary action never writes to them.
+// ---------------------------------------------------------------------------
+export const TRANSCRIPT_STATUSES = ["none", "completed", "failed", "not_enabled"] as const;
+export const SUMMARY_STATUSES = ["none", "generated", "edited"] as const;
+
+export const moneturaTripJournalEntries = mysqlTable(
+  "monetura_trip_journal_entries",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    memberId: bigint("member_id", { mode: "number", unsigned: true }).notNull(),
+    tripId: bigint("trip_id", { mode: "number", unsigned: true }).notNull(),
+    entryDate: date("entry_date", { mode: "string" }).notNull(),
+    rawText: text("raw_text"),
+    audioAttachmentId: bigint("audio_attachment_id", { mode: "number", unsigned: true }),
+    transcript: text("transcript"),
+    transcriptStatus: mysqlEnum("transcript_status", TRANSCRIPT_STATUSES)
+      .notNull()
+      .default("none"),
+    transcribedAt: timestamp("transcribed_at"),
+    // First AI version, written once and never changed afterwards.
+    aiSummaryFirst: text("ai_summary_first"),
+    // Current summary — the latest AI version, or the member's edit of it.
+    aiSummary: text("ai_summary"),
+    summaryStatus: mysqlEnum("summary_status", SUMMARY_STATUSES).notNull().default("none"),
+    summaryGeneratedAt: timestamp("summary_generated_at"),
+    summaryEditedAt: timestamp("summary_edited_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+  },
+  (t) => ({
+    tripDateIdx: index("idx_trip_journal_trip_date").on(t.tripId, t.entryDate),
+    memberDateIdx: index("idx_trip_journal_member_date").on(t.memberId, t.entryDate),
+  })
+);
+
+// ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
 export const moneturaMembersRelations = relations(

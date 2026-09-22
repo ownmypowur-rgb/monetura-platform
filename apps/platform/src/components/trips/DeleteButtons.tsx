@@ -92,3 +92,14 @@ export function DeleteExpenseButton({ tripId, expenseId }: { tripId: number; exp
     />
   );
 }
+
+export function DeleteJournalEntryButton({ tripId, entryId }: { tripId: number; entryId: number }) {
+  return (
+    <ConfirmDelete
+      what="journal entry"
+      url={`/api/trips/${tripId}/journal/${entryId}`}
+      redirectTo={`/trips/${tripId}?tab=journal`}
+      extraNote="Its voice recording, transcript and AI summary are deleted with it."
+    />
+  );
+}

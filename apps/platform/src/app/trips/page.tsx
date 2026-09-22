@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { listMemberTrips } from "@/lib/trips/server";
+import { getMemberRecordYears, listMemberTrips } from "@/lib/trips/server";
 import { formatCad } from "@/lib/trips/money";
 import { TRIP_TYPE_LABELS } from "@/lib/trips/constants";
 import { BackLink, Card, PageHeading, formatDateRange, primaryButtonClass } from "@/components/trips/ui";
+import { ExportLinks } from "@/components/trips/ExportLinks";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,8 @@ export default async function TripsPage() {
   if (!session?.user?.memberId) redirect("/login");
 
   const trips = await listMemberTrips(session.user.memberId);
+
+  const years = await getMemberRecordYears(session.user.memberId, trips);
 
   return (
     <>
@@ -64,6 +67,25 @@ export default async function TripsPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {years.length > 0 && (
+        <section className="mt-10" aria-labelledby="tax-year-export">
+          <h2 id="tax-year-export" className="text-sm font-bold tracking-[0.12em] uppercase text-[#B99B74] mb-2">
+            Tax-year export
+          </h2>
+          <p className="text-sm text-[#C4A882] mb-3">
+            Every expense and journal entry dated in a calendar year, across all trips — for your accountant.
+          </p>
+          <Card className="divide-y divide-[#3D2E26]">
+            {years.map((year) => (
+              <div key={year} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+                <p className="text-lg text-monetura-cream tabular-nums">{year}</p>
+                <ExportLinks baseUrl={`/api/trips/export?year=${year}`} compact />
+              </div>
+            ))}
+          </Card>
+        </section>
       )}
     </>
   );

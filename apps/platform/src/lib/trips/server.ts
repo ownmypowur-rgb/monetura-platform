@@ -7,6 +7,7 @@ import {
   moneturaTripExpenses,
   moneturaTripAttachments,
   moneturaTripExpenseRevisions,
+  moneturaTripJournalEntries,
   TRIP_TYPES,
   EXPENSE_CATEGORIES,
   PAYMENT_METHODS,
@@ -33,6 +34,7 @@ import { MAX_EXPENSE_NOTE_LENGTH } from "./constants";
 export type TripRow = typeof moneturaTrips.$inferSelect;
 export type ExpenseRow = typeof moneturaTripExpenses.$inferSelect;
 export type AttachmentRow = typeof moneturaTripAttachments.$inferSelect;
+export type JournalRow = typeof moneturaTripJournalEntries.$inferSelect;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -477,3 +479,96 @@ export function missingEvidence(
 
 /** Edits made more than this long after creation keep an audit record. */
 export const AUDIT_GRACE_MS = 24 * 60 * 60 * 1000;
+
+// ── Journal ──────────────────────────────────────────────────────────────────
+
+export const MAX_JOURNAL_TEXT = 20000;
+
+export const journalCreateSchema = z
+  .object({
+    entryDate: isoDate,
+    rawText: z.string().trim().max(MAX_JOURNAL_TEXT).nullable().optional(),
+    audioAttachmentId: z.number().int().positive().nullable().optional(),
+  })
+  .superRefine((v, ctx) => {
+    if (v.entryDate > latestAllowedDate()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["entryDate"], message: "Entry date can't be in the future" });
+    }
+    if (!v.rawText && !v.audioAttachmentId) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["rawText"], message: "Record a voice note or type your entry" });
+    }
+  });
+
+export const journalUpdateSchema = z
+  .object({
+    entryDate: isoDate.optional(),
+    rawText: z.string().trim().max(MAX_JOURNAL_TEXT).nullable().optional(),
+    aiSummary: z.string().trim().min(1, "The summary can't be empty").max(MAX_JOURNAL_TEXT).optional(),
+    audioAttachmentId: z.number().int().positive().optional(),
+  })
+  .superRefine((v, ctx) => {
+    if (v.entryDate && v.entryDate > latestAllowedDate()) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["entryDate"], message: "Entry date can't be in the future" });
+    }
+  });
+
+export async function getMemberJournalEntry(
+  memberId: number,
+  tripId: number,
+  entryId: number
+): Promise<JournalRow | null> {
+  const rows = await getDb()
+    .select()
+    .from(moneturaTripJournalEntries)
+    .where(
+      and(
+        eq(moneturaTripJournalEntries.id, entryId),
+        eq(moneturaTripJournalEntries.memberId, memberId),
+        eq(moneturaTripJournalEntries.tripId, tripId)
+      )
+    )
+    .limit(1);
+  return rows[0] ?? null;
+}
+
+export async function getTripJournal(memberId: number, tripId: number): Promise<JournalRow[]> {
+  return getDb()
+    .select()
+    .from(moneturaTripJournalEntries)
+    .where(
+      and(eq(moneturaTripJournalEntries.memberId, memberId), eq(moneturaTripJournalEntries.tripId, tripId))
+    )
+    .orderBy(asc(moneturaTripJournalEntries.entryDate), asc(moneturaTripJournalEntries.id));
+}
+
+/** Expenses on one day of one trip — context for the journal summary. */
+export async function getTripExpensesOnDate(
+  memberId: number,
+  tripId: number,
+  isoDay: string
+): Promise<ExpenseRow[]> {
+  return getDb()
+    .select()
+    .from(moneturaTripExpenses)
+    .where(
+      and(
+        eq(moneturaTripExpenses.memberId, memberId),
+        eq(moneturaTripExpenses.tripId, tripId),
+        eq(moneturaTripExpenses.expenseDate, isoDay)
+      )
+    )
+    .orderBy(asc(moneturaTripExpenses.id));
+}
+
+/** Calendar years touched by any of the member's trips or expenses, newest first. */
+export async function getMemberRecordYears(memberId: number, trips: TripRow[]): Promise<number[]> {
+  const expenseDates = await getDb()
+    .selectDistinct({ d: moneturaTripExpenses.expenseDate })
+    .from(moneturaTripExpenses)
+    .where(eq(moneturaTripExpenses.memberId, memberId));
+  const years = new Set<number>(expenseDates.map((r) => Number(r.d.slice(0, 4))));
+  for (const t of trips) {
+    for (let y = Number(t.startDate.slice(0, 4)); y <= Number(t.endDate.slice(0, 4)); y++) years.add(y);
+  }
+  return Array.from(years).sort((a, b) => b - a);
+}
