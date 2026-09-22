@@ -4,6 +4,7 @@ import {
   text,
   int,
   bigint,
+  date,
   boolean,
   timestamp,
   decimal,
@@ -707,6 +708,184 @@ export const moneturaPasswordTokens = mysqlTable(
   (t) => ({
     tokenIdx: uniqueIndex("idx_password_tokens_token").on(t.token),
     userIdx: index("idx_password_tokens_user").on(t.userId),
+  })
+);
+
+// ---------------------------------------------------------------------------
+// Trip Records — receipts, expenses and journals per trip (Sprint 10/11).
+// Record-keeping only: nothing here computes or implies deductibility.
+// Every row carries member_id and every query filters on it.
+// ---------------------------------------------------------------------------
+
+export const TRIP_TYPES = ["business", "mixed", "personal"] as const;
+
+export const EXPENSE_CATEGORIES = [
+  "airfare",
+  "lodging",
+  "meals",
+  "ground_transport",
+  "fees_admissions",
+  "equipment_supplies",
+  "communications",
+  "other",
+] as const;
+
+// `not_required` is for CAD expenses — no conversion happened. See DECISIONS [Sprint 10].
+export const RATE_SOURCES = [
+  "bank_of_canada",
+  "member_entered",
+  "card_statement",
+  "not_required",
+] as const;
+
+export const PAYMENT_METHODS = ["cash", "card", "other"] as const;
+
+export const EVIDENCE_TYPES = [
+  "official_receipt",
+  "vendor_note",
+  "vendor_signature",
+  "self_declared",
+] as const;
+
+export const ATTACHMENT_TYPES = [
+  "receipt_photo",
+  "vendor_note_photo",
+  "signature",
+  "audio",
+] as const;
+
+// ---------------------------------------------------------------------------
+// monetura_trips
+// ---------------------------------------------------------------------------
+export const moneturaTrips = mysqlTable(
+  "monetura_trips",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    memberId: bigint("member_id", { mode: "number", unsigned: true }).notNull(),
+    name: varchar("name", { length: 255 }).notNull(),
+    // Free text, one or more places ("Lisbon, Porto").
+    destinations: varchar("destinations", { length: 500 }).notNull(),
+    startDate: date("start_date", { mode: "string" }).notNull(),
+    endDate: date("end_date", { mode: "string" }).notNull(),
+    businessPurpose: text("business_purpose").notNull(),
+    tripType: mysqlEnum("trip_type", TRIP_TYPES).notNull().default("business"),
+    businessUsePercent: int("business_use_percent").notNull().default(100),
+    notes: text("notes"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+  },
+  (t) => ({
+    memberIdx: index("idx_trips_member").on(t.memberId),
+    memberStartIdx: index("idx_trips_member_start").on(t.memberId, t.startDate),
+  })
+);
+
+// ---------------------------------------------------------------------------
+// monetura_trip_expenses
+// ---------------------------------------------------------------------------
+export const moneturaTripExpenses = mysqlTable(
+  "monetura_trip_expenses",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    memberId: bigint("member_id", { mode: "number", unsigned: true }).notNull(),
+    tripId: bigint("trip_id", { mode: "number", unsigned: true }).notNull(),
+    expenseDate: date("expense_date", { mode: "string" }).notNull(),
+    vendorName: varchar("vendor_name", { length: 255 }).notNull(),
+    description: text("description"),
+    category: mysqlEnum("category", EXPENSE_CATEGORIES).notNull(),
+    // Original amount in the original currency. Scale 3 covers KWD/BHD/OMR.
+    amount: decimal("amount", { precision: 15, scale: 3 }).notNull(),
+    currency: varchar("currency", { length: 3 }).notNull(),
+    // Frozen at save time so the record never changes after the fact.
+    exchangeRate: decimal("exchange_rate", { precision: 18, scale: 8 }).notNull(),
+    rateSource: mysqlEnum("rate_source", RATE_SOURCES).notNull(),
+    // The Bank of Canada observation date actually used (may precede
+    // expense_date on weekends/holidays). Null for non-BoC sources.
+    rateDate: date("rate_date", { mode: "string" }),
+    cadAmount: decimal("cad_amount", { precision: 14, scale: 2 }).notNull(),
+    paymentMethod: mysqlEnum("payment_method", PAYMENT_METHODS).notNull(),
+    evidenceType: mysqlEnum("evidence_type", EVIDENCE_TYPES).notNull(),
+    // Who signed on the vendor's behalf (vendor_signature evidence).
+    vendorSignerName: varchar("vendor_signer_name", { length: 255 }),
+    businessPurpose: text("business_purpose"),
+    businessUsePercent: int("business_use_percent").notNull().default(100),
+    // True when any field was prefilled by "Read receipt with AI" — the member
+    // still confirmed every field before this row was written.
+    aiAssisted: boolean("ai_assisted").notNull().default(false),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+  },
+  (t) => ({
+    tripIdx: index("idx_trip_expenses_trip").on(t.tripId),
+    memberDateIdx: index("idx_trip_expenses_member_date").on(
+      t.memberId,
+      t.expenseDate
+    ),
+  })
+);
+
+// ---------------------------------------------------------------------------
+// monetura_trip_expense_revisions — audit trail for edits made more than 24h
+// after an expense was created. previous_values is the full row as it stood
+// immediately before the edit.
+// ---------------------------------------------------------------------------
+export const moneturaTripExpenseRevisions = mysqlTable(
+  "monetura_trip_expense_revisions",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    expenseId: bigint("expense_id", { mode: "number", unsigned: true }).notNull(),
+    memberId: bigint("member_id", { mode: "number", unsigned: true }).notNull(),
+    previousValues: json("previous_values")
+      .$type<Record<string, string | number | boolean | null>>()
+      .notNull(),
+    editedAt: timestamp("edited_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    expenseIdx: index("idx_trip_expense_revisions_expense").on(t.expenseId),
+  })
+);
+
+// ---------------------------------------------------------------------------
+// monetura_trip_attachments — private S3 objects (served via presigned GET).
+// Created at upload time with trip_id only; linked to an expense or journal
+// entry when that record is saved.
+// ---------------------------------------------------------------------------
+export const moneturaTripAttachments = mysqlTable(
+  "monetura_trip_attachments",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    memberId: bigint("member_id", { mode: "number", unsigned: true }).notNull(),
+    tripId: bigint("trip_id", { mode: "number", unsigned: true }).notNull(),
+    expenseId: bigint("expense_id", { mode: "number", unsigned: true }),
+    journalEntryId: bigint("journal_entry_id", {
+      mode: "number",
+      unsigned: true,
+    }),
+    type: mysqlEnum("type", ATTACHMENT_TYPES).notNull(),
+    s3Key: varchar("s3_key", { length: 500 }).notNull(),
+    s3Bucket: varchar("s3_bucket", { length: 255 }).notNull(),
+    mimeType: varchar("mime_type", { length: 100 }).notNull(),
+    originalFilename: varchar("original_filename", { length: 500 }).notNull(),
+    fileSizeBytes: bigint("file_size_bytes", { mode: "number", unsigned: true }),
+    status: mysqlEnum("status", ["pending", "uploaded"])
+      .notNull()
+      .default("pending"),
+    uploadedAt: timestamp("uploaded_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    tripIdx: index("idx_trip_attachments_trip").on(t.tripId),
+    expenseIdx: index("idx_trip_attachments_expense").on(t.expenseId),
+    journalIdx: index("idx_trip_attachments_journal").on(t.journalEntryId),
+    memberIdx: index("idx_trip_attachments_member").on(t.memberId),
   })
 );
 

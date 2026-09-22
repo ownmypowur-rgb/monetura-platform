@@ -10,6 +10,7 @@ import {
   CalendarDaysIcon,
   ShoppingBagIcon,
   SettingsIcon,
+  ReceiptIcon,
 } from "./icons";
 
 function LogOutIcon({ size = 18 }: { size?: number }) {
@@ -41,6 +42,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "create", label: "Create", icon: <CreateIcon size={18} /> },
   { id: "earnings", label: "Earnings", icon: <EarningsIcon size={18} /> },
   { id: "travel", label: "Travel", icon: <TravelIcon size={18} /> },
+  { id: "trips", label: "Trips", icon: <ReceiptIcon size={18} /> },
   { id: "events", label: "Events", icon: <CalendarDaysIcon size={18} /> },
   { id: "marketplace", label: "Marketplace", icon: <ShoppingBagIcon size={18} /> },
 ];
@@ -99,6 +101,7 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
             create: "/create",
             earnings: "/earnings",
             travel: "/travel",
+            trips: "/trips",
             events: "/events",
             marketplace: "/marketplace",
           };

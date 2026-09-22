@@ -230,3 +230,85 @@ Format per entry:
 - The TopBar avatar was an inert button; it is now a link to `/settings/social`, the only account surface that exists.
 - **Still inert by decision:** the TopBar notification bell. Sprint 6 deliberately kept it and removed only its always-on dot; there is no notifications table. Left as-is rather than churning a logged decision.
 - The `onTabChange={() => {}}` props on SidebarNav/BottomNav are the vestigial props Sprint 6 kept so call sites did not churn — navigation is pathname-driven and these are ignored by design, not dead handlers.
+
+## [Sprint 10] AI receipt reading costs 1 credit; refunded on every failure
+- Context: the brief requires AI calls to use the credit system exactly like `content/generate` and to pick a cost.
+- Options considered: (a) free (it saves the member typing, and they must confirm every field anyway); (b) 1 credit; (c) 2+ credits because vision input costs more than text.
+- Decision made: (b), `RECEIPT_READ_CREDIT_COST = 1` in `lib/trips/constants.ts`. Debited with `deductCredit` before the Claude call; `refundCredit` on every failure path — API error, refusal, unparseable output, and "not a readable receipt". Storage and format problems (HEIC, >5 MB, S3 read failure) are checked *before* the debit, so they cost nothing. Verified live: without an API key the ledger shows a debit followed by a refund.
+- Reasoning: matches the "1 credit per AI action" rule members already see in Create and the concierge. A downscaled receipt photo is ~1,500 input tokens — comparable to a content generation.
+- Reversible? yes — one constant.
+
+## [Sprint 10] AI never guesses: structured output, nulls for anything uncertain, every field confirmed by hand
+- Context: "Read receipt with AI" must prefill vendor, date, amount, currency and description, and the member must confirm every field; AI values are never auto-saved.
+- Decision made: Claude (`claude-sonnet-5`, same as the rest of the platform) is called with `output_config.format` (a JSON schema), then the result is re-validated with zod and each value checked for shape. The prompt says to return null rather than guess: dates only when day/month are unambiguous, currency only when printed or identified by symbol + address (a bare "$" is null), no category guess at all, and nothing about tax. In the form, every AI-filled field gets an amber border and a "tap to confirm" button; editing the field also counts as confirming. Save stays blocked ("Confirm 3 AI fields first") until none are pending. Expenses record `ai_assisted = true` so the accountant export can say which rows started from AI.
+- Reasoning: "confirm every field" is enforced per field, not as one checkbox that is easy to tap without reading.
+- Reversible? yes.
+
+## [Sprint 10] CAD expenses use a fourth rate source, `not_required`
+- Context: the brief lists three rate sources (bank_of_canada / member_entered / card_statement). A CAD expense has no conversion, and any of the three would misdescribe it in an export.
+- Decision made: added `not_required` to the enum: rate 1.00000000, no rate date, CAD amount = amount. Labelled "CAD — no conversion".
+- Reversible? yes — enum value plus a label.
+
+## [Sprint 10] Bank of Canada lookup: 14-day window, latest observation on or before the date, looked up again on save
+- Context: rates are published on business days only; weekends, holidays and "today before 16:30 ET" have no observation for that date.
+- Decision made: `GET /valet/observations/FX{CUR}CAD/json?start_date=D-14&end_date=D` and take the latest observation ≤ D; its date is stored in `rate_date`. Checked live on 2026-09-22: a Saturday (09-19) resolves to Friday 09-18; an unknown series returns HTTP 404; a suspended series (RUB) returns an empty list. Both mean "not published" and make the member enter a rate or card-statement CAD amount. A network error or 5xx is reported separately ("rate service didn't respond") so a BoC outage is never shown as "not published". The browser gets a preview from `/api/trips/fx`, but the save routes look the rate up again on the server; a rate sent by the browser is never stored as a Bank of Canada rate. Past-date results are cached per serverless instance.
+- Reasoning: stored rates must be reproducible from the public source and cannot be forged by the browser.
+- Reversible? yes.
+
+## [Sprint 10] Card-statement CAD amount is offered for every foreign currency, not only unpublished ones
+- Context: the brief requires the card-statement option when BoC doesn't publish a currency. For card purchases, though, the statement shows what the member was actually charged in CAD, and that can differ from the BoC daily average.
+- Decision made: all three options (BoC / card statement / enter rate) are available for any non-CAD currency. BoC is the default; for an unpublished currency the form switches to card statement (card payments) or entered rate (cash/other) and disables BoC. The implied rate is stored for card-statement entries (CAD ÷ amount, 8 decimals).
+- Reasoning: the member records what happened, and the accountant sees which source was used on every row.
+- Reversible? yes — UI only.
+
+## [Sprint 10] Money is exact: scaled BigInt arithmetic, half-up to the cent
+- Decision made: amounts are `decimal(15,3)` (3 decimals for KWD/BHD/OMR), rates `decimal(18,8)`, CAD `decimal(14,2)`. `lib/trips/money.ts` converts to scaled BigInts; CAD = amount × rate rounded half-up; totals are summed as integers. The browser's live "→ CA$…" preview uses floats and is display only; the server computes every stored value. Verified: 84.50 USD × 1.4002 = 118.32; 12.345 CAD → 12.35.
+- Reversible? yes.
+
+## [Sprint 10] Trip Records media is private: no public URLs, 5-minute presigned reads after an ownership check
+- Context: the existing upload pattern gives every file a public URL (`NEXT_PUBLIC_S3_BASE_URL/...`), which is right for post photos. Receipts, vendor signatures and voice notes are financial and personal records.
+- Decision made: same bucket (`AWS_S3_BUCKET` = monetura-platform-media), same presign → PUT → confirm flow, under `monetura/members/{userId}/trips/{tripId}/`. No public URL is stored. Every read goes through `GET /api/trips/attachments/{id}`, which checks `member_id` and redirects to a 5-minute presigned GET. Confirm runs `HeadObject` before marking a file uploaded. Verified live: another member's session gets a 404 for the file and the trip page.
+- Caveat: if the bucket policy makes all objects public-read, these objects are public too for anyone who guesses the key (they are unguessable: timestamp + random). Making `trips/` private at the bucket-policy level is an owner action — see the Sprint 10 summary.
+- Reversible? yes.
+
+## [Sprint 10] Photos are re-encoded in the browser before upload
+- Decision made: `prepareImage()` draws the photo to a canvas at 2400px or less on the long edge and uploads a JPEG at quality 0.85 (~0.5–1.5 MB). Benefits: iPhone HEIC becomes a format Claude accepts, uploads are quick on hotel wifi, the file fits Claude's 5 MB image limit, and EXIF (including GPS) is removed. Browsers apply EXIF orientation when drawing, so the image comes out upright. If the browser can't decode the file, the original is uploaded (AI reading then returns a friendly 415).
+- Reversible? yes.
+
+## [Sprint 10] "Add expense" opens the camera from the ledger
+- Context: the brief says the add-expense flow opens the phone camera directly. Browsers only open a file picker from a user tap, so the form page can't open the camera by itself on load.
+- Decision made: the ledger's primary button is the camera (`<input capture="environment">`). The photo uploads right away and the form opens with it attached and "Read with AI" one tap away. A secondary "No receipt" button opens the form on the cash path (self-declared, cash preselected). The form also has "Take receipt photo" and "Library" buttons.
+- Known side effect: a photo taken and then abandoned leaves an unlinked attachment. It is invisible, removed if the trip is deleted, and costs cents. A cleanup job can come later.
+- Reversible? yes.
+
+## [Sprint 10] Evidence rules for the cash / no-receipt path
+- Decision made: any evidence other than an official receipt requires a description and business purpose (enforced on the server) and shows the tip "Ask the vendor to write the date, item and amount, and sign." A **vendor signature** requires a signer name and a saved signature PNG. A **vendor note** requires a photo of the note. **Self-declared** needs only the description and purpose. An **official receipt** does not require a photo, because e-tickets and emailed hotel folios have no paper to photograph. When the signature is saved, the signer's name and the local date and time are stamped on the image, so the PNG still makes sense if it is ever separated from the record.
+- Reversible? yes — `missingEvidence()` in `lib/trips/server.ts`.
+
+## [Sprint 10] Edit audit: full pre-edit snapshot after 24 hours; rate kept unless its inputs change
+- Decision made: a PATCH more than 24h after `created_at` writes `monetura_trip_expense_revisions` (full previous row as JSON + `edited_at`) in the same transaction as the update. Edits in the first 24h are free, for typos made at the table. The edit page shows the history ("Edited … — before this edit: …") and says which rule applies. An edit keeps the stored rate and CAD amount (`fx: keep`) unless amount, currency or date changed. In that case the server refuses `keep` and the member picks a conversion again. Verified live.
+- Reversible? yes.
+
+## [Sprint 10] Deletion is real but deliberate; saved files can't be removed one at a time; only empty trips can be deleted
+- Decision made: deleting an expense takes two steps. The second step shows the retention warning ("Records should be kept for six years from the end of the tax year they relate to. Deleting this cannot be undone."). It hard-deletes the row, its revisions and its attachments (S3 delete is best effort, after the rows). An attachment linked to a saved expense can't be removed on its own; it goes only with its record. A trip can be deleted only when it has no expenses or journal entries, so one tap can never wipe a trip's records. Added a trip edit page, which the brief didn't list but members need.
+- Reasoning: the member owns the data and may delete it, but it should never happen by accident.
+- Reversible? no for deleted data (by design); yes for the rules.
+
+## [Sprint 10] Totals are raw CAD sums; business-use % is displayed, never applied
+- Context: the brief says the product never tells a member something is deductible, and the Meals flag is "label only, no calculation of deductibility".
+- Decision made: category totals and the trip total add up the full CAD amounts. Business-use % is shown per expense and per trip but never multiplied in, because "business portion" totals are a step toward a deductibility figure. The ledger says so in one line. "50% rule may apply" is a label on Meals rows and the Meals total.
+- Reversible? yes.
+
+## [Sprint 10] Trip percentages: business 100, mixed required (1–99), personal 0
+- Decision made: business trips default to 100% and personal trips to 0%, and both can be overridden. Mixed trips require a value from 1 to 99 (a mixed trip at 100% is a business trip). New expenses take the trip's % and can be changed per expense. Changing the trip's % doesn't rewrite expenses already recorded.
+- Reversible? yes.
+
+## [Sprint 10] Expense dates: outside the trip is allowed, the future is not
+- Decision made: flights and hotels are often paid weeks before a trip, so dates outside the trip range are accepted with a hint. Dates after tomorrow in UTC are rejected. The one-day allowance covers members in time zones up to UTC+14.
+- Reversible? yes.
+
+## [Sprint 10] Nav placement, a committed idempotent migration script, and one contrast fix
+- Nav: "Trips" sits after Travel in the desktop sidebar and at the top of the mobile "More" sheet. The bottom bar stays at five targets (Sprint 6 decision).
+- Migration: `0007_clever_cyclops` was generated by drizzle-kit (snapshot included) and applied to the live DB with the new `scripts/apply-migration-idempotent.mjs`. The script turns CREATE TABLE into IF NOT EXISTS, skips indexes that already exist, and refuses to run anything that isn't additive. It is the Sprint 2 rule written as a reusable tool instead of a one-off.
+- Contrast: every new text colour was measured against #1A0F0A / #2C2420 / #3D2E26 and passes AA (≥4.5:1). The first placeholder tone (#8F7A63, 3.72:1) was replaced with #A8916F (5.03:1).
+- Local testing note: `next start` on localhost needs `AUTH_TRUST_HOST=true` (Auth.js rejects untrusted hosts outside Vercel). Nothing in the deployed configuration changes.

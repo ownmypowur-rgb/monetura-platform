@@ -215,3 +215,14 @@ export function CalculatorIcon({ size = 20, className, style }: IconProps) {
     </svg>
   );
 }
+
+export function ReceiptIcon({ size = 20, className, style }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
+      <path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z" />
+      <line x1="9" y1="7" x2="15" y2="7" />
+      <line x1="9" y1="11" x2="15" y2="11" />
+      <line x1="9" y1="15" x2="13" y2="15" />
+    </svg>
+  );
+}

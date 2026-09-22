@@ -147,3 +147,27 @@ STATUS: COMPLETE
 > member's own profile, which is where the manual re-share happens. Nav audit: every href resolves, / redirects correctly; avatar now links to
 > settings; only the notification bell stays inert (Sprint 6 decision). "Save this trip" now copies a real summary instead of console.log.
 > Typecheck: 6/6 green.
+
+---
+
+## SPRINT 10 — TRIP RECORDS: TRIPS, EXPENSES, RECEIPTS
+STATUS: COMPLETE
+> Summary: four new member-scoped tables — `monetura_trips`, `monetura_trip_expenses`, `monetura_trip_expense_revisions` (24h audit trail),
+> `monetura_trip_attachments` — migration `0007_clever_cyclops` generated and applied live via the new committed
+> `scripts/apply-migration-idempotent.mjs`. Bank of Canada Valet lookup (latest rate on or before the expense date, actual rate date stored;
+> 404/empty → member enters rate or card-statement CAD; server re-looks up on save) with exact BigInt money math. Private S3 attachments
+> (same bucket, presign → PUT → HeadObject confirm, reads only via ownership-checked 5-minute presigned redirect). "Add expense" opens the
+> rear camera straight from the ledger; photos re-encoded to ≤2400px JPEG in the browser. "Read receipt with AI" (1 credit, debit-before,
+> refund on every failure) uses structured output and prefills vendor/date/amount/currency/description — each AI field must be confirmed
+> before Save unlocks. Cash / no-receipt path: required description + purpose, vendor-note photo, finger signature pad (PNG stamped with
+> signer + time), and the vendor tip. Pages: /trips, /trips/new, /trips/[id] (Expenses | Journal | Export tabs; day-grouped ledger, CAD totals
+> by category with Meals "50% rule may apply", trip total), /trips/[id]/edit, expense new/edit with edit history. Deletes need a two-step
+> confirmation stating the six-year retention guidance. Disclaimer footer on every Trip Records page via the trips layout. "Trips" added to
+> sidebar + mobile More sheet. Verified live against the real DB/S3/BoC (33/33 checks, test data removed). Typecheck 6/6, `next build` green.
+
+Goal: members keep trip receipts and expenses in a form they can hand to an accountant. Record-keeping only — nothing says an expense is deductible.
+- Tables monetura_trips, monetura_trip_expenses, monetura_trip_attachments (+ revisions for the 24h audit rule); member-scoped queries.
+- Bank of Canada rate on the expense date with weekend/holiday fallback and stored rate date; member-entered / card-statement when not published.
+- Camera-direct receipt capture to S3; "Read receipt with AI" prefills, member confirms every field; never auto-saved.
+- Cash / no-receipt path: vendor note photo, finger signature pad with vendor name, tip line.
+- /trips, /trips/new, /trips/[id] tabs; ledger by day with category and trip totals; Meals flagged; edit-after-24h audit; delete with six-year warning.

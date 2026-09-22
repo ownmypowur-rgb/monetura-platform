@@ -12,7 +12,7 @@ import {
 } from "./icons";
 
 // Every tab is a real link. "More" opens a sheet with the remaining sections
-// so Events, Marketplace, Posts, and Settings are reachable on mobile.
+// so Trips, Events, Marketplace, Posts, and Settings are reachable on mobile.
 const TABS = [
   { id: "home", label: "Home", href: "/dashboard", icon: <HomeIcon size={22} /> },
   { id: "create", label: "Create", href: "/create", icon: <CreateIcon size={22} /> },
@@ -21,6 +21,7 @@ const TABS = [
 ] as const;
 
 const MORE_LINKS = [
+  { label: "Trips", href: "/trips" },
   { label: "Events", href: "/events" },
   { label: "Marketplace", href: "/marketplace" },
   { label: "Posts", href: "/posts" },
