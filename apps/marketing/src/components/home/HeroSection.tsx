@@ -84,7 +84,6 @@ export default function HeroSection() {
         <div className="grid w-full gap-8 sm:gap-10 lg:grid-cols-[minmax(0,680px)_1fr] lg:items-end xl:gap-12">
           {/* Centered on mobile, left-aligned over the darker side on desktop. */}
           <div className="mx-auto max-w-[21rem] text-center sm:max-w-[42rem] lg:mx-0 lg:text-left">
-            <p className="editorial-label">MONETURA</p>
             {/* Sized to read confident rather than shouting, and held to a
                 single line from lg upward. */}
             <h1 className="lux-heading [text-shadow:0_2px_24px_rgba(44,36,32,0.45)] mx-auto max-w-[18rem] text-5xl text-monetura-cream sm:max-w-[32rem] lg:mx-0 lg:max-w-none lg:whitespace-nowrap lg:text-6xl">
@@ -138,8 +137,8 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <div className="hidden self-end lg:block lg:max-w-[18rem] lg:justify-self-end xl:max-w-[20rem]">
-            <div className="lux-panel rounded-[1.4rem] p-4 sm:rounded-[1.75rem] sm:p-8">
+          <div className="hidden self-end lg:block lg:max-w-[20rem] lg:justify-self-end xl:max-w-[22rem]">
+            <div className="lux-panel rounded-[1.4rem] p-4 sm:rounded-[1.75rem] sm:p-8 sm:pr-10">
               <p className="text-[10px] uppercase tracking-[0.28em] text-monetura-champagne/90 sm:text-[11px] sm:tracking-[0.42em]">
                 The Membership
               </p>
@@ -154,7 +153,7 @@ export default function HeroSection() {
                     key={stat.label}
                     className="border-l border-monetura-sand/12 pl-4 first:border-l-0 first:pl-0"
                   >
-                    <p className="text-lg tracking-[0.12em] text-monetura-champagne sm:text-2xl">
+                    <p className="whitespace-nowrap text-lg tracking-[0.06em] text-monetura-champagne sm:text-xl">
                       {stat.value}
                     </p>
                     <p className="mt-2 text-[9px] uppercase tracking-[0.28em] text-monetura-cream/48 sm:text-[10px] sm:tracking-[0.3em]">
