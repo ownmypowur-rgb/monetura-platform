@@ -12,9 +12,10 @@ import { useState } from "react";
 //            fades to transparent so the couple on the right stays visible.
 //   BOTTOM – bottom-up gradient behind the stats panel and buttons.
 // ---------------------------------------------------------------------------
-const OVERLAY_BASE_OPACITY = 0.35;
-const OVERLAY_LEFT_OPACITY = 0.7;
-const OVERLAY_BOTTOM_OPACITY = 0.6;
+const OVERLAY_BASE_OPACITY = 0.3; // Flat charcoal wash over the whole video
+const OVERLAY_LEFT_OPACITY = 0.65; // Charcoal strength at the far left edge, behind the headline
+const OVERLAY_LEFT_FADE_END = "55%"; // Point across the width where the left gradient is fully transparent
+const OVERLAY_BOTTOM_OPACITY = 0.5; // Charcoal strength at the bottom edge, behind buttons and stats
 
 const CHARCOAL_RGB = "44, 36, 32"; // #2C2420
 const charcoal = (alpha: number) => `rgba(${CHARCOAL_RGB}, ${alpha})`;
@@ -23,7 +24,7 @@ const HERO_VIDEO_SRC = "/videos/hero.mp4";
 const HERO_POSTER_SRC = "/images/hero-poster.jpg";
 
 const stats = [
-  { value: "200", label: "Total founders" },
+  { value: "200", label: "Founding Members" },
   { value: "Lifetime", label: "Access" },
 ];
 
@@ -66,7 +67,7 @@ export default function HeroSection() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage: `linear-gradient(to right, ${charcoal(OVERLAY_LEFT_OPACITY)} 0%, ${charcoal(0)} 100%)`,
+            backgroundImage: `linear-gradient(to right, ${charcoal(OVERLAY_LEFT_OPACITY)} 0%, ${charcoal(0)} ${OVERLAY_LEFT_FADE_END})`,
           }}
         />
         {/* Overlay 3: bottom-up, behind stats and buttons */}
@@ -86,11 +87,11 @@ export default function HeroSection() {
             <p className="editorial-label">MONETURA</p>
             {/* Sized to read confident rather than shouting, and held to a
                 single line from lg upward. */}
-            <h1 className="lux-heading mx-auto max-w-[18rem] text-5xl text-monetura-cream sm:max-w-[32rem] lg:mx-0 lg:max-w-none lg:whitespace-nowrap lg:text-6xl">
+            <h1 className="lux-heading [text-shadow:0_2px_24px_rgba(44,36,32,0.45)] mx-auto max-w-[18rem] text-5xl text-monetura-cream sm:max-w-[32rem] lg:mx-0 lg:max-w-none lg:whitespace-nowrap lg:text-6xl">
               Find your way{" "}
               <span className="text-monetura-champagne">back.</span>
             </h1>
-            <p className="lux-body mx-auto mt-6 max-w-[20rem] text-[13.5px] leading-6 text-monetura-cream/78 sm:mt-8 sm:max-w-[32rem] sm:text-[15px] sm:leading-8 lg:mx-0 lg:mt-9 lg:max-w-[34rem] lg:text-[15.5px]">
+            <p className="lux-body [text-shadow:0_2px_24px_rgba(44,36,32,0.45)] mx-auto mt-6 max-w-[20rem] text-[13.5px] leading-6 text-monetura-cream/78 sm:mt-8 sm:max-w-[32rem] sm:text-[15px] sm:leading-8 lg:mx-0 lg:mt-9 lg:max-w-[34rem] lg:text-[15.5px]">
               Monetura turns the life you already want to live into content,
               community, and income.
             </p>
@@ -117,10 +118,10 @@ export default function HeroSection() {
 
             <div className="lux-panel mx-auto mt-5 max-w-[20rem] rounded-[1.3rem] p-4 lg:hidden">
               <p className="text-[10px] uppercase tracking-[0.2em] text-monetura-champagne/88">
-                Founders edition
+                The Membership
               </p>
               <p className="mt-3 text-sm leading-6 text-monetura-cream/72">
-                A premium travel-and-creation membership for founders who want their experiences to become content and income.
+                A premium travel-and-creation membership for people who want their experiences to become content, community, and income.
               </p>
               <div className="mt-4 grid grid-cols-2 gap-3 border-t border-monetura-sand/10 pt-4">
                 {stats.map((stat) => (
@@ -140,12 +141,12 @@ export default function HeroSection() {
           <div className="hidden self-end lg:block lg:max-w-[18rem] lg:justify-self-end xl:max-w-[20rem]">
             <div className="lux-panel rounded-[1.4rem] p-4 sm:rounded-[1.75rem] sm:p-8">
               <p className="text-[10px] uppercase tracking-[0.28em] text-monetura-champagne/90 sm:text-[11px] sm:tracking-[0.42em]">
-                Editorial notes
+                The Membership
               </p>
               <div className="hairline my-5" />
               <p className="text-sm leading-7 text-monetura-cream/72">
-                A premium travel-and-creation membership designed for founders who
-                want their experiences to become content, community, and income.
+                A premium travel-and-creation membership for people who want their
+                experiences to become content, community, and income.
               </p>
               <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4">
                 {stats.map((stat) => (
