@@ -17,6 +17,13 @@ const OVERLAY_LEFT_OPACITY = 0.65; // Charcoal strength at the far left edge, be
 const OVERLAY_LEFT_FADE_END = "55%"; // Point across the width where the left gradient is fully transparent
 const OVERLAY_BOTTOM_OPACITY = 0.5; // Charcoal strength at the bottom edge, behind buttons and stats
 
+// Mobile only (below md). Replaces the BOTTOM layer on phones, where the
+// centred copy sits over the bright dress and cliff. Measured against the
+// first screen (svh), not the section, because the membership card extends
+// the section below the fold.
+const OVERLAY_BOTTOM_OPACITY_MOBILE = 0.75; // Charcoal strength at the bottom of the first screen, held behind the card below it
+const OVERLAY_BOTTOM_FADE_END_MOBILE = "45svh"; // Distance from the top where the mobile gradient is fully transparent (= 55% up from the bottom)
+
 const CHARCOAL_RGB = "44, 36, 32"; // #2C2420
 const charcoal = (alpha: number) => `rgba(${CHARCOAL_RGB}, ${alpha})`;
 
@@ -44,7 +51,8 @@ export default function HeroSection() {
         />
         {!videoFailed && (
           <video
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            // Mobile: keeps both faces in the upper-middle of the narrow crop.
+            className="absolute inset-0 h-full w-full object-cover object-center max-md:object-[52%_30%]"
             src={HERO_VIDEO_SRC}
             autoPlay
             muted
@@ -70,12 +78,20 @@ export default function HeroSection() {
             backgroundImage: `linear-gradient(to right, ${charcoal(OVERLAY_LEFT_OPACITY)} 0%, ${charcoal(0)} ${OVERLAY_LEFT_FADE_END})`,
           }}
         />
-        {/* Overlay 3: bottom-up, behind stats and buttons */}
+        {/* Overlay 3: bottom-up, behind stats and buttons (md and up) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute inset-0 max-md:hidden"
           style={{
             backgroundImage: `linear-gradient(to bottom, ${charcoal(0)} 0%, ${charcoal(OVERLAY_BOTTOM_OPACITY)} 100%)`,
+          }}
+        />
+        {/* Overlay 3, mobile: stronger, anchored to the first screen */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 md:hidden"
+          style={{
+            backgroundImage: `linear-gradient(to bottom, ${charcoal(0)} ${OVERLAY_BOTTOM_FADE_END_MOBILE}, ${charcoal(OVERLAY_BOTTOM_OPACITY_MOBILE)} 100svh)`,
           }}
         />
       </div>
@@ -84,9 +100,16 @@ export default function HeroSection() {
         <div className="grid w-full gap-8 sm:gap-10 lg:grid-cols-[minmax(0,680px)_1fr] lg:items-end xl:gap-12">
           {/* Centered on mobile, left-aligned over the darker side on desktop. */}
           <div className="mx-auto max-w-[21rem] text-center sm:max-w-[42rem] lg:mx-0 lg:text-left">
+            {/* Mobile: headline, subtext and buttons fill the first screen,
+                pinned to its bottom (min-height = 100svh minus the shell's top
+                padding), so the top of the frame and the couple stay clear.
+                The membership card follows just below the fold. Plain block
+                wrapper from md up, so desktop layout is unaffected. */}
+            <div className="max-md:flex max-md:min-h-[calc(100svh-6rem)] max-md:flex-col max-md:justify-end max-md:pb-10 sm:max-md:min-h-[calc(100svh-8rem)]">
             {/* Sized to read confident rather than shouting, and held to a
-                single line from lg upward. */}
-            <h1 className="lux-heading [text-shadow:0_2px_24px_rgba(44,36,32,0.45)] mx-auto max-w-[18rem] text-5xl text-monetura-cream sm:max-w-[32rem] lg:mx-0 lg:max-w-none lg:whitespace-nowrap lg:text-6xl">
+                single line from lg upward. 20% smaller on mobile so it sits
+                on two lines below the couple. */}
+            <h1 className="lux-heading [text-shadow:0_2px_24px_rgba(44,36,32,0.45)] mx-auto max-w-[18rem] text-5xl max-md:text-[2.4rem] text-monetura-cream sm:max-w-[32rem] lg:mx-0 lg:max-w-none lg:whitespace-nowrap lg:text-6xl">
               Find your way{" "}
               <span className="text-monetura-champagne">back.</span>
             </h1>
@@ -113,6 +136,7 @@ export default function HeroSection() {
               >
                 Discover Monetura
               </Link>
+            </div>
             </div>
 
             <div className="lux-panel mx-auto mt-5 max-w-[20rem] rounded-[1.3rem] p-4 lg:hidden">
