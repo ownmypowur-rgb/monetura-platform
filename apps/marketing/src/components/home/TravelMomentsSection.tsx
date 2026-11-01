@@ -82,7 +82,7 @@ export default function TravelMomentsSection() {
             compound — long after you've come home.
           </p>
           <a
-            href="/founders/apply"
+            href="/membership/apply"
             className="mt-8 inline-flex min-h-[52px] items-center justify-center rounded-lg border border-monetura-champagne bg-transparent px-6 py-4 text-center text-[10px] uppercase tracking-[0.18em] text-monetura-champagne transition-all duration-300 hover:bg-monetura-champagne hover:text-monetura-charcoal sm:mt-10 sm:px-8 sm:text-xs sm:tracking-[0.24em]"
           >
             Start turning your experiences into income

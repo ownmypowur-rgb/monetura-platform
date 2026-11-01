@@ -153,7 +153,7 @@ export default function TiersSection() {
                 </ul>
 
                 <a
-                  href="/founders/apply"
+                  href="/membership/apply"
                   className={`min-h-[52px] px-4 py-4 text-center text-[10px] uppercase tracking-[0.12em] font-garet transition-all duration-300 sm:text-xs sm:tracking-[0.15em] ${
                     highlight
                       ? "border border-monetura-champagne bg-monetura-champagne text-monetura-charcoal hover:bg-transparent hover:text-monetura-champagne"

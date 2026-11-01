@@ -99,7 +99,7 @@ function WebinarForm() {
         throw new Error(data.error ?? "Something went wrong. Please try again.");
       }
 
-      router.push("/founders/apply/success");
+      router.push("/membership/apply/success");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setError(message);
@@ -112,7 +112,7 @@ function WebinarForm() {
       <div className="max-w-3xl mx-auto px-6 lg:px-12 pt-40 pb-24">
 
         {/* Header */}
-        <p className="editorial-label">Founder Webinar</p>
+        <p className="editorial-label">Founding Member Webinar</p>
         <h1 className="lux-heading text-3xl md:text-5xl text-monetura-cream mb-6">
           Reserve Your Spot.
         </h1>
@@ -159,7 +159,7 @@ function WebinarForm() {
                   ))}
                 </ul>
                 <Link
-                  href="/founders"
+                  href="/membership"
                   className="btn-secondary text-[10px] py-2.5 px-4 self-start"
                 >
                   Learn More

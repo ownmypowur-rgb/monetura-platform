@@ -77,8 +77,8 @@ export default function StoryPage() {
             </div>
 
             <div className="mt-12 flex flex-col sm:flex-row gap-4 sm:gap-6 items-center justify-center">
-              <Link href="/founders/apply" className="btn-primary">
-                Apply for Founder Access
+              <Link href="/membership/apply" className="btn-primary">
+                Apply for Founding Membership
               </Link>
               <Link
                 href="/how-it-works"

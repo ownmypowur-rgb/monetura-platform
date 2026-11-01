@@ -125,7 +125,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         subject: `New Webinar Request — ${name} — Interested in ${tierDef?.name ?? tier}`,
         html: brandedEmailHtml({
           heading: "New Founder Webinar Request",
-          paragraphs: ["A new application came in through monetura.com/founders/apply."],
+          paragraphs: ["A new application came in through monetura.com/membership/apply."],
           panelLines: [
             `Name: ${name}`,
             `Email: ${email}`,
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             `Tier Interest: ${tierLabel}`,
             `Referral Source: ${referral ?? "—"}`,
           ],
-          footerNote: "Submitted via monetura.com/founders/apply",
+          footerNote: "Submitted via monetura.com/membership/apply",
         }),
       });
     } catch (err) {

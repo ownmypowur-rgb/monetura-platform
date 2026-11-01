@@ -144,7 +144,7 @@ export default function TierSelector() {
               </div>
 
               <Link
-                href={`/founders/apply?tier=${activeTier.id}`}
+                href={`/membership/apply?tier=${activeTier.id}`}
                 className="btn-champagne"
               >
                 Apply as {activeTier.name}

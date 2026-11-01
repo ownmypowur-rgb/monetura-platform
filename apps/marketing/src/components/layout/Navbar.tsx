@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const links = [
   { href: "/story", label: "Our Story" },
   { href: "/how-it-works", label: "How It Works" },
-  { href: "/founders", label: "Founders" },
+  { href: "/membership", label: "Membership" },
 ];
 
 export default function Navbar() {
@@ -58,7 +58,7 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link href="/founders/apply" className="btn-primary px-6 py-3 text-[10px]">
+          <Link href="/membership/apply" className="btn-primary px-6 py-3 text-[10px]">
             Apply Now
           </Link>
         </div>
@@ -107,11 +107,11 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/founders/apply"
+            href="/membership/apply"
             onClick={() => setMenuOpen(false)}
             className="btn-primary mt-2 w-full"
           >
-            Apply for Founder Access
+            Apply for Founding Membership
           </Link>
         </div>
       </div>

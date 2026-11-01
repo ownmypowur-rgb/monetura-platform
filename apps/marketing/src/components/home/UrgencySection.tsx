@@ -26,7 +26,7 @@ export default async function UrgencySection() {
             <h2 className="font-garet font-bold text-2xl md:text-3xl lg:text-4xl text-white leading-[1.2]">
               {spotsRemaining !== null ? (
                 <>
-                  {spotsRemaining} of {TOTAL_FOUNDER_SPOTS} founder
+                  {spotsRemaining} of {TOTAL_FOUNDER_SPOTS} founding member
                   <br />
                   spots remaining.
                 </>
@@ -63,10 +63,10 @@ export default async function UrgencySection() {
             )}
 
             <a
-              href="/founders/apply"
+              href="/membership/apply"
               className="inline-block border border-white text-white text-xs tracking-[0.2em] uppercase font-garet px-10 py-4 hover:bg-white hover:text-monetura-terracotta transition-all duration-300"
             >
-              Apply for Founder Access
+              Apply for Founding Membership
             </a>
           </div>
         </div>

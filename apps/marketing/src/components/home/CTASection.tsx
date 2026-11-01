@@ -25,11 +25,11 @@ export default function CTASection() {
         </p>
 
         <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">
-          <a href="/founders/apply" className="btn-champagne">
-            Apply for Founder Access
+          <a href="/membership/apply" className="btn-champagne">
+            Apply for Founding Membership
           </a>
           <a
-            href="/founders"
+            href="/membership"
             className="text-xs uppercase tracking-[0.2em] text-monetura-cream/50 transition-colors duration-200 hover:text-monetura-cream"
           >
             View Founder Benefits →

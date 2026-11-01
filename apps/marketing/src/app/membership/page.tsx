@@ -8,9 +8,9 @@ import { TOTAL_FOUNDER_SPOTS } from "@monetura/config/src/tiers";
 export const revalidate = 600;
 
 export const metadata: Metadata = {
-  title: "Founder Access — Monetura",
+  title: "Founding Membership — Monetura",
   description:
-    "Explore the Monetura founder tiers. 200 spots. Canada only. One payment. Lifetime access.",
+    "Explore the Monetura membership tiers. 200 spots. Canada only. One payment. Lifetime access.",
 };
 
 export default async function FoundersPage() {
@@ -26,7 +26,7 @@ export default async function FoundersPage() {
       <section className="pt-40 pb-24 bg-monetura-charcoal">
         <div className="max-w-6xl mx-auto px-6 lg:px-12">
           <p className="text-monetura-champagne text-xs tracking-[0.3em] uppercase font-garet mb-8">
-            Founder Access
+            Founding Membership
           </p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
             <h1 className="font-garet font-bold text-4xl md:text-5xl lg:text-6xl text-monetura-cream leading-[1.1]">
@@ -42,8 +42,8 @@ export default async function FoundersPage() {
                 only, lifetime access. Applications are reviewed personally.
                 There is no open checkout.
               </p>
-              <Link href="/founders/apply" className="btn-champagne inline-block">
-                Apply for Founder Access
+              <Link href="/membership/apply" className="btn-champagne inline-block">
+                Apply for Founding Membership
               </Link>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default async function FoundersPage() {
               ? `${spotsRemaining} spots remaining.`
               : `${TOTAL_FOUNDER_SPOTS} seats. Reviewed personally.`}
           </h2>
-          <Link href="/founders/apply" className="btn-champagne">
+          <Link href="/membership/apply" className="btn-champagne">
             Begin Your Application
           </Link>
         </div>

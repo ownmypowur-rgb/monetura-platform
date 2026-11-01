@@ -59,8 +59,8 @@ export default function SolutionSection() {
         </div>
 
         <div className="mt-12 border-t border-monetura-sand/10 pt-12 text-center sm:mt-16 sm:pt-16">
-          <a href="/founders/apply" className="btn-champagne">
-            Apply for Founder Access
+          <a href="/membership/apply" className="btn-champagne">
+            Apply for Founding Membership
           </a>
         </div>
       </div>

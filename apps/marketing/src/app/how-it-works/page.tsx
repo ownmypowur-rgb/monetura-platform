@@ -147,7 +147,7 @@ export default function HowItWorksPage() {
           <h2 className="font-garet font-bold text-3xl text-monetura-cream mb-8">
             Ready to apply?
           </h2>
-          <Link href="/founders/apply" className="btn-champagne">
+          <Link href="/membership/apply" className="btn-champagne">
             Begin Your Application
           </Link>
         </div>

@@ -3,8 +3,8 @@ import Link from "next/link";
 const links = [
   { href: "/story", label: "Our Story" },
   { href: "/how-it-works", label: "How It Works" },
-  { href: "/founders", label: "Founders Club" },
-  { href: "/founders/apply", label: "Apply for Access" },
+  { href: "/membership", label: "Membership" },
+  { href: "/membership/apply", label: "Apply for Access" },
 ];
 
 export default function Footer() {
