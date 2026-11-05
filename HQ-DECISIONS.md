@@ -9,7 +9,7 @@ Notes from the HQ build. The existing `DECISIONS.md` was not modified.
 1. **`apps/corporate` does not build, and didn't before this work.** `next build` fails with `Configuring Next.js via 'next.config.ts' is not supported`. The file dates from April 2026, Next 14 rejects it, and `git diff 7d3dbec HEAD -- apps/corporate` is empty, so this build didn't cause it. I left it alone because the brief says not to change existing apps. The fix is probably renaming it to `next.config.mjs`. `moneturamedia.com` is a separate Vercel project (`monetura-media`, last deployed 81 days ago), so check whether it deploys from this folder at all. **Checklist item 9 is therefore only partly met:** `apps/marketing` and `apps/platform` build; `apps/corporate` fails exactly as it did before.
 2. **Approvals don't trigger anything yet.** Approve and Reject are recorded in the database, but nothing is published or sent. See "Approvals downstream stub".
 3. **No real agents report to the feed.** Every event is demo data until an agent writes `is_demo = false` rows.
-4. **`docs/hq-concept-brief.pdf` isn't committed.** It's your file, it's untracked, and it's 14 MB with the "Montura" misspelling throughout, so I left that decision to you.
+4. **`docs/hq-concept-brief.pdf` isn't committed.** It's your file, it's untracked, and it's 14 MB and misspells the brand throughout, so I left that decision to you.
 
 ## Darryl to do later
 
