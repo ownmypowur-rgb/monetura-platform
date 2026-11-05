@@ -47,6 +47,92 @@ async function main() {
   await page.goto(`${BASE}/?quality=medium&debug=1`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => !document.querySelector('[role="status"][aria-live="polite"].absolute'), undefined, { timeout: 180_000 });
 
+  // Camera: orbit, zoom, limits, and an exact return.
+  const cam = () =>
+    page.evaluate(() => {
+      const c = (window as unknown as { __hqCamera: { position: { x: number; y: number; z: number } } }).__hqCamera;
+      return { x: c.position.x, y: c.position.y, z: c.position.z };
+    });
+  const distanceBetween = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) =>
+    Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+  await wait(1500);
+  const home = await cam();
+
+  // Wheel over a nameplate must reach the camera too.
+  const plate = page.getByRole("button", { name: /^Research Centre, Destinations/ });
+  const box = await plate.boundingBox({ timeout: 5000 });
+  if (box) {
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    for (let i = 0; i < 3; i++) {
+      await page.mouse.wheel(0, -200);
+      await wait(100);
+    }
+    await wait(1500);
+    check("wheel over a nameplate still zooms", distanceBetween(home, await cam()) > 3);
+  } else {
+    check("wheel over a nameplate still zooms", false, "plate not on screen");
+  }
+  await page.getByRole("button", { name: "Island Overview" }).first().click();
+  await wait(6000);
+
+  await page.mouse.move(1000, 640);
+  for (let i = 0; i < 5; i++) {
+    await page.mouse.wheel(0, -300);
+    await wait(100);
+  }
+  await wait(2500);
+  const zoomed = await cam();
+  check("mouse wheel zooms in, and not wildly", distanceBetween(home, zoomed) > 20 && distanceBetween(home, zoomed) < 300, `moved ${distanceBetween(home, zoomed).toFixed(0)} units`);
+
+  // Zoom right in: the camera must stay above ground and outside closed buildings.
+  await page.mouse.move(1000, 640);
+  let lowest = Infinity;
+  for (let i = 0; i < 40; i++) {
+    await page.mouse.wheel(0, -500);
+    await wait(40);
+    lowest = Math.min(lowest, (await cam()).y);
+  }
+  await wait(1500);
+  lowest = Math.min(lowest, (await cam()).y);
+  check("zooming in stays above the ground, sea and canopy", lowest > 20, `lowest y ${lowest.toFixed(1)}`);
+
+  // Orbit down hard: the camera must not go under.
+  await page.mouse.move(800, 300);
+  await page.mouse.down();
+  await page.mouse.move(800, 860, { steps: 12 });
+  await page.mouse.up();
+  await wait(1800);
+  const orbited = await cam();
+  check("dragging orbits the camera", distanceBetween(zoomed, orbited) > 1);
+  check("orbiting low stays above the ground and sea", orbited.y > 1, `y ${orbited.y.toFixed(1)}`);
+
+  // Zoom right out: clamped.
+  await page.getByRole("button", { name: "Island Overview" }).first().click();
+  await wait(5000);
+  await page.mouse.move(1000, 640);
+  for (let i = 0; i < 40; i++) {
+    await page.mouse.wheel(0, 600);
+    await wait(30);
+  }
+  await wait(2500);
+  const far = await cam();
+  check("zoom out is clamped", Math.hypot(far.x, far.y, far.z) < 900, `${Math.hypot(far.x, far.y, far.z).toFixed(0)} units from centre`);
+
+  // Island Overview returns to the same pose, exactly.
+  await page.getByRole("button", { name: "Island Overview" }).first().click();
+  await wait(7000);
+  const back = await cam();
+  check("Island Overview restores the original camera", distanceBetween(home, back) < 1, `off by ${distanceBetween(home, back).toFixed(2)} units`);
+
+  // Into a building and back: no spatial jump on return.
+  await page.getByRole("navigation", { name: "Departments" }).getByRole("button", { name: /^Story Lab/ }).click();
+  await wait(6000);
+  const focused = await cam();
+  check("focusing flies the camera to the building", distanceBetween(home, focused) > 40);
+  await page.keyboard.press("Escape");
+  await wait(7000);
+  check("returning restores the camera", distanceBetween(home, await cam()) < 1);
+
   // Feed.
   const feed = await ownerFeed(page);
   check("owner feed returns events", feed.events.length > 0, `${feed.events.length} events, source ${feed.source}`);

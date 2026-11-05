@@ -896,7 +896,15 @@ export function Nameplates() {
   const world = useHQ((s) => s.world);
   if (!world) return null;
   return (
-    <div className="absolute inset-0 overflow-hidden hud-pass" aria-label="Buildings on the island" role="group">
+    <div
+      className="absolute inset-0 overflow-hidden hud-pass"
+      aria-label="Buildings on the island"
+      role="group"
+      onWheel={(e) => {
+        // Plates sit above the canvas; hand the wheel to the camera underneath.
+        document.querySelector(".hq-canvas canvas")?.dispatchEvent(new WheelEvent("wheel", e.nativeEvent));
+      }}
+    >
       {world.divisions.map((d) => (
         <Plate key={d.id} division={d} />
       ))}

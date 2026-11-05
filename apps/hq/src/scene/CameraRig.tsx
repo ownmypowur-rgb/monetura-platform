@@ -18,7 +18,7 @@ type Pose = [number, number, number, number, number, number];
 
 /** The authored default: framed like the master render. Pulls back on tall screens. */
 export function overviewPose(aspect: number): Pose {
-  const k = aspect < 1.2 ? (1.35 / Math.max(0.45, aspect)) * 0.82 : 1;
+  const k = aspect < 1.2 ? (1.35 / Math.max(0.45, aspect)) * 0.92 : 1;
   return [6, 196 * k, 292 * k, 6, 0, -36];
 }
 
@@ -97,6 +97,8 @@ export function CameraRig({ world, divisions }: { world: World; divisions: Clien
     c.smoothTime = 0.85;
     c.draggingSmoothTime = 0.14;
     c.dollyToCursor = true;
+    c.dollySpeed = 0.35;
+    c.truckSpeed = 1.2;
     c.setBoundary(new THREE.Box3(new THREE.Vector3(-300, -2, -320), new THREE.Vector3(300, 110, 200)));
   }, [aspect]);
 
@@ -160,7 +162,9 @@ export function CameraRig({ world, divisions }: { world: World; divisions: Clien
     // Hard floors for the camera: terrain, sea, and any closed building.
     const pos = camera.position;
     const openId = useHQ.getState().roofOpenId;
-    const ground = Math.max(world.sample(pos.x, pos.z), 0) + 5;
+    // Free flight stays above the palm canopy; inside a building focus it may come lower.
+    const clearance = useHQ.getState().selectedDivisionId ? 8 : 26;
+    const ground = Math.max(world.sample(pos.x, pos.z), 0) + clearance;
     let minY = ground;
     for (const col of colliders) {
       const d = Math.hypot(pos.x - col.x, pos.z - col.z);
@@ -181,7 +185,7 @@ export function CameraRig({ world, divisions }: { world: World; divisions: Clien
 
   const initial = useMemo(() => overviewPose(aspect), [aspect]);
   useEffect(() => {
-    exposeDebug();
+    exposeDebug(camera);
     const c = ref.current;
     if (c && !useHQ.getState().selectedDivisionId) void c.setLookAt(...(captureCamera() ?? initial), false);
     // Only on mount.

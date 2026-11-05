@@ -327,7 +327,7 @@ export function Interior({ division, floorY }: { division: ClientDivision; floor
       ))}
       {layout.mTable ? <MTable x={layout.mTable.x} z={layout.mTable.z} /> : null}
       {division.status !== "planned" ? (
-        <pointLight position={[layout.light.x, layout.light.y, layout.light.z]} distance={layout.light.distance} intensity={34} decay={1.1} color="#ffd6a0" />
+        <pointLight position={[layout.light.x, layout.light.y, layout.light.z]} distance={layout.light.distance} intensity={52} decay={1.1} color="#ffd6a0" />
       ) : null}
       {onFloor.map((agent) => {
         const target = assignments.get(agent.id);

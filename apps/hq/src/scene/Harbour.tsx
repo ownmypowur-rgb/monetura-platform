@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { clock, useHQ, type Pulse } from "../store";
 import { HELIPAD, MARINA, WATERFALLS, makeRandom, type World } from "../world/world";
@@ -231,7 +231,7 @@ function roughStone(): THREE.BufferGeometry {
   return g;
 }
 
-export function Waterfalls({ world }: { world: World }) {
+export function Waterfalls() {
   const data = useMemo(() => {
     const material = new THREE.ShaderMaterial({
       vertexShader: FALL_VERT,
@@ -293,7 +293,7 @@ export function Waterfalls({ world }: { world: World }) {
       }
     }
     return { material, geometries, pools, rockGeo: rocks.build() };
-  }, [world]);
+  }, []);
 
   const mist = useMemo(softGlowTexture, []);
   return (
@@ -333,6 +333,7 @@ function PulseDot({ pulse, world }: { pulse: Pulse; world: World }) {
     return out;
   }, [route]);
   const group = useRef<THREE.Group>(null);
+  const { camera } = useThree();
   const glow = useMemo(softGlowTexture, []);
   const removePulse = useHQ((s) => s.removePulse);
   const packet = pulse.kind === "packet";
@@ -364,10 +365,13 @@ function PulseDot({ pulse, world }: { pulse: Pulse; world: World }) {
       out.position.set(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t + (packet ? 2.4 : 1.2), a.z + (b.z - a.z) * t);
     };
     place(eased * total, g);
+    // Holds a readable size at island zoom without ballooning up close.
+    const zoom = Math.max(1, camera.position.distanceTo(g.position) / (packet ? 95 : 130));
+    g.scale.setScalar(zoom);
     trail.current.forEach((s, i) => {
       const back = (i + 1) * (packet ? 2.2 : 1.7);
       place(Math.max(0, eased * total - back), s);
-      s.position.sub(g.position);
+      s.position.sub(g.position).divideScalar(zoom);
     });
     if (raw >= 1) removePulse(pulse.id);
   });
@@ -375,12 +379,12 @@ function PulseDot({ pulse, world }: { pulse: Pulse; world: World }) {
   const color = packet ? new THREE.Color(3.4, 2.5, 1.05) : new THREE.Color(0.8, 3, 2.8);
   return (
     <group ref={group}>
-      <mesh raycast={() => undefined}>
+      <mesh raycast={() => undefined} renderOrder={20}>
         <sphereGeometry args={[packet ? 1 : 0.5, 14, 12]} />
-        <meshBasicMaterial color={color} toneMapped={false} />
+        <meshBasicMaterial color={color} toneMapped={false} depthTest={false} transparent />
       </mesh>
-      <sprite scale={packet ? [8, 8, 1] : [3.4, 3.4, 1]} raycast={() => undefined}>
-        <spriteMaterial map={glow} color={color} transparent opacity={0.72} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} />
+      <sprite scale={packet ? [8, 8, 1] : [3.4, 3.4, 1]} raycast={() => undefined} renderOrder={19}>
+        <spriteMaterial map={glow} color={color} transparent opacity={0.8} depthWrite={false} depthTest={false} toneMapped={false} blending={THREE.AdditiveBlending} />
       </sprite>
       {Array.from({ length: trailCount }).map((_, i) => (
         <sprite
@@ -391,7 +395,7 @@ function PulseDot({ pulse, world }: { pulse: Pulse; world: World }) {
           scale={packet ? [4.4 - i * 0.42, 4.4 - i * 0.42, 1] : [1.9 - i * 0.28, 1.9 - i * 0.28, 1]}
           raycast={() => undefined}
         >
-          <spriteMaterial map={glow} color={color} transparent opacity={0.46 - i * 0.05} depthWrite={false} toneMapped={false} blending={THREE.AdditiveBlending} />
+          <spriteMaterial map={glow} color={color} transparent opacity={0.46 - i * 0.05} depthWrite={false} depthTest={false} toneMapped={false} blending={THREE.AdditiveBlending} />
         </sprite>
       ))}
     </group>

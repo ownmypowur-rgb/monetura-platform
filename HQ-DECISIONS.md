@@ -1,6 +1,6 @@
-# Monetura HQ: decisions log
+**Live URL: https://monetura-hq.vercel.app** (public tour at [/tour](https://monetura-hq.vercel.app/tour); `/` needs the owner password)
 
-**Live URL:** pending first deployment
+# Monetura HQ: decisions log
 
 Notes from the HQ build. The existing `DECISIONS.md` was not modified.
 
@@ -128,6 +128,12 @@ Compared against the master render, extracted from page 1 of the PDF (`docs/hq-m
 - **Differences:** hollow, ribbed palm fronds; waterfalls hidden and without a real drop; green-ball planters; daytime rather than golden-hour light; phone view crowded with nameplates.
 - **Fixed:** solid serrated frond texture, darker at the base; carved lips and plunge pools with planting kept clear, now visible at the island's centre; leafy planters; lower and warmer sun with weaker fill; simplified phone nameplates.
 
+### Pass 4: checking every required view by eye
+- **Differences:** the campus view screenshot was identical to the overview; packet invisible at island zoom; too many idle staff; selected plate clipped under the top bar; pendant ring hiding "Deliver" on the sign; phone framing slightly cut off.
+- **Causes found:** nameplates swallowed wheel events, so scrolling over one didn't zoom. A real bug, and it meant orbit and zoom had never been tested at all.
+- **Then:** fixing the wheel exposed zoom that was far too fast, plunging under the palms, with plates stacking against the top bar. Slowed the dolly, kept free flight above the canopy, and off-screen plates now hide.
+- **Fixed:** wheel forwarding from plates; camera tests added to `verify.ts`; packet draws through foliage and scales with distance; demo generator keeps about three in four staff busy; plate clamped below the bar; pendant and alcove moved clear of the sign; wider phone framing.
+
 ### Remaining gap, honestly
 The composition, palette, layout and HUD match the render's direction. The render's richness doesn't: it's a painting-level image with every building glowing and dense modelled detail. This is a real-time scene built from primitives, closer to a polished stylized game than to the render. See the improvements list in `HQ-README.md`.
 
@@ -135,6 +141,11 @@ The composition, palette, layout and HUD match the render's direction. The rende
 
 Run against a production build (`next start`):
 - `scripts/check-public-bundle.ts`: **PASS**. 32 documents (the `/tour` page, every static JS chunk, the public feed) against 209 private strings from the registry. `/` redirects to login. Owner feed and approvals return 401 without a session.
-- `scripts/verify.ts`: login, feed, approval round trip, all 15 roofs, Escape, 12 staffed figures, walking, agent card, four nav panels, tour with 7 captions, unattended tour completion, no page errors.
+- `scripts/verify.ts`: **66 checks pass.** Login; wheel zoom, including over plates; camera stays above ground and sea when zooming and orbiting; zoom-out clamped; returning restores the camera to within 0.00 units; feed from the database; approval round trip, including refusing a second decision; all 15 roofs and Escape; 12 staffed figures; walking; agent card; four nav panels; tour with 7 captions; unattended tour completion (58s); no page errors.
+- The leak check also passes against the live deployment.
 
-**Not tested:** a real phone (only a phone-sized viewport, on this laptop's GPU); frame rates on other hardware; other browsers (Chromium only); a screen reader.
+**Roofs:** `verify.ts` confirms the roof state changes for all 15 buildings, and I checked the cutaway picture of all 15 by eye. Screenshots are in `apps/hq/screenshots/`.
+
+**Not tested:** a real phone (only a phone-sized viewport, on this laptop's GPU); touch gestures; frame rates, on any hardware; other browsers (Chromium only); a screen reader; "no clipping through buildings" beyond the camera height check above.
+
+**Build status (real exit codes):** `apps/hq` typecheck, lint and build pass. `apps/marketing` and `apps/platform` build. `apps/corporate` fails, as it did before this work.

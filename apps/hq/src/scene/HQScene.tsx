@@ -99,8 +99,11 @@ function PlateProjector({ divisions }: { divisions: ClientDivision[] }) {
       }
       placed.push({ x: a.x, y, w, h });
       a.offset += (y - a.y - a.offset) * 0.14;
-      const screenY = a.y + a.offset;
-      const onScreen = a.visible && a.x > -80 && a.x < size.width + 80 && screenY > -30 && screenY < size.height + 30;
+      // Only the selected plate holds on below the top bar; others leave with their building.
+      const raw = a.y + a.offset;
+      const selected = useHQ.getState().selectedDivisionId === a.id;
+      const screenY = selected ? Math.max(raw, 60 + h) : raw;
+      const onScreen = a.visible && a.x > -80 && a.x < size.width + 80 && screenY > 60 + h * 0.8 && screenY < size.height + 30;
       el.style.transform = `translate3d(${a.x.toFixed(1)}px, ${screenY.toFixed(1)}px, 0) translate(-50%, -100%)`;
       el.style.visibility = onScreen ? "visible" : "hidden";
     }
@@ -163,7 +166,7 @@ function World3D({ world, divisions, tier }: { world: World; divisions: ClientDi
       <Ocean world={world} />
       <Paths world={world} />
       <Foliage world={world} palms={q.palms} bushes={q.bushes} rocks={q.rocks} shadows={q.shadows} />
-      <Waterfalls world={world} />
+      <Waterfalls />
       <Harbour world={world} shadows={q.shadows} />
       <Helipad shadows={q.shadows} />
       {divisions.map((d) => (

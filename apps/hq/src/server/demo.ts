@@ -123,12 +123,14 @@ export function nextDemoEvents(recent: readonly EventRow[], rand: () => number =
   const movable = active.filter((r) => r.eventType !== "needs_approval");
   const pendingCount = active.length - movable.length;
 
-  const shouldStart = free.length > 0 && (movable.length < 6 || rand() < 0.12) && movable.length < 9;
-  if (shouldStart && (movable.length === 0 || rand() < 0.45)) {
+  const starts: NewEvent[] = [];
+  // Roughly three in four staff busy, so the floor reads as a working team.
+  const target = Math.ceil(staff.length * 0.72);
+  if (free.length > 0 && movable.length < target && (movable.length === 0 || rand() < 0.7)) {
     const who = pick(free, rand);
     const template = pick(TASKS[who.agentId] ?? [], rand);
     const taskId = `demo-${who.agentId}-${Date.now().toString(36)}-${Math.floor(rand() * 1e6).toString(36)}`;
-    return [
+    starts.push(
       demoEvent({
         agentId: who.agentId,
         divisionId: who.divisionId,
@@ -139,10 +141,10 @@ export function nextDemoEvents(recent: readonly EventRow[], rand: () => number =
         progress: 5 + Math.floor(rand() * 10),
         payloadJson: { stage: template.stage, summary: `${ORCHESTRATOR_NAME} assigned this task.` },
       }),
-    ];
+    );
   }
 
-  if (movable.length === 0) return [];
+  if (movable.length === 0) return starts;
   const row = pick(movable, rand);
   const agentId = row.agentId as string;
   const template = templateFor(agentId, row.taskTitle);
@@ -156,20 +158,21 @@ export function nextDemoEvents(recent: readonly EventRow[], rand: () => number =
 
   if (row.eventType === "approved" || row.eventType === "rejected") {
     if (row.eventType === "rejected") {
-      return [demoEvent({ ...base, eventType: "progress", status: "working", progress: 55, payloadJson: { stage, summary: "Rework after review." } })];
+      return [...starts, demoEvent({ ...base, eventType: "progress", status: "working", progress: 55, payloadJson: { stage, summary: "Rework after review." } })];
     }
-    return finishTask(base, template, stage);
+    return [...starts, ...finishTask(base, template, stage)];
   }
 
   const progress = Math.min(100, (row.progress ?? 0) + 9 + Math.floor(rand() * 22));
 
   if (row.eventType === "blocked") {
-    return [demoEvent({ ...base, eventType: "progress", status: "working", progress, payloadJson: { stage, summary: "Blocker cleared." } })];
+    return [...starts, demoEvent({ ...base, eventType: "progress", status: "working", progress, payloadJson: { stage, summary: "Blocker cleared." } })];
   }
 
   if (progress >= 100) {
     if (template?.needsApproval && pendingCount < 3) {
       return [
+        ...starts,
         demoEvent({
           ...base,
           eventType: "needs_approval",
@@ -180,11 +183,12 @@ export function nextDemoEvents(recent: readonly EventRow[], rand: () => number =
         }),
       ];
     }
-    return finishTask(base, template, stage);
+    return [...starts, ...finishTask(base, template, stage)];
   }
 
   if (rand() < 0.05) {
     return [
+      ...starts,
       demoEvent({
         ...base,
         eventType: "blocked",
@@ -197,6 +201,7 @@ export function nextDemoEvents(recent: readonly EventRow[], rand: () => number =
   }
 
   return [
+    ...starts,
     demoEvent({
       ...base,
       eventType: "progress",

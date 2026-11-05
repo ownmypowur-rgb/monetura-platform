@@ -71,15 +71,15 @@ async function main() {
   if (want("01-island-overview")) await shot("01-island-overview");
 
   if (want("02-campus-view")) {
-    await page.mouse.move(836, 470);
-    for (let i = 0; i < 6; i++) {
-      await page.mouse.wheel(0, -260);
+    await page.mouse.move(1000, 640);
+    for (let i = 0; i < 4; i++) {
+      await page.mouse.wheel(0, -200);
       await wait(120);
     }
     await wait(2200);
     await shot("02-campus-view");
     await page.getByRole("button", { name: "Island Overview" }).first().click();
-    await wait(2500);
+    await wait(5000);
   }
 
   const focus = async (name: RegExp) => {
@@ -98,7 +98,7 @@ async function main() {
       await wait(600);
     }
     await page.keyboard.press("Escape");
-    await wait(2600);
+    await wait(6000);
     if (want("08-roof-restored")) await shot("08-roof-restored");
   }
 
@@ -114,6 +114,15 @@ async function main() {
     ["11-publishing-hub", /^Publishing Hub/],
     ["12-it-integrations", /^IT & Integrations/],
     ["13-marketplace", /^Marketplace/],
+    ["14-partnerships-hub", /^Partnerships Hub/],
+    ["15-strategy-growth", /^Strategy & Growth/],
+    ["16-story-lab", /^Story Lab/],
+    ["17-client-success", /^Client Success/],
+    ["18-trip-planning", /^Trip Planning/],
+    ["19-finance", /^Finance/],
+    ["20-agent-operations", /^Agent Operations/],
+    ["21-legal-compliance", /^Legal/],
+    ["22-business-intelligence", /^Business Intelligence/],
   ] as const) {
     if (!want(file)) continue;
     await focus(re);

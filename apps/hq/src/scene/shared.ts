@@ -60,8 +60,10 @@ export const agentPositions = new Map<string, THREE.Vector3>();
 export const shadowState = { dirtyFrames: 8 };
 
 /** Characters' live positions, readable by the verification script with ?debug=1. */
-export function exposeDebug(): void {
+export function exposeDebug(camera: THREE.Camera): void {
   if (typeof window === "undefined") return;
   if (new URLSearchParams(window.location.search).get("debug") !== "1") return;
-  (window as unknown as { __hqAgentPositions: typeof agentPositions }).__hqAgentPositions = agentPositions;
+  const w = window as unknown as { __hqAgentPositions: typeof agentPositions; __hqCamera: THREE.Camera };
+  w.__hqAgentPositions = agentPositions;
+  w.__hqCamera = camera;
 }

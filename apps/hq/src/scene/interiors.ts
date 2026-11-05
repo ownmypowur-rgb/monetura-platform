@@ -213,7 +213,7 @@ function studioInterior(): InteriorLayout {
   b.cyl(5.4, 5.4, 0.06, 20, 0.04, 9.5, "#bda67f", 36);
 
   // The large display: "CONTENT STUDIO · Create · Edit · Enhance · Deliver".
-  backWallBoard(screens, b, studioSignTexture(), -7, 6.65, -17.45, 22.5, 6.6, 0);
+  backWallBoard(screens, b, studioSignTexture(), -8.5, 6.65, -17.45, 22.5, 6.6, 0);
   // Angled left wall: a big travel screen.
   backWallBoard(screens, b, travelTexture(0), -25.3, 5.6, -11, 12, 6.2, 0.884);
   // Photo wall: a grid of travel images, back right.
@@ -223,10 +223,10 @@ function studioInterior(): InteriorLayout {
     }
   }
   // Gold ring pendant over the stand-up alcove, held by slender rods.
-  lit.torus(4.2, 0.2, 1, 6.9, -11.5, "#ffc56b");
-  lit.torus(3, 0.1, 1, 7.5, -11.5, "#ffd893");
-  b.cyl(0.05, 0.05, 6.9, -3.2, 3.4, -11.5, "#b08a5e", 6);
-  b.cyl(0.05, 0.05, 6.9, 5.2, 3.4, -11.5, "#b08a5e", 6);
+  lit.torus(2.9, 0.16, 5, 5.8, -9.4, "#ffc56b");
+  lit.torus(2, 0.08, 5, 6.3, -9.4, "#ffd893");
+  b.cyl(0.05, 0.05, 5.8, 2.1, 2.9, -9.4, "#b08a5e", 6);
+  b.cyl(0.05, 0.05, 5.8, 7.9, 2.9, -9.4, "#b08a5e", 6);
 
   // Twelve desks, indexed by each agent's homeDesk in the registry.
   const desks: Slot[] = [
@@ -284,18 +284,18 @@ function studioInterior(): InteriorLayout {
   const meeting: Slot[] = [];
   roundTable(b, 20, 9.5, 3, 6, meeting);
   // Stand-up review alcove, back centre.
-  b.cyl(1.15, 1.15, 0.12, 1, 2.2, -12.2, TABLE, 20);
-  b.cyl(0.1, 0.16, 2.2, 1, 1.1, -12.2, "#8b6e52", 8);
+  b.cyl(1.15, 1.15, 0.12, 5, 2.2, -9.4, TABLE, 20);
+  b.cyl(0.1, 0.16, 2.2, 5, 1.1, -9.4, "#8b6e52", 8);
   meeting.push(
-    { x: -0.6, z: -10.9, ry: 2.3, standing: true },
-    { x: 2.7, z: -11, ry: -2.1, standing: true },
-    { x: 1.4, z: -14, ry: -0.2, standing: true },
+    { x: 3.4, z: -8.1, ry: 2.3, standing: true },
+    { x: 6.7, z: -8.2, ry: -2.1, standing: true },
+    { x: 5.4, z: -11.2, ry: -0.2, standing: true },
   );
 
   // Plants throughout.
   for (const [x, z, s] of [
     [-29.5, 4.8, 1.5], [-17.5, 14.8, 1.5], [-1.4, 13, 1.7], [15.2, 14.5, 1.3], [28.5, -0.8, 1.2],
-    [-8.4, 3, 1.1], [8.5, 3.6, 1.2], [-20.5, -13.5, 1.2], [6, -14.2, 1.1], [25.5, -11, 1.3], [-29, -4, 1.1],
+    [-8.4, 3, 1.1], [8.5, 3.6, 1.2], [-20.5, -13.5, 1.2], [2, -14.8, 1.1], [25.5, -11, 1.3], [-29, -4, 1.1],
   ] as const) {
     plant(b, x, z, s);
   }
