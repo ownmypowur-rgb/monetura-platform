@@ -64,6 +64,13 @@
       "when": 1790112693062,
       "tag": "0008_huge_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1793847444054,
+      "tag": "0009_lucky_madame_hydra",
+      "breakpoints": true
     }
   ]
 }

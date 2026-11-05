@@ -1,0 +1,21 @@
+{
+  "root": true,
+  "extends": "next/core-web-vitals",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/scene/**", "src/hud/**", "src/world/**", "src/store.ts"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "group": ["@/registry", "**/registry"], "message": "Client code receives the registry as props from the server projection; importing it would ship private fields in the public bundle." },
+            { "group": ["@monetura/db", "@/server/*", "mysql2", "mysql2/*"], "message": "Server-only module." }
+          ]
+        }]
+      }
+    }
+  ]
+}

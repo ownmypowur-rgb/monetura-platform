@@ -1120,3 +1120,66 @@ export const moneturaBundleTeamsRelations = relations(
     }),
   })
 );
+
+// ---------------------------------------------------------------------------
+// monetura_hq_events — Monetura HQ (apps/hq) activity feed. The island only
+// visualizes these rows; it never runs the business. is_demo rows come from the
+// demo generator and must always be labelled "Demo" in the UI.
+// ---------------------------------------------------------------------------
+export const moneturaHqEvents = mysqlTable(
+  "monetura_hq_events",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    agentId: varchar("agent_id", { length: 64 }),
+    divisionId: varchar("division_id", { length: 64 }).notNull(),
+    taskId: varchar("task_id", { length: 64 }),
+    taskTitle: varchar("task_title", { length: 255 }),
+    eventType: mysqlEnum("event_type", [
+      "task_started",
+      "progress",
+      "handoff",
+      "needs_approval",
+      "approved",
+      "rejected",
+      "completed",
+      "blocked",
+    ]).notNull(),
+    status: varchar("status", { length: 32 }),
+    progress: int("progress"),
+    fromDivisionId: varchar("from_division_id", { length: 64 }),
+    toDivisionId: varchar("to_division_id", { length: 64 }),
+    payloadJson: json("payload_json"),
+    publicSafe: boolean("public_safe").notNull().default(false),
+    isDemo: boolean("is_demo").notNull().default(false),
+  },
+  (table) => ({
+    idxCreatedAt: index("idx_hq_events_created_at").on(table.createdAt),
+    idxDivision: index("idx_hq_events_division").on(table.divisionId),
+    idxAgent: index("idx_hq_events_agent").on(table.agentId),
+    idxPublic: index("idx_hq_events_public").on(table.publicSafe, table.createdAt),
+  })
+);
+
+// ---------------------------------------------------------------------------
+// monetura_hq_approvals — owner decisions on needs_approval events.
+// ---------------------------------------------------------------------------
+export const moneturaHqApprovals = mysqlTable(
+  "monetura_hq_approvals",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    eventId: bigint("event_id", { mode: "number", unsigned: true }).notNull(),
+    agentId: varchar("agent_id", { length: 64 }),
+    decision: mysqlEnum("decision", ["approved", "rejected"]).notNull(),
+    decidedBy: varchar("decided_by", { length: 255 }).notNull(),
+    note: text("note"),
+  },
+  (table) => ({
+    idxEvent: index("idx_hq_approvals_event").on(table.eventId),
+  })
+);
