@@ -8,7 +8,7 @@ import { useHQ } from "../store";
 import type { ClientDivision } from "../types";
 import { footprintSize, type World } from "../world/world";
 import { buildBuilding } from "./buildingKit";
-import { agentPositions } from "./shared";
+import { agentPositions, exposeDebug } from "./shared";
 
 /** Fly-to timing: the roof starts lifting as the camera settles. */
 const ROOF_DELAY_MS = 800;
@@ -22,6 +22,15 @@ export function overviewPose(aspect: number): Pose {
   return [6, 196 * k, 292 * k, 6, 0, -36];
 }
 
+/** ?cam=px,py,pz,tx,ty,tz frames a clean hero shot, for stills and ads. */
+function captureCamera(): Pose | null {
+  if (typeof window === "undefined") return null;
+  const raw = new URLSearchParams(window.location.search).get("cam");
+  if (!raw) return null;
+  const v = raw.split(",").map(Number);
+  return v.length === 6 && v.every(Number.isFinite) ? (v as Pose) : null;
+}
+
 /** A composed, elevated isometric angle over this exact building. */
 function focusPose(d: ClientDivision, aspect: number): Pose {
   const b = d.building;
@@ -30,7 +39,7 @@ function focusPose(d: ClientDivision, aspect: number): Pose {
   const halfH = Math.atan(Math.tan(halfV) * aspect);
   // Fit the building with room for the HUD around it.
   const fit = Math.max(f.rx / Math.tan(halfH), (f.rz * 1.25) / Math.tan(halfV));
-  const distance = fit * (b.footprint === "angular" ? 0.86 : 1.2) + (b.footprint === "angular" ? 2 : 8);
+  const distance = fit * (b.footprint === "angular" ? 0.86 : 1) + (b.footprint === "angular" ? 2 : 6);
   const elevation = THREE.MathUtils.degToRad(b.footprint === "angular" ? 38 : 42);
   const azimuth = b.rotation * 0.5 + (b.x > 40 ? -0.18 : b.x < -40 ? 0.18 : 0);
   const ty = b.elevation + 2;
@@ -108,7 +117,7 @@ export function CameraRig({ world, divisions }: { world: World; divisions: Clien
       timer = setTimeout(() => {
         if (wantsRoof) setRoofOpen(division.id);
       }, animate ? ROOF_DELAY_MS : 0);
-    } else {
+    } else if (animate || !captureCamera()) {
       void c.setLookAt(...overviewPose(aspect), animate);
     }
     return () => {
@@ -172,8 +181,9 @@ export function CameraRig({ world, divisions }: { world: World; divisions: Clien
 
   const initial = useMemo(() => overviewPose(aspect), [aspect]);
   useEffect(() => {
+    exposeDebug();
     const c = ref.current;
-    if (c && !useHQ.getState().selectedDivisionId) void c.setLookAt(...initial, false);
+    if (c && !useHQ.getState().selectedDivisionId) void c.setLookAt(...(captureCamera() ?? initial), false);
     // Only on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

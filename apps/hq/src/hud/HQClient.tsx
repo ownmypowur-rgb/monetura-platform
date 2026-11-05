@@ -31,6 +31,7 @@ export function HQClient({ world }: { world: WorldData }) {
   const reduced = useHQ((s) => s.reducedMotion);
   const [configured, setConfigured] = useState(false);
   const [noWebgl, setNoWebgl] = useState(false);
+  const [clean, setClean] = useState(false);
 
   useEffect(() => {
     setWorld(world);
@@ -43,6 +44,7 @@ export function HQClient({ world }: { world: WorldData }) {
       setNoWebgl(true);
       setReady();
     }
+    setClean(new URLSearchParams(window.location.search).get("hud") === "0");
     setConfigured(true);
     return () => media.removeEventListener("change", onChange);
   }, [world, setWorld, setQuality, setReducedMotion, setReady]);
@@ -74,7 +76,7 @@ export function HQClient({ world }: { world: WorldData }) {
           <p className="text-sm text-[#E8DCCB] max-w-sm">This device can&apos;t show the 3D island, but everything else is available from the menu and the department bar.</p>
         </div>
       ) : null}
-      <div className="hud-layer">
+      <div className={`hud-layer ${clean ? "hidden" : ""}`}>
         <Nameplates />
         <TopBar />
         <LiveOps />

@@ -152,7 +152,7 @@ export function Harbour({ world, shadows }: { world: World; shadows: boolean }) 
   );
 }
 
-export function Helipad({ world, shadows }: { world: World; shadows: boolean }) {
+export function Helipad({ shadows }: { shadows: boolean }) {
   const y = HELIPAD.elevation;
   const heli = useMemo(() => {
     const b = new GeoBuilder();
@@ -169,7 +169,6 @@ export function Helipad({ world, shadows }: { world: World; shadows: boolean }) 
     return b.build();
   }, []);
   const texture = useMemo(helipadTexture, []);
-  void world;
   return (
     <group position={[HELIPAD.x, y, HELIPAD.z]}>
       <mesh position={[0, 0.2, 0]} castShadow={shadows} receiveShadow={shadows} raycast={() => undefined}>
@@ -215,6 +214,23 @@ const FALL_FRAG = /* glsl */ `
   }
 `;
 
+let stoneGeometry: THREE.BufferGeometry | null = null;
+function roughStone(): THREE.BufferGeometry {
+  if (stoneGeometry) return stoneGeometry;
+  const g = new THREE.IcosahedronGeometry(1, 2);
+  const pos = g.getAttribute("position") as THREE.BufferAttribute;
+  const v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i);
+    const n = Math.sin(v.x * 4.3 + v.y * 2.1) * Math.cos(v.z * 3.7 - v.x * 1.7) * 0.2 + Math.sin(v.y * 8 + v.z * 5) * 0.07;
+    v.multiplyScalar(1 + n);
+    pos.setXYZ(i, v.x, v.y, v.z);
+  }
+  g.computeVertexNormals();
+  stoneGeometry = g;
+  return g;
+}
+
 export function Waterfalls({ world }: { world: World }) {
   const data = useMemo(() => {
     const material = new THREE.ShaderMaterial({
@@ -229,10 +245,10 @@ export function Waterfalls({ world }: { world: World }) {
     const pools: { x: number; y: number; z: number; r: number }[] = [];
     const rocks = new GeoBuilder();
     for (const f of WATERFALLS) {
-      const yTop = world.sample(f.topX, f.topZ) + 0.6;
+      const yTop = f.topY + 0.5;
       const bx = f.topX + f.dirX * f.length;
       const bz = f.topZ + f.dirZ * f.length;
-      const yBottom = Math.min(world.sample(bx, bz), yTop - 9) + 0.2;
+      const yBottom = f.bottomY + 0.2;
       const segs = 12;
       const pos: number[] = [];
       const uv: number[] = [];
@@ -241,7 +257,7 @@ export function Waterfalls({ world }: { world: World }) {
       const pz = f.dirX;
       for (let i = 0; i <= segs; i++) {
         const t = i / segs;
-        const out = Math.sin(t * Math.PI * 0.5) * f.length;
+        const out = Math.pow(t, 0.8) * f.length;
         const y = yTop + (yBottom - yTop) * Math.pow(t, 1.5);
         const w = f.width * (0.9 + t * 0.25);
         pos.push(f.topX + f.dirX * out + (px * w) / 2, y, f.topZ + f.dirZ * out + (pz * w) / 2);
@@ -257,7 +273,7 @@ export function Waterfalls({ world }: { world: World }) {
       g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
       g.setIndex(idx);
       geometries.push(g);
-      pools.push({ x: bx + f.dirX * 2, y: yBottom + 0.12, z: bz + f.dirZ * 2, r: f.width * 1.05 });
+      pools.push({ x: bx + f.dirX * 3.5, y: yBottom + 0.14, z: bz + f.dirZ * 3.5, r: f.width * 1.08 });
 
       // Dark rock face behind and around the fall.
       const rand = makeRandom(Math.round(f.topX * 13 + 1000));
@@ -268,11 +284,12 @@ export function Waterfalls({ world }: { world: World }) {
         const rz = f.topZ + pz * side * along + f.dirZ * rand() * f.length;
         const ry = yBottom + rand() * (yTop - yBottom);
         const size = 1.6 + rand() * 3;
-        rocks.add(new THREE.DodecahedronGeometry(size, 0), rand() < 0.5 ? "#3c332b" : "#574a3e", [rx, ry, rz], [rand(), rand(), rand()]);
+        rocks.add(roughStone(), rand() < 0.5 ? "#2c2620" : "#40362d", [rx, ry, rz], [rand(), rand(), rand()], [size, size * 0.8, size]);
       }
       for (let i = 0; i < 7; i++) {
         const off = (i / 6 - 0.5) * f.width * 1.2;
-        rocks.add(new THREE.DodecahedronGeometry(1.4 + rand() * 1.6, 0), "#3c332b", [f.topX + px * off - f.dirX * 2, yTop - 2.4 + rand(), f.topZ + pz * off - f.dirZ * 2], [rand(), rand(), rand()]);
+        const stone = 1.4 + rand() * 1.6;
+        rocks.add(roughStone(), "#2c2620", [f.topX + px * off - f.dirX * 2, yTop - 2.4 + rand(), f.topZ + pz * off - f.dirZ * 2], [rand(), rand(), rand()], [stone, stone * 0.8, stone]);
       }
     }
     return { material, geometries, pools, rockGeo: rocks.build() };
@@ -282,7 +299,7 @@ export function Waterfalls({ world }: { world: World }) {
   return (
     <group>
       <mesh geometry={data.rockGeo} raycast={() => undefined} castShadow>
-        <meshStandardMaterial vertexColors flatShading roughness={0.95} />
+        <meshStandardMaterial vertexColors roughness={0.96} />
       </mesh>
       {data.geometries.map((g, i) => (
         <mesh key={i} geometry={g} material={data.material} raycast={() => undefined} renderOrder={4} />

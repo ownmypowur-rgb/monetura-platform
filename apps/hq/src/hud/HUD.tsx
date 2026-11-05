@@ -324,8 +324,10 @@ export function Roster() {
   const selectedAgent = useHQ((s) => s.selectedAgentId);
   const setPanel = useHQ((s) => s.setPanel);
   const feed = useHQ((s) => s.feed);
+  const tourActive = useHQ((s) => s.tour.active);
   const division = world?.divisions.find((d) => d.id === selected);
   if (!world || !division) return null;
+  if (tourActive && !open) return null;
   if (!open || selectedAgent) {
     if (selectedAgent) return null;
     return (
@@ -871,7 +873,7 @@ function Plate({ division }: { division: ClientDivision }) {
       disabled={tourActive}
       onClick={() => focusDivision(division.id)}
       aria-label={`${division.name}, ${division.subtitle}, ${STATUS_LABEL[division.status]}`}
-      className={`plate ${isSelected ? "plate-selected" : ""} ${important ? "plate-important" : ""} ${compact ? "plate-compact" : ""} ${division.status === "planned" ? "plate-planned" : ""}`}
+      className={`plate ${isSelected ? "plate-selected" : ""} ${important ? "plate-important" : ""} ${compact ? "plate-compact" : ""} ${internal ? "plate-internal" : ""} ${division.status === "planned" ? "plate-planned" : ""}`}
       style={{ opacity: hidden ? 0 : 1, pointerEvents: hidden ? "none" : undefined }}
     >
       <Icon name={division.icon} size={compact ? 14 : important ? 26 : 20} className="plate-icon" />

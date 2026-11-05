@@ -49,6 +49,10 @@ function makeTerrainMaterial(): THREE.MeshStandardMaterial {
         vec3 ground = mix(grass, sand, sandMix);
         ground = mix(ground, wetSand, 1.0 - smoothstep(0.1, 0.9, wp.y));
         ground = mix(ground, rock, smoothstep(0.22, 0.42, steep + (n2 - 0.5) * 0.12));
+        // Lawns get mown stripes and warm dappled light, so they don't read as flat paint.
+        float flat_ = smoothstep(0.02, 0.0, steep);
+        float dapple = hq_fbm(wp.xz * 0.16 + 11.0);
+        ground = mix(ground, ground * (0.62 + dapple * 0.62), flat_ * (1.0 - sandMix));
         // Underwater: fades into the seabed colour.
         ground = mix(ground, vec3(0.75, 0.82, 0.66), 1.0 - smoothstep(-1.2, 0.05, wp.y));
         diffuseColor.rgb = ground;

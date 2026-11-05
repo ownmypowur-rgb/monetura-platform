@@ -7,6 +7,9 @@
  *   HQ_BASE_URL=http://localhost:3003 pnpm check:public
  * Exits non-zero on any leak.
  */
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { ORCHESTRATOR_NAME } from "../src/config/brand";
 import { DIVISIONS } from "../src/registry";
 
 const BASE = process.env["HQ_BASE_URL"] ?? "http://localhost:3003";
@@ -17,10 +20,10 @@ function privateStrings(): string[] {
     out.add(d.nextUp);
     for (const a of d.agents) {
       out.add(a.specialty);
-      out.add(a.id);
-      // Bare first names are too common to search for reliably in minified JS,
-      // so names are checked as a quoted JSON value instead.
-      out.add(`"${a.name}"`);
+      if (a.id.includes("-")) out.add(a.id);
+      // Bare first names are too common to search for reliably in minified JS, so
+      // names are checked as a quoted value. The orchestrator's name is public.
+      if (a.name !== ORCHESTRATOR_NAME) out.add(`"${a.name}"`);
       for (const t of a.tools) out.add(`"${t}"`);
     }
   }
@@ -39,6 +42,17 @@ async function main() {
   // Chunks loaded lazily are referenced from the webpack runtime; follow one level.
   const docs: { name: string; body: string }[] = [{ name: "/tour html", body: html }];
   for (const u of chunkUrls) docs.push({ name: u, body: await text(`${BASE}${u}`) });
+  // Every static chunk is downloadable by anyone, whichever page loads it. When a
+  // local build exists, scan them all, including lazily loaded and owner-page chunks.
+  const staticDir = resolve(".next/static");
+  if (existsSync(staticDir)) {
+    const walk = (dir: string): string[] =>
+      readdirSync(dir).flatMap((f) => {
+        const p = join(dir, f);
+        return statSync(p).isDirectory() ? walk(p) : p.endsWith(".js") ? [p] : [];
+      });
+    for (const file of walk(staticDir)) docs.push({ name: file, body: readFileSync(file, "utf8") });
+  }
   docs.push({ name: "/api/hq/events?mode=public", body: await text(`${BASE}/api/hq/events?mode=public`) });
 
   const feed = JSON.parse(docs[docs.length - 1]?.body ?? "{}") as Record<string, unknown>;

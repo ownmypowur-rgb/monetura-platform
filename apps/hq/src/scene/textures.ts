@@ -423,20 +423,44 @@ export function palmFrondTexture(): THREE.CanvasTexture {
     ctx.clearRect(0, 0, w, h);
     const cx = w / 2;
     const r = rng(5);
-    for (let i = 0; i < 46; i++) {
-      const t = i / 46;
-      const y = h * 0.02 + t * h * 0.96;
-      const len = (w / 2) * Math.sin(Math.PI * Math.min(1, t * 0.92 + 0.08)) ** 0.7;
+    // v runs from the trunk (bottom of the canvas) to the tip. Three.js flips Y, so
+    // draw with the trunk at the bottom.
+    const teeth = 17;
+    const halfWidth = (t: number) => (w / 2) * 0.96 * Math.pow(Math.sin(Math.PI * Math.min(1, t * 0.95 + 0.05)), 0.62);
+    ctx.beginPath();
+    ctx.moveTo(cx, h);
+    for (const side of [-1, 1]) {
+      for (let i = 0; i <= teeth; i++) {
+        const k = side < 0 ? i : teeth - i;
+        const t = k / teeth;
+        const tNotch = (k + 0.5) / teeth;
+        const y = h - t * h;
+        ctx.lineTo(cx + side * halfWidth(t), y - 6);
+        if (k < teeth) ctx.lineTo(cx + side * halfWidth(tNotch) * 0.3, h - tNotch * h + 13);
+      }
+    }
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, h, 0, 0);
+    grad.addColorStop(0, "#5f8a33");
+    grad.addColorStop(0.45, "#a9cf5c");
+    grad.addColorStop(1, "#e4ea8c");
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.save();
+    ctx.clip();
+    for (let i = 0; i < 44; i++) {
+      const y = (i / 44) * h;
       for (const side of [-1, 1]) {
-        ctx.strokeStyle = `rgb(${200 + r() * 40},${225 + r() * 25},${110 + r() * 50})`;
-        ctx.lineWidth = 3.6;
+        ctx.strokeStyle = `rgba(${40 + r() * 30},${80 + r() * 40},${30 + r() * 20},${0.25 + r() * 0.2})`;
+        ctx.lineWidth = 1.6;
         ctx.beginPath();
         ctx.moveTo(cx, y);
-        ctx.lineTo(cx + side * len, y + 18 + len * 0.28);
+        ctx.lineTo(cx + side * (w / 2), y - 26);
         ctx.stroke();
       }
     }
-    ctx.strokeStyle = "#d8d27c";
+    ctx.restore();
+    ctx.strokeStyle = "#d9d48a";
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(cx, 0);

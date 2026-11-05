@@ -120,3 +120,32 @@ export function mergeOrEmpty(list: THREE.BufferGeometry[]): THREE.BufferGeometry
   const merged = mergeGeometries(list.map((g) => (g.index ? g.toNonIndexed() : g)), false);
   return merged ?? new THREE.BufferGeometry();
 }
+
+const bladeCache = new Map<string, THREE.BufferGeometry>();
+/** A drooping leaf, extending along +x: a tapered bent strip, double-faced. */
+export function leafBlade(len: number, width: number): THREE.BufferGeometry {
+  const key = `${len.toFixed(2)}-${width.toFixed(2)}`;
+  const hit = bladeCache.get(key);
+  if (hit) return hit;
+  const segs = 5;
+  const pos: number[] = [];
+  const idx: number[] = [];
+  for (let i = 0; i <= segs; i++) {
+    const t = i / segs;
+    const w = width * Math.sin(Math.PI * Math.min(1, t * 0.94 + 0.06)) * 0.5;
+    const y = Math.sin(t * 1.3) * len * 0.34 - t * t * len * 0.55;
+    pos.push(t * len, y, -w, t * len, y + w * 0.3, 0, t * len, y, w);
+    if (i < segs) {
+      const a = i * 3;
+      idx.push(a, a + 1, a + 3, a + 1, a + 4, a + 3, a + 1, a + 2, a + 4, a + 2, a + 5, a + 4);
+      idx.push(a, a + 3, a + 1, a + 1, a + 3, a + 4, a + 1, a + 4, a + 2, a + 2, a + 4, a + 5);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  bladeCache.set(key, g);
+  return g;
+}
+

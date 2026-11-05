@@ -5,7 +5,7 @@
  */
 import * as THREE from "three";
 import type { DivisionStatus, FootprintType } from "../types";
-import { GeoBuilder, glassRing, mergeOrEmpty } from "./geo";
+import { GeoBuilder, glassRing, leafBlade, mergeOrEmpty } from "./geo";
 
 const WHITE = "#ebe4d8";
 const CONCRETE = "#d9d1c3";
@@ -65,8 +65,11 @@ function deck(b: GeoBuilder, rIn: number, rOut: number, y: number, cx = 0, cz = 
 
 function planter(b: GeoBuilder, x: number, y: number, z: number, size = 1) {
   b.cyl(0.95 * size, 0.75 * size, 0.9 * size, x, y + 0.45 * size, z, PLANTER, 14);
-  b.sphere(1.05 * size, x, y + 1.35 * size, z, PLANT, 1, 0.8, 1, 8);
-  b.sphere(0.7 * size, x + 0.5 * size, y + 1.05 * size, z + 0.2 * size, "#54923f", 1, 0.8, 1, 7);
+  b.sphere(0.55 * size, x, y + 1 * size, z, PLANT, 1, 0.7, 1, 6);
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    b.add(leafBlade(1.5 * size, 0.46 * size), i % 2 ? PLANT : "#54923f", [x, y + 1.1 * size, z], [0, -a, i % 2 ? 0.5 : 0.1]);
+  }
 }
 
 /** A round pavilion at (cx, cz): the core of the kit. */

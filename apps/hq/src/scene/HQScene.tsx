@@ -118,12 +118,12 @@ function Lights({ shadowSize, shadows }: { shadowSize: number; shadows: boolean 
   }, []);
   return (
     <>
-      <hemisphereLight args={["#a8c4dc", "#94703f", 0.86]} />
-      <ambientLight intensity={0.16} color="#ffe6c9" />
+      <hemisphereLight args={["#8fb2d4", "#8a6636", 0.74]} />
+      <ambientLight intensity={0.12} color="#ffdcb5" />
       <directionalLight
         ref={sun}
         position={[pos.x, pos.y, pos.z]}
-        intensity={4.3}
+        intensity={4.9}
         color={SUN_COLOR}
         castShadow={shadows}
         shadow-mapSize={[shadowSize, shadowSize]}
@@ -165,7 +165,7 @@ function World3D({ world, divisions, tier }: { world: World; divisions: ClientDi
       <Foliage world={world} palms={q.palms} bushes={q.bushes} rocks={q.rocks} shadows={q.shadows} />
       <Waterfalls world={world} />
       <Harbour world={world} shadows={q.shadows} />
-      <Helipad world={world} shadows={q.shadows} />
+      <Helipad shadows={q.shadows} />
       {divisions.map((d) => (
         <Building key={d.id} division={d} shadows={q.shadows} />
       ))}
@@ -201,7 +201,7 @@ function Effects({ tier }: { tier: QualityTier }) {
       <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
       <BrightnessContrast brightness={0.01} contrast={0.1} />
       <HueSaturation saturation={0.22} />
-      <Vignette offset={0.32} darkness={0.42} />
+      <Vignette offset={0.3} darkness={0.5} />
     </EffectComposer>
   ) : (
     <EffectComposer multisampling={0}>
@@ -224,6 +224,7 @@ export function HQScene({ divisions }: { divisions: ClientDivision[] }) {
   // visibly reshape the island. Later downgrades reduce post-processing and pixel ratio.
   const [initialRes] = useState(q.terrainRes);
   const [loadTier] = useState(tier);
+  const [dprCap, setDprCap] = useState(2);
 
   useEffect(() => {
     let cancelled = false;
@@ -257,24 +258,27 @@ export function HQScene({ divisions }: { divisions: ClientDivision[] }) {
   return (
     <Canvas
       className="hq-canvas"
-      shadows={q.shadows ? "soft" : false}
-      flat={q.post}
-      dpr={q.dpr}
+      shadows={QUALITY[loadTier].shadows ? "soft" : false}
+      flat={QUALITY[loadTier].post}
+      dpr={[QUALITY[loadTier].dpr[0], Math.min(QUALITY[loadTier].dpr[1], dprCap)]}
       frameloop={hidden ? "never" : "always"}
       gl={{ antialias: !q.post, powerPreference: "high-performance", stencil: false, preserveDrawingBuffer: false }}
       camera={{ fov: FOV, near: 2, far: 4000, position: [start[0], start[1], start[2]] }}
       onCreated={({ gl, scene }) => {
         scene.fog = new THREE.FogExp2(HAZE_COLOR, 0.00034);
-        if (!q.post) gl.toneMapping = THREE.ACESFilmicToneMapping;
+        if (!QUALITY[loadTier].post) gl.toneMapping = THREE.ACESFilmicToneMapping;
       }}
       aria-hidden="true"
     >
       <PerformanceMonitor
         flipflops={2}
         onDecline={() => {
-          const s = useHQ.getState();
-          if (s.quality === "high") setQuality("medium");
-          else if (s.quality === "medium" && !/quality=/.test(window.location.search)) setQuality("low");
+          // Forced quality (?quality=) is for captures: leave it alone.
+          if (/quality=/.test(window.location.search)) return;
+          // Tone mapping is fixed when the canvas is created, so a session steps down
+          // through post-processing and pixel ratio rather than dropping the chain.
+          if (useHQ.getState().quality === "high") setQuality("medium");
+          else setDprCap((cap) => Math.max(0.75, cap > 1.25 ? 1.25 : cap - 0.25));
         }}
       />
       <World3D world={world} divisions={divisions} tier={loadTier} />

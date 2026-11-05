@@ -58,7 +58,7 @@ function palmTrunk(): THREE.BufferGeometry {
     const r1 = 0.42 - t1 * 0.2;
     const bend = (v: number) => v * v * 1.6;
     const cx = (bend(t) + bend(t1)) / 2;
-    b.add(new THREE.CylinderGeometry(r1, r0, 1 / rings + 0.01, 7, 1, true), i % 2 ? "#8c6b4a" : "#7a5c40", [cx, (t + t1) / 2, 0], [0, 0, 0], [1, 1, 1]);
+    b.add(new THREE.CylinderGeometry(r1, r0, 1 / rings + 0.01, 7, 1, true), i % 2 ? "#6e5540" : "#5c4635", [cx, (t + t1) / 2, 0], [0, 0, 0], [1, 1, 1]);
   }
   return b.build();
 }
@@ -253,7 +253,7 @@ export function Foliage({ world, palms, bushes, rocks, shadows }: FoliageProps) 
         crown.setMatrixAt(i, m);
         // Golden sunlit palms, varied.
         const k = (i * 0.618) % 1;
-        c.setRGB(0.28 + k * 0.3, 0.5 + k * 0.18, 0.11 + k * 0.07);
+        c.setRGB(0.38 + k * 0.42, 0.56 + k * 0.28, 0.24 + k * 0.14);
         crown.setColorAt(i, c);
       });
       trunk.instanceMatrix.needsUpdate = true;

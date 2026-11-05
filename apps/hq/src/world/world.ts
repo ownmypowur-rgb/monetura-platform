@@ -193,11 +193,21 @@ const HUB_LINKS: [string, string][] = [
   ["hub-north", "hub-back"],
 ];
 
-export interface WaterfallSpec { topX: number; topZ: number; dirX: number; dirZ: number; length: number; width: number; }
+export interface WaterfallSpec {
+  topX: number;
+  topZ: number;
+  dirX: number;
+  dirZ: number;
+  length: number;
+  width: number;
+  /** Heights the terrain is carved to at the lip and the plunge pool. */
+  topY: number;
+  bottomY: number;
+}
 
 export const WATERFALLS: WaterfallSpec[] = [
-  { topX: 33, topZ: -68, dirX: 0.5, dirZ: 0.86, length: 12, width: 7.5 },
-  { topX: 44, topZ: -34, dirX: -0.1, dirZ: 1, length: 11, width: 10 },
+  { topX: 38, topZ: -76, dirX: 0.42, dirZ: 0.9, length: 10, width: 8, topY: 31, bottomY: 13 },
+  { topX: 34, topZ: -40, dirX: 0.05, dirZ: 1, length: 9, width: 10, topY: 19, bottomY: 4.5 },
 ];
 
 export interface PlacementSpot { x: number; z: number; }
@@ -311,6 +321,35 @@ export function buildWorld(divisions: ClientDivision[], res: number): World {
         if ((lx * lx) / ((p.rx + 7) * (p.rx + 7)) + (lz * lz) / ((p.rz + 7) * (p.rz + 7)) > 1) continue;
         stampClear(p.x + lx * c + lz * s, p.z - lx * s + lz * c, cell * 1.5, kept);
       }
+    }
+  }
+
+  /* --- waterfalls: carve a lip and a plunge pool, and keep the planting off them --- */
+  const stampHeight = (cx: number, cz: number, radius: number, blend: number, y: number) => {
+    const r = Math.ceil((radius + blend) / cell);
+    const ci = Math.round((cx - WORLD_MIN_X) / cell);
+    const cj = Math.round((cz - WORLD_MIN_Z) / cell);
+    for (let j = cj - r; j <= cj + r; j++) {
+      for (let i = ci - r; i <= ci + r; i++) {
+        if (i < 0 || j < 0 || i >= size || j >= size) continue;
+        const d = Math.hypot((i - ci) * cell, (j - cj) * cell);
+        const w = 1 - smoothstep(radius, radius + blend, d);
+        if (w <= 0) continue;
+        const k = j * size + i;
+        heights[k] = lerp(heights[k] as number, y, w);
+      }
+    }
+  };
+  for (const f of WATERFALLS) {
+    const bx = f.topX + f.dirX * f.length;
+    const bz = f.topZ + f.dirZ * f.length;
+    stampHeight(f.topX - f.dirX * 5, f.topZ - f.dirZ * 5, f.width * 1.1, 6, f.topY);
+    stampHeight(bx + f.dirX * 4, bz + f.dirZ * 4, f.width * 1.05, 7, f.bottomY);
+    for (let t = -0.6; t <= 2.2; t += 0.2) {
+      const x = f.topX + f.dirX * f.length * t;
+      const z = f.topZ + f.dirZ * f.length * t;
+      stampClear(x, z, f.width * 0.95);
+      stampClear(x, z, f.width * 1.35, kept);
     }
   }
 

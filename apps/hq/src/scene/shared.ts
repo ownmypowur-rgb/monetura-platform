@@ -7,8 +7,8 @@ export const sharedUniforms = {
 };
 
 /** Golden-hour sun: low, warm, from the front right so facades glow toward camera. */
-export const SUN_DIRECTION = new THREE.Vector3(0.72, 0.38, 0.46).normalize();
-export const SUN_COLOR = "#ffcf94";
+export const SUN_DIRECTION = new THREE.Vector3(0.74, 0.34, 0.42).normalize();
+export const SUN_COLOR = "#ffc07a";
 export const HAZE_COLOR = "#a9c7c6";
 
 export interface QualitySettings {
@@ -58,3 +58,10 @@ export const agentPositions = new Map<string, THREE.Vector3>();
 
 /** Set when something changes shape enough to re-render the static shadow map. */
 export const shadowState = { dirtyFrames: 8 };
+
+/** Characters' live positions, readable by the verification script with ?debug=1. */
+export function exposeDebug(): void {
+  if (typeof window === "undefined") return;
+  if (new URLSearchParams(window.location.search).get("debug") !== "1") return;
+  (window as unknown as { __hqAgentPositions: typeof agentPositions }).__hqAgentPositions = agentPositions;
+}
