@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import FounderBenefits from "@/components/founders/FounderBenefits";
-import TierSelector from "@/components/founders/TierSelector";
 import Link from "next/link";
+
 export const metadata: Metadata = {
   title: "Founding Membership: Founders Club, Monetura",
   description:
@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function FoundersPage() {
-
   return (
     <main className="bg-monetura-charcoal">
       {/* Page hero */}
@@ -29,11 +28,12 @@ export default function FoundersPage() {
             </h1>
             <div className="space-y-6">
               <p className="text-monetura-cream/50 text-base md:text-lg leading-relaxed">
-                Monetura is a curated founder community. Founder terms are shared privately on our founders webinar. Be the first to know.
-                Applications are reviewed personally. There is no open checkout.
+                The Founders Club is a small, chosen community, and the first
+                members of Monetura. Founders join by invitation, after a private
+                webinar. There is no open checkout.
               </p>
-              <Link href="/membership/apply" className="btn-champagne inline-block">
-                Apply for Founding Membership
+              <Link href="/waitlist" className="btn-champagne inline-block">
+                Be the first to know
               </Link>
             </div>
           </div>
@@ -41,7 +41,6 @@ export default function FoundersPage() {
       </section>
 
       <FounderBenefits />
-      <TierSelector />
 
       {/* Final CTA */}
       <section className="py-24 bg-monetura-charcoal border-t border-monetura-sand/10 text-center">
@@ -50,10 +49,10 @@ export default function FoundersPage() {
             Ready?
           </p>
           <h2 className="font-garet font-bold text-3xl md:text-4xl text-monetura-cream mb-8">
-            Reviewed personally.
+            Find your way back.
           </h2>
-          <Link href="/membership/apply" className="btn-champagne">
-            Begin Your Application
+          <Link href="/waitlist" className="btn-champagne">
+            Be the first to know
           </Link>
         </div>
       </section>

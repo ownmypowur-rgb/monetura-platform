@@ -19,20 +19,21 @@ export default function CTASection() {
         </h2>
 
         <p className="mx-auto mb-14 max-w-xl text-base leading-relaxed text-monetura-cream/50 md:text-lg">
-          Founder terms are shared privately on our founders webinar. Be the first to know. This is not a course.
-          This is not a mastermind. This is a platform, a business model, and a
-          community — built around the life you already want to live.
+          Founder terms are shared privately on our founders webinar. Be the
+          first to know. This is not a course or a mastermind. It&rsquo;s a small,
+          chosen community, a place to tell your story, and people to travel
+          with, built around the life you already want to live.
         </p>
 
         <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">
-          <a href="/membership/apply" className="btn-champagne">
-            Apply for Founding Membership
+          <a href="/waitlist" className="btn-champagne">
+            Be the first to know
           </a>
           <a
             href="/membership"
             className="text-xs uppercase tracking-[0.2em] text-monetura-cream/50 transition-colors duration-200 hover:text-monetura-cream"
           >
-            View Founder Benefits →
+            About the Founders Club →
           </a>
         </div>
       </div>

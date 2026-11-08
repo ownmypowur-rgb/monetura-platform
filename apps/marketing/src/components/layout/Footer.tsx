@@ -4,7 +4,8 @@ const links = [
   { href: "/story", label: "Our Story" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/membership", label: "Membership" },
-  { href: "/membership/apply", label: "Apply for Access" },
+  { href: "/waitlist", label: "Be the first to know" },
+  { href: "/privacy", label: "Privacy" },
 ];
 
 export default function Footer() {

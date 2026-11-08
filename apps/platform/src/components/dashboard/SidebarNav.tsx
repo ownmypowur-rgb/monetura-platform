@@ -11,6 +11,7 @@ import {
   ShoppingBagIcon,
   SettingsIcon,
   ReceiptIcon,
+  BellIcon,
 } from "./icons";
 
 function LogOutIcon({ size = 18 }: { size?: number }) {
@@ -221,6 +222,22 @@ export function SidebarNav({ activeTab, onTabChange, memberTier }: SidebarNavPro
             <span><ShoppingBagIcon size={18} /></span>
             <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
               Submissions
+            </span>
+          </Link>
+          <Link
+            href="/admin/waitlist"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+            style={{
+              background: activeTab === "waitlist" ? "rgba(212,168,83,0.08)" : "transparent",
+              border: activeTab === "waitlist" ? "1px solid rgba(212,168,83,0.15)" : "1px solid transparent",
+              color: activeTab === "waitlist" ? "#D4A853" : "#E8DCCB",
+              textDecoration: "none",
+              display: "flex",
+            }}
+          >
+            <span><BellIcon size={18} /></span>
+            <span className="text-sm" style={{ fontFamily: "var(--font-heading)" }}>
+              Waitlist
             </span>
           </Link>
         </div>

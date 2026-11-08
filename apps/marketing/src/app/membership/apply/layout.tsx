@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description:
     "Reserve your spot on the Monetura founders webinar. Founder terms are shared privately on the webinar. Be the first to know.",
   alternates: { canonical: "/membership/apply" },
+  // Invited founders only: reachable by direct link, never indexed or linked.
+  robots: { index: false, follow: false },
 };
 
 export default function ApplyLayout({

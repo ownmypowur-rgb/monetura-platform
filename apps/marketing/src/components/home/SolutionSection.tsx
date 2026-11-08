@@ -2,7 +2,7 @@ const steps = [
   {
     number: "01",
     title: "Book and go",
-    body: "Access exclusive member travel rates through our partner network. Hotels, flights, and experiences at prices the public can't touch.",
+    body: "Plan the trip you keep putting off. Optional member travel rates through our partner network, if they suit how you travel.",
   },
   {
     number: "02",
@@ -12,7 +12,7 @@ const steps = [
   {
     number: "03",
     title: "Publish and share",
-    body: "Your content goes out to all your social platforms simultaneously — with your unique affiliate link embedded in every post.",
+    body: "Your story is ready for your own pages, with your referral link in every post.",
   },
 ];
 
@@ -59,8 +59,8 @@ export default function SolutionSection() {
         </div>
 
         <div className="mt-12 border-t border-monetura-sand/10 pt-12 text-center sm:mt-16 sm:pt-16">
-          <a href="/membership/apply" className="btn-champagne">
-            Apply for Founding Membership
+          <a href="/waitlist" className="btn-champagne">
+            Be the first to know
           </a>
         </div>
       </div>

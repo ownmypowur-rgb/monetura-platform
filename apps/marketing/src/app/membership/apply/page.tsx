@@ -1,38 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
-import {
-  FOUNDER_TIERS,
-  type FounderTierId,
-} from "@monetura/config/src/tiers";
-
-const TIER_PERKS: Record<FounderTierId, readonly string[]> = {
-  explorer: ["Platform access", "Community network", "Founder badge"],
-  trailblazer: [
-    "All Explorer benefits",
-    "Travel creation tools",
-    "Monthly strategy call",
-  ],
-  pioneer: ["All Trailblazer benefits", "Priority deal flow", "VIP travel concierge"],
-  luminary: [
-    "All Pioneer benefits",
-    "Founding seat on advisory",
-    "Founding member recognition",
-  ],
-};
-
-// Names and taglines come from the canonical tier definition. Prices are
-// deliberately NOT surfaced here: founder pricing is discussed on the webinar,
-// never published. The canonical config still carries priceCad for internal use.
-const TIERS = FOUNDER_TIERS.map((t) => ({
-  id: t.id,
-  name: t.name,
-  tagline: t.tagline,
-  perks: TIER_PERKS[t.id],
-}));
 
 const PROVINCES = [
   { value: "AB", label: "Alberta" },
@@ -52,20 +23,12 @@ const PROVINCES = [
 
 function WebinarForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // Pre-select the tier when arriving from a "?tier=…" link (TierSelector).
-  const tierParam = searchParams.get("tier") ?? "";
-  const initialTier = FOUNDER_TIERS.some((t) => t.id === tierParam)
-    ? tierParam
-    : "";
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     province: "",
-    tier: initialTier,
     referral: "",
   });
   const [submitting, setSubmitting] = useState(false);
@@ -80,7 +43,7 @@ function WebinarForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.phone || !formData.province || !formData.tier) {
+    if (!formData.name || !formData.email || !formData.phone || !formData.province) {
       setError("Please fill in all required fields.");
       return;
     }
@@ -122,43 +85,7 @@ function WebinarForm() {
           ))}
         </div>
 
-        {/* Tier cards */}
-        <div className="mb-14">
-          <p className="text-monetura-champagne text-xs tracking-[0.3em] uppercase mb-6">
-            Choose Your Level
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {TIERS.map(({ id, name, tagline, perks }) => (
-              <div
-                key={id}
-                className="lux-panel p-6 flex flex-col gap-4"
-              >
-                <div>
-                  <p className="font-garet font-bold text-monetura-cream text-base mb-1">
-                    {name}
-                  </p>
-                  <p className="text-monetura-cream/40 text-xs">{tagline}</p>
-                </div>
-                <ul className="space-y-1.5 flex-1">
-                  {perks.map((perk) => (
-                    <li key={perk} className="flex items-center gap-2 text-monetura-cream/60 text-xs">
-                      <span className="text-monetura-champagne text-[8px]">◆</span>
-                      {perk}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/membership"
-                  className="btn-secondary text-[10px] py-2.5 px-4 self-start"
-                >
-                  Learn More
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="hairline mb-14" />
+<div className="hairline mb-14" />
 
         {/* Booking form */}
         <p className="text-monetura-champagne text-xs tracking-[0.3em] uppercase mb-8">
@@ -204,20 +131,6 @@ function WebinarForm() {
                 ...PROVINCES,
               ]}
             />
-            <SelectField
-              label="Tier Interest"
-              name="tier"
-              value={formData.tier}
-              onChange={handleChange}
-              required
-              options={[
-                { value: "", label: "Which tier interests you?" },
-                ...TIERS.map(({ id, name }) => ({
-                  value: id,
-                  label: name,
-                })),
-              ]}
-            />
             <Field
               label="How did you hear about us?"
               name="referral"
@@ -242,9 +155,9 @@ function WebinarForm() {
               {submitting ? "Booking…" : "Schedule My Webinar"}
             </button>
             <p className="text-monetura-cream/25 text-xs mt-5 leading-relaxed">
-              One of our founding members will personally walk you through
-              everything — tiers, benefits, community, and what life inside
-              Monetura looks like. No sales pressure. Just answers.
+              Darryl will personally walk you through everything: founder
+              terms, benefits, community, and what life inside Monetura looks
+              like. No sales pressure. Just answers.
             </p>
           </div>
         </form>

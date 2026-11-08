@@ -58,8 +58,8 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link href="/membership/apply" className="btn-primary px-6 py-3 text-[10px]">
-            Apply Now
+          <Link href="/waitlist" className="btn-primary px-6 py-3 text-[10px]">
+            Be the first to know
           </Link>
         </div>
 
@@ -107,11 +107,11 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/membership/apply"
+            href="/waitlist"
             onClick={() => setMenuOpen(false)}
             className="btn-primary mt-2 w-full"
           >
-            Apply for Founding Membership
+            Be the first to know
           </Link>
         </div>
       </div>

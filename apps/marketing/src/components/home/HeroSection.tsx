@@ -120,10 +120,10 @@ export default function HeroSection() {
                 on narrow tablets instead of overflowing. */}
             <div className="mx-auto mt-7 flex max-w-sm flex-col gap-3 sm:mt-10 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center sm:gap-5 lg:mx-0 lg:mt-11 lg:justify-start">
               <Link
-                href="/membership/apply"
+                href="/waitlist"
                 className="btn-primary whitespace-nowrap lg:px-10"
               >
-                Apply for Founding Membership
+                Be the first to know
               </Link>
               <Link
                 href="#the-origin"

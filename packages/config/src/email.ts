@@ -25,6 +25,21 @@ export interface BrandedEmailOptions {
   button?: { label: string; url: string };
   /** Small print under the button. */
   footerNote?: string;
+  /** Hidden inbox preview text. Escaped. */
+  preheader?: string;
+  /** Sign-off lines replacing "— The Monetura Team" (e.g. a personal signature). Escaped. */
+  signature?: string[];
+  /** Small lines under the card (sender identification for CASL). Escaped. */
+  footerLines?: string[];
+  /** Unsubscribe link under the card. Must be https; escaped. */
+  unsubscribeUrl?: string;
+}
+
+/** Returns the URL only if it is an absolute https URL; otherwise throws. */
+function httpsOnly(url: string): string {
+  const parsed = new URL(url);
+  if (parsed.protocol !== "https:") throw new Error("unsubscribeUrl must be https");
+  return parsed.toString();
 }
 
 export function escapeHtml(text: string): string {
@@ -72,9 +87,39 @@ export function brandedEmailHtml(opts: BrandedEmailOptions): string {
     ? `<p style="margin:0 0 16px 0;color:${EARTH};font-size:12px;line-height:18px;">${escapeHtml(opts.footerNote)}</p>`
     : "";
 
+  const preheader = opts.preheader
+    ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${CHARCOAL};">${escapeHtml(opts.preheader)}</div>`
+    : "";
+
+  const signature = opts.signature?.length
+    ? opts.signature
+        .map(
+          (l) =>
+            `<p style="margin:0;color:${SAND};font-size:15px;line-height:24px;">${escapeHtml(l)}</p>`
+        )
+        .join("\n")
+    : `<p style="margin:0;color:${SAND};font-size:15px;line-height:24px;">— The Monetura Team</p>`;
+
+  const footerLines = (opts.footerLines ?? [])
+    .map(
+      (l) =>
+        `<p style="margin:0 0 6px 0;color:${SAND};font-size:11px;line-height:17px;">${escapeHtml(l)}</p>`
+    )
+    .join("\n");
+
+  const unsubscribe = opts.unsubscribeUrl
+    ? `<p style="margin:8px 0 0 0;font-size:11px;line-height:17px;"><a href="${escapeHtml(httpsOnly(opts.unsubscribeUrl))}" target="_blank" style="color:${GOLD};text-decoration:underline;">Unsubscribe</a></p>`
+    : "";
+
+  const legal =
+    footerLines || unsubscribe
+      ? `<tr><td align="center" style="padding-top:20px;">${footerLines}${unsubscribe}</td></tr>`
+      : "";
+
   return `<!DOCTYPE html>
 <html>
 <body style="margin:0;padding:0;background:${CHARCOAL};">
+  ${preheader}
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${CHARCOAL};">
     <tr><td align="center" style="padding:40px 16px;">
       <table role="presentation" width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
@@ -87,8 +132,9 @@ export function brandedEmailHtml(opts: BrandedEmailOptions): string {
           ${panel}
           ${button}
           ${footerNote}
-          <p style="margin:0;color:${SAND};font-size:15px;line-height:24px;">— The Monetura Team</p>
+          ${signature}
         </td></tr>
+        ${legal}
         <tr><td align="center" style="padding-top:24px;">
           <p style="margin:0;color:${EARTH};font-size:11px;letter-spacing:1px;">MONETURA — PASSION BECOMES CREATION. CREATION BECOMES FREEDOM.</p>
         </td></tr>

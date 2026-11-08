@@ -2,9 +2,10 @@ import type { MetadataRoute } from "next";
 
 const BASE = "https://www.monetura.com";
 
-// Every public page. Post-submit confirmation pages (/success,
-// /membership/apply/success) are noindex and deliberately left out.
-const PATHS = ["/", "/story", "/how-it-works", "/membership", "/membership/apply"];
+// Every public page. Left out on purpose (all noindex): the post-submit pages
+// (/success, /membership/apply/success), /waitlist/unsubscribe, and
+// /membership/apply (invited founders only).
+const PATHS = ["/", "/waitlist", "/story", "/how-it-works", "/membership", "/privacy"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();

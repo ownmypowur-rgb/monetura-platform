@@ -21,7 +21,8 @@ const schema = z.object({
   province: z.enum([
     "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT",
   ]),
-  tier: z.enum(["explorer", "trailblazer", "pioneer", "luminary"]),
+  // Tiers are no longer shown publicly; kept optional for old links.
+  tier: z.enum(["explorer", "trailblazer", "pioneer", "luminary"]).optional(),
   referral: z.string().max(500).trim().optional(),
 });
 
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .where(eq(moneturaMembers.email, email))
       .limit(1);
 
-    const tierDef = founderTierById(tier);
+    const tierDef = tier ? founderTierById(tier) : undefined;
     if (existing.length === 0) {
       await db.insert(moneturaMembers).values({
         email,
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         membershipTier: "founder",
         status: "pending",
         province,
-        tierInterest: tierDef?.tierInterest ?? "entry",
+        tierInterest: tierDef?.tierInterest ?? null,
         heardAbout: referral ?? null,
       });
     }
@@ -111,10 +112,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (resendKey) {
     try {
       const resend = new Resend(resendKey);
-      const tierDef = founderTierById(tier);
+      const tierDef = tier ? founderTierById(tier) : undefined;
       const tierLabel = tierDef
         ? `${tierDef.name} (${formatTierPrice(tierDef)} CAD)`
-        : tier;
+        : null;
 
       // brandedEmailHtml escapes every value it is given. The applicant's name,
       // phone and referral text are unauthenticated public input and must never
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       await resend.emails.send({
         from: "noreply@monetura.com",
         to: ownerEmail,
-        subject: `New Webinar Request — ${name} — Interested in ${tierDef?.name ?? tier}`,
+        subject: `New Webinar Request — ${name}`,
         html: brandedEmailHtml({
           heading: "New Founder Webinar Request",
           paragraphs: ["A new application came in through monetura.com/membership/apply."],
@@ -131,7 +132,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             `Email: ${email}`,
             `Phone: ${phone}`,
             `Province: ${province}`,
-            `Tier Interest: ${tierLabel}`,
+            ...(tierLabel ? [`Tier Interest: ${tierLabel}`] : []),
             `Referral Source: ${referral ?? "—"}`,
           ],
           footerNote: "Submitted via monetura.com/membership/apply",

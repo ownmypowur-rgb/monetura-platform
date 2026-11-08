@@ -2,7 +2,7 @@ const perks = [
   {
     icon: "◈",
     title: "A Small, Chosen Community",
-    body: "A small, chosen community of people who left too. Founders are reviewed personally, one application at a time.",
+    body: "A small, chosen community of people who left too. Founders join by invitation, after a private webinar.",
   },
   {
     icon: "◈",
@@ -11,8 +11,8 @@ const perks = [
   },
   {
     icon: "◈",
-    title: "Monthly Founder Sessions",
-    body: "Deep-dive strategy sessions, guest speakers, and community conversations — exclusively for Monetura founders. Every month.",
+    title: "Founder Retreats",
+    body: "Small trips by design, in places like Puerto Vallarta, with people who left too. Booked separately.",
   },
   {
     icon: "◈",
@@ -54,7 +54,7 @@ export default function OfferSection() {
           {perks.map(({ icon, title, body }) => (
             <div
               key={title}
-              className="bg-monetura-cream p-10 transition-colors duration-300 hover:bg-white"
+              className="bg-monetura-cream p-10 transition-colors duration-300 hover:bg-monetura-sand/40"
             >
               <p className="mb-5 text-xl text-monetura-champagne">{icon}</p>
               <h3 className="mb-3 font-garet text-base leading-snug text-monetura-charcoal">

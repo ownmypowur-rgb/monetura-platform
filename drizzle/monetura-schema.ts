@@ -1183,3 +1183,42 @@ export const moneturaHqApprovals = mysqlTable(
     idxEvent: index("idx_hq_approvals_event").on(table.eventId),
   })
 );
+
+// ---------------------------------------------------------------------------
+// monetura_waitlist — "Be the first to know" signups from monetura.com.
+// Holds CASL proof of consent (exact text shown, version, time, page).
+// Never stores the raw IP: ip_hash is SHA-256(ip + WAITLIST_IP_SALT).
+// ---------------------------------------------------------------------------
+export const moneturaWaitlist = mysqlTable(
+  "monetura_waitlist",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    firstName: varchar("first_name", { length: 100 }).notNull(),
+    email: varchar("email", { length: 320 }).notNull(),
+    status: mysqlEnum("status", ["subscribed", "unsubscribed"])
+      .notNull()
+      .default("subscribed"),
+    consentText: text("consent_text").notNull(),
+    consentVersion: varchar("consent_version", { length: 20 }).notNull(),
+    consentedAt: timestamp("consented_at").notNull(),
+    consentPage: varchar("consent_page", { length: 500 }),
+    ipHash: varchar("ip_hash", { length: 64 }),
+    unsubscribeToken: varchar("unsubscribe_token", { length: 64 }).notNull(),
+    confirmationSentAt: timestamp("confirmation_sent_at"),
+    unsubscribedAt: timestamp("unsubscribed_at"),
+    utmSource: varchar("utm_source", { length: 100 }),
+    utmMedium: varchar("utm_medium", { length: 100 }),
+    utmCampaign: varchar("utm_campaign", { length: 100 }),
+    referrer: varchar("referrer", { length: 500 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+  },
+  (table) => ({
+    uqEmail: uniqueIndex("uq_waitlist_email").on(table.email),
+    uqToken: uniqueIndex("uq_waitlist_unsubscribe_token").on(table.unsubscribeToken),
+    idxStatus: index("idx_waitlist_status").on(table.status),
+    idxCreatedAt: index("idx_waitlist_created_at").on(table.createdAt),
+  })
+);

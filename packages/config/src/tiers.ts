@@ -24,7 +24,7 @@ export interface FounderTier {
   creditsPerMonth: number;
 }
 
-export const TOTAL_FOUNDER_SPOTS = 200;
+export const TOTAL_FOUNDER_SPOTS = 100;
 
 export const FOUNDER_TIERS: readonly FounderTier[] = [
   {

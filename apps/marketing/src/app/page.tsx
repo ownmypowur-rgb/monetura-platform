@@ -7,7 +7,6 @@ import PlatformSection from "@/components/home/PlatformSection";
 import ProblemSection from "@/components/home/ProblemSection";
 import SolutionSection from "@/components/home/SolutionSection";
 import StorySection from "@/components/home/StorySection";
-import TiersSection from "@/components/home/TiersSection";
 import TravelMomentsSection from "@/components/home/TravelMomentsSection";
 import UrgencySection from "@/components/home/UrgencySection";
 import type { Metadata } from "next";
@@ -30,9 +29,6 @@ export default function HomePage() {
       <BlogTransformSection />
       <OfferSection />
       <DestinationsSection />
-      <div id="founders">
-        <TiersSection />
-      </div>
       <UrgencySection />
       <CTASection />
     </main>

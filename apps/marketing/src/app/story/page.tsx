@@ -76,8 +76,8 @@ export default function StoryPage() {
             </div>
 
             <div className="mt-12 flex flex-col sm:flex-row gap-4 sm:gap-6 items-center justify-center">
-              <Link href="/membership/apply" className="btn-primary">
-                Apply for Founding Membership
+              <Link href="/waitlist" className="btn-primary">
+                Be the first to know
               </Link>
               <Link
                 href="/how-it-works"

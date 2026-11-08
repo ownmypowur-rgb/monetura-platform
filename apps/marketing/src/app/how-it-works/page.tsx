@@ -4,42 +4,57 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "How It Works: Founders Club, Monetura",
   description:
-    "From application to welcome: how the Monetura Founders Club works, step by step.",
+    "How the Monetura Founders Club works: join the waitlist, meet us on a private webinar, then find your way back.",
   alternates: { canonical: "/how-it-works" },
 };
 
 const steps = [
   {
     number: "01",
-    title: "Apply",
-    subtitle: "Not a checkout. A conversation.",
-    body: "Complete the founder application. Tell us about your business, your goals, and why Monetura is the right room for you right now. We read every word personally.",
-    detail:
-      "Applications take approximately 10 minutes to complete. We ask about your business stage, your goals, and what you're looking for in a founder network. There's no trick to it — we're looking for alignment.",
+    title: "Be the first to know",
+    subtitle: "Join the waitlist.",
+    body: "Add your first name and email. Nothing to buy, nothing to decide yet.",
+    detail: "We\u2019ll email you when something is ready, and you can unsubscribe at any time.",
   },
   {
     number: "02",
-    title: "Review",
-    subtitle: "5 business days.",
-    body: "Every application is reviewed by the Monetura founding team. We're not looking for the most successful founders — we're looking for the most aligned ones.",
-    detail:
-      "We assess fit based on stage, industry, values, and what you're looking to contribute to the community — not just what you're looking to extract from it.",
+    title: "The founders webinar",
+    subtitle: "By invitation.",
+    body: "Waitlist members are invited first to a private webinar, where Darryl shares what Monetura is, who it\u2019s for, and the founder terms.",
+    detail: "Come with questions. There\u2019s no pressure to decide on the call.",
   },
   {
     number: "03",
-    title: "Accept & Choose Your Tier",
-    subtitle: "Terms shared privately.",
-    body: "Approved founders choose their tier — Explorer, Trailblazer, Pioneer, or Luminary — and complete their founder payment via e-transfer or wire to ATB Bank. Pricing is walked through personally on the founder webinar.",
-    detail:
-      "Payment is not processed through Stripe or any payment platform. This is intentional. Founder access is a relationship, not a transaction.",
+    title: "Join, if it feels right",
+    subtitle: "Arranged personally.",
+    body: "Founders join after the webinar. Payment is arranged personally, never through an open checkout.",
+    detail: "Founder access is a relationship, not a transaction.",
   },
   {
     number: "04",
-    title: "Onboard",
-    subtitle: "Welcome to the room.",
-    body: "You'll receive full platform access, an onboarding call (Luminary tier), and your first curated introduction within your first week.",
-    detail:
-      "We don't just open the door and leave you in an empty room. Every new founder gets a personal welcome and at least one warm introduction to another member who is building something relevant to your work.",
+    title: "Find your way back",
+    subtitle: "Welcome in.",
+    body: "You\u2019ll get platform access, a personal welcome, and the people who left too.",
+    detail: "Your next trip, your next story, and a tribe to plan it with.",
+  },
+];
+
+const faqs = [
+  {
+    q: "Why isn\u2019t there a price on the site?",
+    a: "Founder terms are shared privately on the founders webinar. It\u2019s how we make sure every founder is a good fit, and that no one feels pushed.",
+  },
+  {
+    q: "Do I need to be a content creator?",
+    a: "No. If you take photos when you travel, you have what you need. Monetura helps you turn them into stories for your own pages.",
+  },
+  {
+    q: "Who is Monetura for?",
+    a: "People who\u2019ve spent years living for everyone else and are ready to travel more, with people who get it.",
+  },
+  {
+    q: "Is Monetura available outside Canada?",
+    a: "Not yet. We\u2019re starting in Canada.",
   },
 ];
 
@@ -59,8 +74,8 @@ export default function HowItWorksPage() {
               <span className="text-monetura-champagne">One welcome.</span>
             </h1>
             <p className="text-monetura-cream/50 text-base md:text-lg leading-relaxed">
-              The process is intentionally straightforward. The curation is what
-              makes it work — not the complexity of the onboarding.
+              No checkout, no pressure. Founders join by invitation, after a
+              private webinar.
             </p>
           </div>
         </div>
@@ -108,24 +123,7 @@ export default function HowItWorksPage() {
           </p>
 
           <div className="space-y-px">
-            {[
-              {
-                q: "Why e-transfer instead of online payment?",
-                a: "Founder access is a relationship, not a SaaS subscription. The payment method is intentional — it filters for seriousness and creates a real human touchpoint at the start of the membership.",
-              },
-              {
-                q: "Is there a refund policy?",
-                a: "Given the curated nature of the community, founder payments are non-refundable. We take the application process seriously precisely because of this.",
-              },
-              {
-                q: "Can I upgrade my tier later?",
-                a: "Yes. Founders can upgrade from Explorer to Trailblazer or Luminary by paying the tier difference. Upgrades are subject to availability.",
-              },
-              {
-                q: "How soon after acceptance do I get access?",
-                a: "Platform access is granted within 24 hours of payment confirmation. Onboarding calls (Luminary) are scheduled within the first week.",
-              },
-            ].map(({ q, a }) => (
+            {faqs.map(({ q, a }) => (
               <div
                 key={q}
                 className="border-t border-monetura-cream/10 py-8 grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -146,10 +144,10 @@ export default function HowItWorksPage() {
       <section className="py-24 text-center border-t border-monetura-sand/10">
         <div className="max-w-xl mx-auto px-6">
           <h2 className="font-garet font-bold text-3xl text-monetura-cream mb-8">
-            Ready to apply?
+            Ready when you are.
           </h2>
-          <Link href="/membership/apply" className="btn-champagne">
-            Begin Your Application
+          <Link href="/waitlist" className="btn-champagne">
+            Be the first to know
           </Link>
         </div>
       </section>

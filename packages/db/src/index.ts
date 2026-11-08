@@ -56,3 +56,6 @@ export * from "./stats";
 
 // Re-export events/marketplace catalog helpers
 export * from "./catalog";
+
+// Re-export waitlist helpers
+export * from "./waitlist";

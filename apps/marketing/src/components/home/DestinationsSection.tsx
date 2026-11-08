@@ -1,47 +1,42 @@
 import Image from "next/image";
 
+// Captions describe what is actually in each photo (Darryl, Nov 8, 2026). These are
+// illustrative images: never caption them as a real place, a Monetura trip or a member.
 const destinations = [
   {
-    name: "Santorini",
-    region: "Greece",
-    body: "Whitewashed walls. Infinite blue. Content that stops every scroll.",
+    name: "Over the Water",
+    region: "Island pavilion",
+    body: "Turquoise water, mountains on the horizon, and a table set for the evening.",
     image: "/images/monetura-tropical.jpg",
-    alt: "Luxury coastal destination inspired by the Mediterranean",
+    alt: "A couple on an open-air pavilion above turquoise water, with mountains and palms beyond",
   },
   {
-    name: "Kyoto",
-    region: "Japan",
-    body: "Ancient temples. Cherry blossoms. Stories that write themselves.",
+    name: "City Lights",
+    region: "Coastal city",
+    body: "A balcony high above the beach, just as the lights come on.",
     image: "/images/monetura-rooftop.jpg",
-    alt: "Elegant travel scene with quiet editorial atmosphere",
+    alt: "A couple laughing on a high balcony above a coastal city at sunset",
   },
   {
-    name: "Amalfi Coast",
-    region: "Italy",
-    body: "Clifftop villages. Lemon groves. The kind of views people ask about for years.",
+    name: "On Deck",
+    region: "Island coast",
+    body: "A slow afternoon on the water, with mountains rising beyond the shore.",
     image: "/images/monetura-hero-reference.jpg",
-    alt: "Luxury yacht travel image with warm Mediterranean feeling",
+    alt: "People relaxing on a boat deck in golden light, with green mountains behind",
   },
   {
-    name: "Patagonia",
-    region: "Chile",
-    body: "The end of the world. The beginning of your best content.",
+    name: "The Chalet",
+    region: "Mountains",
+    body: "A fire on the terrace and peaks catching the last light.",
     image: "/images/monetura-mountain.jpg",
-    alt: "Mountain retreat landscape with cinematic light",
+    alt: "Friends on a wooden chalet terrace with a fireplace, looking out at mountain peaks",
   },
   {
-    name: "Bali",
-    region: "Indonesia",
-    body: "Rice terraces. Temple gates. A lifestyle that practically documents itself.",
-    image: "/images/monetura-tropical.jpg",
-    alt: "Tropical destination travel lifestyle scene",
-  },
-  {
-    name: "Iceland",
-    region: "Nordic",
-    body: "Northern lights. Black sand beaches. The trip that changes what you think travel can be.",
+    name: "The Long Table",
+    region: "Evening",
+    body: "Candlelight, good food, and a conversation that runs three hours longer than planned.",
     image: "/images/monetura-dining.jpg",
-    alt: "Warm luxury travel mood contrasting with a Nordic editorial theme",
+    alt: "Four friends laughing over a candlelit dinner on a boat deck",
   },
 ];
 
@@ -92,9 +87,8 @@ export default function DestinationsSection() {
           ))}
         </div>
 
-        <p className="mx-auto mt-14 max-w-3xl text-center text-base leading-relaxed text-monetura-earth md:text-lg">
-          These are just the beginning. Monetura members have created content
-          from over 40 countries — and counting.
+        <p className="mx-auto mt-10 max-w-3xl text-center text-xs uppercase tracking-[0.2em] text-monetura-earth">
+          Illustrative images, not Monetura members or trips.
         </p>
       </div>
     </section>

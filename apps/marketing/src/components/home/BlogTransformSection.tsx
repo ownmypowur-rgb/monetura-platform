@@ -13,7 +13,7 @@ const afterItems = [
   "LinkedIn post",
   "Facebook post",
   "TikTok caption",
-  "All published simultaneously",
+  "Ready for your own pages",
 ];
 
 export default function BlogTransformSection() {
@@ -34,7 +34,7 @@ export default function BlogTransformSection() {
           </p>
         </div>
 
-        <div className="mb-8 overflow-hidden rounded-[2rem] border border-monetura-sand bg-white/50">
+        <div className="mb-8 overflow-hidden rounded-[2rem] border border-monetura-sand bg-monetura-cream/50">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="relative min-h-[20rem] lg:min-h-[26rem]">
               <Image

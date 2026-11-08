@@ -2,38 +2,30 @@ const benefits = [
   {
     category: "Community",
     items: [
-      "Private, curated founder network",
-      "Direct access to every other founder",
-      "Member directory with warm intro protocol",
-      "Private forum — no social media noise",
+      "A small, chosen community of people who left too",
+      "Challenges, events and trips with people who get it",
+      "A direct line into what we build next",
     ],
   },
   {
-    category: "Platform",
+    category: "Trips",
     items: [
-      "Monetura software platform",
-      "Future tools built for founders",
-      "Early access to every new feature",
-      "Founder pricing on add-ons",
+      "Founder retreats, small by design, in places like Puerto Vallarta (booked separately)",
+      "Plan your next trip together, between trips",
+      "Optional member travel rates through our Arrivia partnership",
     ],
   },
   {
-    category: "Events & Sessions",
+    category: "Your story",
     items: [
-      "Monthly virtual strategy sessions",
-      "Quarterly deep-dive workshops",
-      "Annual Canadian founder retreat (Luminary)",
-      "City-based meetups across Canada",
+      "Upload photos from any experience",
+      "AI shapes them into captions, posts and blog stories for your own pages",
+      "Your referral link in every post",
     ],
   },
   {
-    category: "Network",
-    items: [
-      "Curated introductions by the Monetura team",
-      "Deal flow and collaboration opportunities",
-      "Guest speakers — operators not influencers",
-      "Advisory seat opportunities (Luminary)",
-    ],
+    category: "Five pillars",
+    items: ["Mind, Body, Kindness, Growth, Love", "Shaping the retreats and the everyday platform"],
   },
 ];
 
@@ -46,7 +38,7 @@ export default function FounderBenefits() {
         </p>
 
         <h2 className="font-garet font-bold text-3xl md:text-4xl text-monetura-cream leading-[1.2] mb-16">
-          Every benefit, in full.
+          What founders get.
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-monetura-sand/10">
