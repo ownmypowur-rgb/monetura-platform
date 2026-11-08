@@ -168,7 +168,7 @@ async function main() {
 
   // Every building: fly in, roof lifts, Escape restores.
   const names = await page.getByRole("navigation", { name: "Departments" }).getByRole("button").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label") ?? ""));
-  check("department bar lists every division", names.length === 15, `${names.length}`);
+  check("department bar lists every division", names.length === 17, `${names.length}`);
   for (const name of names) {
     await page.getByRole("navigation", { name: "Departments" }).getByRole("button", { name }).click();
     await wait(1100);
@@ -191,13 +191,21 @@ async function main() {
     });
   const before = await snapshot();
   check("Content Studio is fully staffed on screen", before.length === 12, `${before.length} figures: ${before.map((b) => b.id).join(", ")}`);
+
+  // Walking needs status changes. Content Studio is live (real events only, no demo),
+  // so watch a building division whose labelled demo activity still runs.
+  await page.keyboard.press("Escape");
+  await wait(1500);
+  await page.getByRole("navigation", { name: "Departments" }).getByRole("button", { name: /^Visual Studio/ }).click();
+  await wait(5000);
+  const walkBefore = await snapshot();
   let moved = 0;
   const seen = new Set<string>();
-  for (let i = 0; i < 16 && moved === 0; i++) {
+  for (let i = 0; i < 36 && moved === 0; i++) {
     await wait(2500);
     const now = await snapshot();
     for (const p of now) {
-      const old = before.find((b) => b.id === p.id);
+      const old = walkBefore.find((b) => b.id === p.id);
       if (old && Math.hypot(p.x - old.x, p.z - old.z) > 1) {
         moved++;
         seen.add(p.id);
@@ -207,6 +215,10 @@ async function main() {
   check("characters walk between spots when status changes", moved > 0, [...seen].join(", "));
   const statuses = new Set(Object.values((await ownerFeed(page)).agents).map((a) => a.status));
   check("agents show more than one status", statuses.size > 1, [...statuses].join(", "));
+  await page.keyboard.press("Escape");
+  await wait(1500);
+  await page.getByRole("navigation", { name: "Departments" }).getByRole("button", { name: /^Content Studio/ }).click();
+  await wait(3000);
 
   // Agent card.
   await page.getByRole("complementary", { name: /Content Studio team/ }).getByRole("button", { name: /Ava/ }).click();

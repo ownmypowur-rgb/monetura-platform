@@ -433,6 +433,28 @@ const INTERIOR_SPECS: Record<Exclude<InteriorKind, "studio">, RoundSpec> = {
       { texture: () => mapTexture(), w: 9, h: 5 },
     ],
   },
+  web: {
+    title: "Website & SEO",
+    sub: "Site, Search & Analytics",
+    desks: 4,
+    monitors: 2,
+    deskTexture: (i) => chartTexture(i),
+    wall: [
+      { texture: () => listBoardTexture("site-pages", "monetura.com", ["Home", "Our story", "Membership", "Waitlist", "Blog"], "#d4a853"), w: 11, h: 6.2 },
+      { texture: () => chartTexture(2), w: 10, h: 5.6 },
+    ],
+  },
+  visual: {
+    title: "Visual Studio",
+    sub: "Cinematic Images & Reels",
+    desks: 4,
+    monitors: 2,
+    deskTexture: (i) => travelTexture(i + 2),
+    wall: [
+      { texture: () => storyboardTexture(), w: 13, h: 5.6 },
+      { texture: () => travelTexture(4), w: 9, h: 5 },
+    ],
+  },
   office: {
     title: "Internal",
     sub: "Headquarters Operations",

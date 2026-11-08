@@ -123,6 +123,8 @@ async function main() {
     ["20-agent-operations", /^Agent Operations/],
     ["21-legal-compliance", /^Legal/],
     ["22-business-intelligence", /^Business Intelligence/],
+    ["23-website-seo", /^Website & SEO/],
+    ["24-visual-studio", /^Visual Studio/],
   ] as const) {
     if (!want(file)) continue;
     await focus(re);

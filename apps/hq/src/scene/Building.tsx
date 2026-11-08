@@ -132,6 +132,9 @@ export function Building({ division, shadows }: Props) {
   useEffect(() => {
     // Interiors mount before the lift starts so nothing pops in.
     if (isOpen || isSelected) setInteriorMounted(true);
+    // Deselected before the roof ever lifted (e.g. Escape inside the roof delay):
+    // the lift animation never runs, so its p === 0 unmount below never fires.
+    else if (progress.current === 0) setInteriorMounted(false);
   }, [isOpen, isSelected]);
 
   useFrame((_, delta) => {

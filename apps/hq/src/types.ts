@@ -15,6 +15,8 @@ export type InteriorKind =
   | "support"
   | "marketplace"
   | "trip"
+  | "web"
+  | "visual"
   | "office";
 
 export type IconName =

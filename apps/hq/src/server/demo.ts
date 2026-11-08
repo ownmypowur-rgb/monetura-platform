@@ -70,6 +70,10 @@ const TASKS: Record<string, Template[]> = {
   "publishing-coordinator": [
     { title: "Schedule brief: Thailand week", stage: "Publishing", output: "Thailand schedule brief", handoffTo: "publishing-hub", needsApproval: true },
   ],
+  "website-lead": [{ title: "Page brief: waitlist landing", stage: "Production", output: "Waitlist page brief", handoffTo: "it-integrations", needsApproval: true }],
+  "seo-specialist": [{ title: "Title and meta review", stage: "Research", output: "Title and meta notes" }],
+  "visual-studio-lead": [{ title: "Style check: quote reel prompts", stage: "Review & approval", output: "Prompt set approved", needsApproval: true }],
+  "image-producer": [{ title: "Golden-hour stills, test set", stage: "Production", output: "Stills test set", handoffTo: "content-studio" }],
   atlas: [{ title: "Route new trip upload", stage: "Intake", output: "Workflow opened", handoffTo: "content-studio" }],
   "atlas-ops": [{ title: "Queue check across departments", stage: "Operations", output: "Queue report" }],
   "platform-builder": [{ title: "HQ platform release", stage: "Build", output: "HQ release notes" }],

@@ -25,6 +25,8 @@ export const DIVISION_STATS: Record<string, DivisionStatConfig[]> = {
     { id: "captions", label: "Captions & Copy", icon: "doc", match: "progress", demoBaseline: 7 },
     { id: "deliveries", label: "Deliveries This Week", icon: "check", match: "completed", demoBaseline: 20 },
   ],
+  "website-seo": generic("Pages in Review", "Briefs Drafting", "Pages Updated"),
+  "visual-studio": generic("Prompts in Review", "Clips Rendering", "Assets Approved"),
   "research-centre": generic("Destinations in Queue", "Briefs Drafting", "Sources Verified"),
   "partnerships-hub": generic("Prospects", "Outreach Prepared", "Offers Verified"),
   "story-lab": generic("Briefs Open", "Scripts Drafting", "Stories Approved"),
