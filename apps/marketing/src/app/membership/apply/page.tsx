@@ -20,7 +20,7 @@ const TIER_PERKS: Record<FounderTierId, readonly string[]> = {
   luminary: [
     "All Pioneer benefits",
     "Founding seat on advisory",
-    "Lifetime access guaranteed",
+    "Founding member recognition",
   ],
 };
 
@@ -108,21 +108,10 @@ function WebinarForm() {
   };
 
   return (
-    <main className="bg-monetura-charcoal min-h-screen">
-      <div className="max-w-3xl mx-auto px-6 lg:px-12 pt-40 pb-24">
-
-        {/* Header */}
-        <p className="editorial-label">Founding Member Webinar</p>
-        <h1 className="lux-heading text-3xl md:text-5xl text-monetura-cream mb-6">
-          Reserve Your Spot.
-        </h1>
-        <p className="text-monetura-cream/50 text-base leading-relaxed mb-10">
-          One call. Everything you need to know. No pressure — just clarity.
-        </p>
-
+    <>
         {/* Trust pills */}
         <div className="flex flex-wrap gap-3 mb-14">
-          {["Only 200 Spots", "Lifetime Locked Pricing", "Exclusive Access"].map((pill) => (
+          {["Reviewed Personally", "Terms Shared Privately", "Exclusive Access"].map((pill) => (
             <span
               key={pill}
               className="inline-flex items-center gap-2 border border-monetura-champagne/30 px-4 py-1.5 text-[10px] uppercase tracking-[0.3em] text-monetura-champagne"
@@ -259,8 +248,7 @@ function WebinarForm() {
             </p>
           </div>
         </form>
-      </div>
-    </main>
+    </>
   );
 }
 
@@ -340,14 +328,27 @@ function SelectField({
 
 export default function ApplyPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-monetura-charcoal flex items-center justify-center">
-          <p className="text-monetura-cream/40 text-sm tracking-wide">Loading…</p>
-        </div>
-      }
-    >
-      <WebinarForm />
-    </Suspense>
+    <main className="bg-monetura-charcoal min-h-screen">
+      <div className="max-w-3xl mx-auto px-6 lg:px-12 pt-40 pb-24">
+        {/* Header sits outside the Suspense boundary so the page's single
+            H1 is in the server-rendered HTML (useSearchParams below bails
+            the boundary out to client rendering). */}
+        <p className="editorial-label">Founding Member Webinar</p>
+        <h1 className="lux-heading text-3xl md:text-5xl text-monetura-cream mb-6">
+          Reserve Your Spot.
+        </h1>
+        <p className="text-monetura-cream/50 text-base leading-relaxed mb-10">
+          One call. Everything you need to know. No pressure — just clarity.
+        </p>
+
+        <Suspense
+          fallback={
+            <p className="text-monetura-cream/40 text-sm tracking-wide">Loading…</p>
+          }
+        >
+          <WebinarForm />
+        </Suspense>
+      </div>
+    </main>
   );
 }

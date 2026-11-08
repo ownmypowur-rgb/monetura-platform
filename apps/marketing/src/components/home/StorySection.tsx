@@ -13,9 +13,8 @@ export default function StorySection() {
 
           <div className="mt-8 space-y-5 text-[15px] leading-8 text-monetura-earth sm:mt-10 sm:space-y-6 sm:text-base sm:leading-[1.9] md:text-lg">
             <p>
-              In 2024 I had the most successful year of my life. I built a
-              company from nothing to $2.3 million in 13 months. The kind of
-              number that&apos;s supposed to feel like arrival. It didn&apos;t.
+              In 2024 I had the most successful year of my life. It was
+              supposed to feel like arrival. It didn&apos;t.
             </p>
             <p>
               I realized I had been disciplined at building a life that society

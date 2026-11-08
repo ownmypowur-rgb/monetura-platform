@@ -30,11 +30,6 @@ const charcoal = (alpha: number) => `rgba(${CHARCOAL_RGB}, ${alpha})`;
 const HERO_VIDEO_SRC = "/videos/hero.mp4";
 const HERO_POSTER_SRC = "/images/hero-poster.jpg";
 
-const stats = [
-  { value: "200", label: "Founding Members" },
-  { value: "Lifetime", label: "Access" },
-];
-
 export default function HeroSection() {
   const [videoFailed, setVideoFailed] = useState(false);
 
@@ -114,8 +109,8 @@ export default function HeroSection() {
               <span className="text-monetura-champagne">back.</span>
             </h1>
             <p className="lux-body [text-shadow:0_2px_24px_rgba(44,36,32,0.45)] mx-auto mt-6 max-w-[20rem] text-[13.5px] leading-6 text-monetura-cream/78 sm:mt-8 sm:max-w-[32rem] sm:text-[15px] sm:leading-8 lg:mx-0 lg:mt-9 lg:max-w-[34rem] lg:text-[15.5px]">
-              Monetura turns the life you already want to live into content,
-              community, and income.
+              Monetura helps people who&apos;ve spent years living for everyone
+              else find their way back to travel, to each other, and to themselves.
             </p>
 
             {/* max-w-sm is the mobile stack width. It has to be released once
@@ -144,20 +139,8 @@ export default function HeroSection() {
                 The Membership
               </p>
               <p className="mt-3 text-sm leading-6 text-monetura-cream/72">
-                A premium travel-and-creation membership for people who want their experiences to become content, community, and income.
+                A travel-and-creation membership for people ready to find their way back to travel, to each other, and to themselves.
               </p>
-              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-monetura-sand/10 pt-4">
-                {stats.map((stat) => (
-                  <div key={stat.label}>
-                    <p className="text-lg tracking-[0.08em] text-monetura-champagne">
-                      {stat.value}
-                    </p>
-                    <p className="mt-1 text-[9px] uppercase tracking-[0.18em] text-monetura-cream/44">
-                      {stat.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 
@@ -168,24 +151,9 @@ export default function HeroSection() {
               </p>
               <div className="hairline my-5" />
               <p className="text-sm leading-7 text-monetura-cream/72">
-                A premium travel-and-creation membership for people who want their
-                experiences to become content, community, and income.
+                A travel-and-creation membership for people ready to
+                find their way back to travel, to each other, and to themselves.
               </p>
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4">
-                {stats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="border-l border-monetura-sand/12 pl-4 first:border-l-0 first:pl-0"
-                  >
-                    <p className="whitespace-nowrap text-lg tracking-[0.06em] text-monetura-champagne sm:text-xl">
-                      {stat.value}
-                    </p>
-                    <p className="mt-2 text-[9px] uppercase tracking-[0.28em] text-monetura-cream/48 sm:text-[10px] sm:tracking-[0.3em]">
-                      {stat.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>

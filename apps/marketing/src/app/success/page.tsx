@@ -4,6 +4,8 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Welcome to Monetura",
   description: "You're in. Welcome to the Monetura founder community.",
+  alternates: { canonical: "/success" },
+  robots: { index: false, follow: true },
 };
 
 export default function SuccessPage() {

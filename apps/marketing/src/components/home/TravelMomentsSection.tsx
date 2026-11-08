@@ -78,14 +78,14 @@ export default function TravelMomentsSection() {
 
         <div className="mx-auto mt-12 max-w-3xl text-center sm:mt-16">
           <p className="text-base leading-relaxed text-monetura-cream md:text-lg">
-            Monetura turns these moments into content, income, and memories that
-            compound — long after you've come home.
+            Monetura turns these moments into stories, friendships, and memories that
+            last — long after you&apos;ve come home.
           </p>
           <a
             href="/membership/apply"
             className="mt-8 inline-flex min-h-[52px] items-center justify-center rounded-lg border border-monetura-champagne bg-transparent px-6 py-4 text-center text-[10px] uppercase tracking-[0.18em] text-monetura-champagne transition-all duration-300 hover:bg-monetura-champagne hover:text-monetura-charcoal sm:mt-10 sm:px-8 sm:text-xs sm:tracking-[0.24em]"
           >
-            Start turning your experiences into income
+            Start turning your experiences into stories
           </a>
         </div>
       </div>

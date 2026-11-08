@@ -17,8 +17,8 @@ const TIER_COPY: Record<
     description:
       "Full platform and community access. The essential Monetura experience — everything you need to be part of Canada's most curated founder network.",
     features: [
-      "Lifetime community platform access",
-      "Monetura software (lifetime)",
+      "Community platform access",
+      "Monetura software",
       "Monthly virtual sessions",
       "Private member directory",
       "Digital resources library",
@@ -136,10 +136,10 @@ export default function TierSelector() {
 
               <div className="mb-10">
                 <p className="font-garet font-bold text-2xl text-monetura-cream">
-                  One-time founding investment
+                  Founder terms
                 </p>
                 <p className="text-monetura-cream/40 text-sm mt-1">
-                  Pricing is shared on the founder webinar.
+                  Founder terms are shared privately on our founders webinar. Be the first to know.
                 </p>
               </div>
 

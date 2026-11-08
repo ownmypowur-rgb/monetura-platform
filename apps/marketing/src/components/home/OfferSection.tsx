@@ -1,18 +1,13 @@
 const perks = [
   {
     icon: "◈",
-    title: "Lifetime Community Access",
-    body: "Pay once. Access forever. No subscription for community membership. As Monetura grows, your access only expands — never shrinks.",
-  },
-  {
-    icon: "◈",
-    title: "No Price Increases. Ever.",
-    body: "Founders lock in at their founding price permanently. When membership costs more in the future, you've already paid. That's the deal.",
+    title: "A Small, Chosen Community",
+    body: "A small, chosen community of people who left too. Founders are reviewed personally, one application at a time.",
   },
   {
     icon: "◈",
     title: "Platform Software Included",
-    body: "Your founder access includes the Monetura platform — AI content tools, social publishing, affiliate tracking. All of it, for life.",
+    body: "Your founder access includes the Monetura platform — AI content tools, social publishing, affiliate tracking. All of it.",
   },
   {
     icon: "◈",
@@ -27,7 +22,7 @@ const perks = [
   {
     icon: "◈",
     title: "Global Lifestyle Platform",
-    body: "Monetura is built for travellers everywhere. Your content, your income, and your membership move with you wherever you go.",
+    body: "Monetura is built for travellers everywhere. Your stories, your people, and your membership move with you wherever you go.",
   },
 ];
 
@@ -46,13 +41,12 @@ export default function OfferSection() {
             founding chapter.
             <br />
             <span className="text-monetura-terracotta">
-              The terms never get better.
+              Shaped by the people inside.
             </span>
           </h2>
           <p className="text-base leading-relaxed text-monetura-earth md:text-lg">
-            Monetura is launching with a limited Founders Club — the first 200
-            members who shape what this platform becomes. One payment. Lifetime
-            access. No price increases. Ever.
+            Monetura is launching with a limited Founders Club: the members
+            who shape what this platform becomes. Founder terms are shared privately on our founders webinar. Be the first to know.
           </p>
         </div>
 

@@ -7,17 +7,17 @@ const points = [
   {
     number: "02",
     title: "You've thought about building something around your life",
-    body: "The idea of turning your travels into content — maybe even income — has crossed your mind. You just didn't know where to start or what platform made sense.",
+    body: "The idea of turning your travels into stories worth sharing has crossed your mind. You just didn't know where to start or what platform made sense.",
   },
   {
     number: "03",
     title: "You're not trying to become a full-time influencer",
-    body: "You're not chasing fame. You want travel to mean more than it does right now. You want it to pay for itself. You want the experiences to add up to something.",
+    body: "You're not chasing fame. You want travel to mean more than it does right now. You want the experiences to add up to something.",
   },
   {
     number: "04",
     title: "You want a community of people who are doing the same thing",
-    body: "Not a Facebook group. Not a random Discord. A curated, serious community of people who are building a lifestyle around travel, content, and income.",
+    body: "A small, chosen community of people who left too.",
   },
 ];
 

@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "How It Works — Monetura",
+  title: "How It Works: Founders Club, Monetura",
   description:
-    "From application to lifetime access — how Monetura founder membership works.",
+    "From application to welcome: how the Monetura Founders Club works, step by step.",
+  alternates: { canonical: "/how-it-works" },
 };
 
 const steps = [
@@ -27,8 +28,8 @@ const steps = [
   {
     number: "03",
     title: "Accept & Choose Your Tier",
-    subtitle: "One payment. Lifetime access.",
-    body: "Approved founders choose their tier — Explorer, Trailblazer, Pioneer, or Luminary — and complete their one-time payment via e-transfer or wire to ATB Bank. Pricing is walked through personally on the founder webinar.",
+    subtitle: "Terms shared privately.",
+    body: "Approved founders choose their tier — Explorer, Trailblazer, Pioneer, or Luminary — and complete their founder payment via e-transfer or wire to ATB Bank. Pricing is walked through personally on the founder webinar.",
     detail:
       "Payment is not processed through Stripe or any payment platform. This is intentional. Founder access is a relationship, not a transaction.",
   },
@@ -55,7 +56,7 @@ export default function HowItWorksPage() {
             <h1 className="font-garet font-bold text-4xl md:text-5xl lg:text-6xl text-monetura-cream leading-[1.1]">
               Four steps.
               <br />
-              <span className="text-monetura-champagne">One lifetime.</span>
+              <span className="text-monetura-champagne">One welcome.</span>
             </h1>
             <p className="text-monetura-cream/50 text-base md:text-lg leading-relaxed">
               The process is intentionally straightforward. The curation is what
@@ -114,7 +115,7 @@ export default function HowItWorksPage() {
               },
               {
                 q: "Is there a refund policy?",
-                a: "Given the curated nature of the community and the lifetime access model, founder payments are non-refundable. We take the application process seriously precisely because of this.",
+                a: "Given the curated nature of the community, founder payments are non-refundable. We take the application process seriously precisely because of this.",
               },
               {
                 q: "Can I upgrade my tier later?",

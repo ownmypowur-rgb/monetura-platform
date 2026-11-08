@@ -19,7 +19,7 @@ export default function CTASection() {
         </h2>
 
         <p className="mx-auto mb-14 max-w-xl text-base leading-relaxed text-monetura-cream/50 md:text-lg">
-          200 founders. One payment. Lifetime access. This is not a course.
+          Founder terms are shared privately on our founders webinar. Be the first to know. This is not a course.
           This is not a mastermind. This is a platform, a business model, and a
           community — built around the life you already want to live.
         </p>

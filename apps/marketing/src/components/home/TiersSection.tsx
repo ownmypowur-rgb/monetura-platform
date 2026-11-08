@@ -11,9 +11,9 @@ const TIER_COPY: Record<
 > = {
   explorer: {
     description:
-      "Full platform access, AI tools, member travel rates, community access, and monthly sessions. Everything you need to start turning travel into income.",
+      "Full platform access, AI tools, member travel rates, community access, and monthly sessions. Everything you need to start sharing the life you&apos;re reclaiming.",
     features: [
-      "Full platform access (lifetime)",
+      "Full platform access",
       "AI content engine",
       "Member travel rates via Arrivia",
       "Private community access",
@@ -83,7 +83,7 @@ export default function TiersSection() {
             founding chapter.
             <br />
             <span className="text-monetura-champagne">
-              One payment. Lifetime access.
+              Terms shared privately.
             </span>
           </h2>
           <div className="space-y-4">
@@ -93,8 +93,8 @@ export default function TiersSection() {
               life you already want to live.
             </p>
             <p className="text-sm leading-relaxed text-monetura-cream/30">
-              All tiers paid once via e-transfer or wire to ATB Bank. Canada-
-              first founder payments are being handled manually while every
+              Founder terms are shared privately on our founders webinar. Be the first to know. Founder payments are
+              handled manually by e-transfer or wire to ATB Bank while every
               application is reviewed personally.
             </p>
           </div>
@@ -127,7 +127,7 @@ export default function TiersSection() {
                     {name}
                   </h3>
                   <p className="mb-2 font-garet text-xl text-monetura-cream/90">
-                    One-time founding investment
+                    Founder terms
                   </p>
                   <p className="text-xs uppercase tracking-[0.1em] text-monetura-cream/40">
                     Pricing shared on the webinar

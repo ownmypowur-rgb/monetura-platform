@@ -11,8 +11,8 @@ const features = [
   },
   {
     icon: "◈",
-    title: "Affiliate Income System",
-    body: "Every piece of content you publish includes your unique tracking link. Build an audience. Earn commissions. Three referrals and your monthly membership is free.",
+    title: "Your Referral Link",
+    body: "Every piece of content you publish includes your unique tracking link. Share what you love with your people.",
   },
   {
     icon: "◈",
@@ -27,7 +27,7 @@ const features = [
   {
     icon: "◈",
     title: "Monthly Performance Reports",
-    body: "See exactly how your content is performing — reach, clicks, commissions earned, and top posts. Know what's working and do more of it.",
+    body: "See exactly how your content is performing — reach, clicks, and top posts. Know what's working and do more of it.",
   },
 ];
 

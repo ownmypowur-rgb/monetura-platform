@@ -2,23 +2,14 @@ import type { Metadata } from "next";
 import FounderBenefits from "@/components/founders/FounderBenefits";
 import TierSelector from "@/components/founders/TierSelector";
 import Link from "next/link";
-import { getActiveFounderCount } from "@monetura/db";
-import { TOTAL_FOUNDER_SPOTS } from "@monetura/config/src/tiers";
-
-export const revalidate = 600;
-
 export const metadata: Metadata = {
-  title: "Founding Membership — Monetura",
+  title: "Founding Membership: Founders Club, Monetura",
   description:
-    "Explore the Monetura membership tiers. 200 spots. Canada only. One payment. Lifetime access.",
+    "The Monetura Founders Club: a small, chosen travel community. Founder terms are shared privately on our founders webinar.",
+  alternates: { canonical: "/membership" },
 };
 
-export default async function FoundersPage() {
-  const activeFounders = await getActiveFounderCount().catch(() => null);
-  const spotsRemaining =
-    activeFounders === null
-      ? null
-      : Math.max(0, TOTAL_FOUNDER_SPOTS - activeFounders);
+export default function FoundersPage() {
 
   return (
     <main className="bg-monetura-charcoal">
@@ -38,9 +29,8 @@ export default async function FoundersPage() {
             </h1>
             <div className="space-y-6">
               <p className="text-monetura-cream/50 text-base md:text-lg leading-relaxed">
-                Monetura is a curated founder community — 200 seats, Canada
-                only, lifetime access. Applications are reviewed personally.
-                There is no open checkout.
+                Monetura is a curated founder community. Founder terms are shared privately on our founders webinar. Be the first to know.
+                Applications are reviewed personally. There is no open checkout.
               </p>
               <Link href="/membership/apply" className="btn-champagne inline-block">
                 Apply for Founding Membership
@@ -60,9 +50,7 @@ export default async function FoundersPage() {
             Ready?
           </p>
           <h2 className="font-garet font-bold text-3xl md:text-4xl text-monetura-cream mb-8">
-            {spotsRemaining !== null
-              ? `${spotsRemaining} spots remaining.`
-              : `${TOTAL_FOUNDER_SPOTS} seats. Reviewed personally.`}
+            Reviewed personally.
           </h2>
           <Link href="/membership/apply" className="btn-champagne">
             Begin Your Application

@@ -10,9 +10,11 @@ import StorySection from "@/components/home/StorySection";
 import TiersSection from "@/components/home/TiersSection";
 import TravelMomentsSection from "@/components/home/TravelMomentsSection";
 import UrgencySection from "@/components/home/UrgencySection";
+import type { Metadata } from "next";
 
-// UrgencySection reads the live founder count — refresh every 10 minutes.
-export const revalidate = 600;
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function HomePage() {
   return (

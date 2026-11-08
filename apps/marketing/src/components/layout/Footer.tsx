@@ -20,8 +20,8 @@ export default function Footer() {
               Passion becomes creation. Creation becomes freedom.
             </p>
             <p className="mt-5 max-w-lg text-sm leading-7 text-monetura-cream/56">
-              A premium travel creator platform for founders who want their
-              experiences to become content, community, and income.
+              A travel community for people ready to
+              find their way back to travel, to each other, and to themselves.
             </p>
           </div>
 
@@ -55,8 +55,7 @@ export default function Footer() {
                 founders@monetura.com
               </a>
               <p className="text-sm leading-7 text-monetura-cream/46">
-                Canada only. Limited to 200 founders. Applications reviewed
-                personally.
+                Canada only. Applications reviewed personally.
               </p>
             </div>
           </div>
@@ -65,8 +64,7 @@ export default function Footer() {
         <div className="mt-12 h-px w-full bg-[linear-gradient(90deg,transparent_0%,rgba(212,168,83,0.4)_50%,transparent_100%)] sm:mt-16" />
 
         <div className="mt-8 flex flex-col gap-3 text-[11px] uppercase tracking-[0.28em] text-monetura-cream/34 sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} Monetura. All rights reserved.</p>
-          <p>200 founders — Canada only — lifetime access</p>
+          <p>&copy; 2026 Monetura Media &amp; Technologies Inc.</p>
         </div>
       </div>
     </footer>

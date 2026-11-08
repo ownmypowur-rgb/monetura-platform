@@ -1,4 +1,11 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Webinar Reserved: Monetura",
+  alternates: { canonical: "/membership/apply/success" },
+  robots: { index: false, follow: true },
+};
 
 export default function ApplySuccessPage() {
   return (

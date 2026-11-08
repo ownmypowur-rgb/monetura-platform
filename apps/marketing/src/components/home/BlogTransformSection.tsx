@@ -30,7 +30,7 @@ export default function BlogTransformSection() {
             </h2>
           </div>
           <p className="text-base leading-relaxed text-monetura-earth md:text-lg">
-            You don't need to be a writer. You just need to have been there.
+            You don&apos;t need to be a writer. You just need to have been there.
           </p>
         </div>
 
@@ -133,7 +133,7 @@ export default function BlogTransformSection() {
         <div className="mx-auto mt-16 max-w-4xl text-center">
           <blockquote className="font-serif text-3xl leading-[1.3] text-monetura-charcoal md:text-4xl">
             &ldquo;You took hundreds of photos on your last trip. Monetura turns
-            every single one into content that earns.&rdquo;
+            every single one into a story worth telling.&rdquo;
           </blockquote>
           <a
             href="/how-it-works"

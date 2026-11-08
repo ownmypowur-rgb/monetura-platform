@@ -11,8 +11,8 @@ const steps = [
   },
   {
     number: "03",
-    title: "Publish and earn",
-    body: "Your content goes out to all your social platforms simultaneously — with your unique affiliate link embedded in every post. When someone joins Monetura through your content, you earn. Three active referrals and your membership pays for itself.",
+    title: "Publish and share",
+    body: "Your content goes out to all your social platforms simultaneously — with your unique affiliate link embedded in every post.",
   },
 ];
 
@@ -29,7 +29,7 @@ export default function SolutionSection() {
           <h2 className="font-garet text-3xl text-monetura-cream leading-[1.15] md:text-4xl lg:text-5xl">
             Three steps from
             <br />
-            <span className="text-monetura-champagne">trip to income.</span>
+            <span className="text-monetura-champagne">trip to story.</span>
           </h2>
           <p className="text-monetura-cream/50 text-base md:text-lg leading-relaxed lg:pt-4">
             No content experience required. No existing audience needed. Just

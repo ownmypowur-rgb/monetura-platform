@@ -4,9 +4,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Monetura — Passion becomes creation. Creation becomes freedom.",
+  metadataBase: new URL("https://www.monetura.com"),
+  title: "Monetura: Find your way back",
   description:
-    "A premium travel creator platform for founders who want to turn every trip into content, community, and income.",
+    "A travel community for people who've spent years living for everyone else. Small trips, real friends, and your story, reclaimed. Be the first to know.",
   keywords: [
     "Monetura",
     "premium travel platform",
@@ -16,11 +17,18 @@ export const metadata: Metadata = {
     "Canada",
   ],
   openGraph: {
-    title: "Monetura — Passion becomes creation. Creation becomes freedom.",
+    title: "Monetura: Find your way back",
     description:
-      "A premium travel creator platform for founders who want to turn every trip into content, community, and income.",
+      "A travel community for people who've spent years living for everyone else. Small trips, real friends, and your story, reclaimed. Be the first to know.",
     type: "website",
     locale: "en_CA",
+    siteName: "Monetura",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Monetura: Find your way back",
+    description:
+      "A travel community for people who've spent years living for everyone else. Small trips, real friends, and your story, reclaimed. Be the first to know.",
   },
 };
 

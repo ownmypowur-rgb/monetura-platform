@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Our Story — Monetura",
+  title: "Our Story: Monetura",
   description:
     "The story behind Monetura. Passion becomes creation. Creation becomes freedom.",
+  alternates: { canonical: "/story" },
 };
 
 export default function StoryPage() {
@@ -30,10 +31,8 @@ export default function StoryPage() {
         <div className="max-w-[680px] mx-auto px-6">
           <div className="space-y-8 text-monetura-earth text-base md:text-lg leading-[2]">
             <p>
-              In 2024 I had the most successful year of my life. I built a
-              company from nothing to $2.3 million in 13 months. The kind of
-              number that&rsquo;s supposed to feel like arrival. It
-              didn&rsquo;t.
+              In 2024 I had the most successful year of my life. It was
+              supposed to feel like arrival. It didn&rsquo;t.
             </p>
 
             <p>

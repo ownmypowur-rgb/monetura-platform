@@ -3,7 +3,7 @@ const benefits = [
     category: "Community",
     items: [
       "Private, curated founder network",
-      "Direct access to 199 other serious operators",
+      "Direct access to every other founder",
       "Member directory with warm intro protocol",
       "Private forum — no social media noise",
     ],
@@ -11,10 +11,10 @@ const benefits = [
   {
     category: "Platform",
     items: [
-      "Monetura software platform (lifetime)",
+      "Monetura software platform",
       "Future tools built for founders",
       "Early access to every new feature",
-      "Founder pricing on add-ons forever",
+      "Founder pricing on add-ons",
     ],
   },
   {
