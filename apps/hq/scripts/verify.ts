@@ -137,7 +137,13 @@ async function main() {
   const feed = await ownerFeed(page);
   check("owner feed returns events", feed.events.length > 0, `${feed.events.length} events, source ${feed.source}`);
   check("feed comes from the database", feed.source === "database");
-  check("demo rows are flagged", feed.events.every((e) => e.isDemo));
+  // Demo generator rows carry demo- task ids; everything else comes from the
+  // authenticated ingest (real agents) and must not be flagged Demo.
+  check(
+    "demo rows are flagged, real rows are not",
+    feed.events.every((e) => (e.taskId?.startsWith("demo-") ? e.isDemo : true)) &&
+      feed.events.filter((e) => !e.isDemo).every((e) => !e.taskId?.startsWith("demo-")),
+  );
 
   // Approval round trip.
   let pending = feed.pendingApprovals[0];
@@ -184,7 +190,7 @@ async function main() {
       return map ? [...map.entries()].map(([id, p]) => ({ id, x: p.x, z: p.z })) : [];
     });
   const before = await snapshot();
-  check("Content Studio is fully staffed on screen", before.length === 12, `${before.length} figures`);
+  check("Content Studio is fully staffed on screen", before.length === 12, `${before.length} figures: ${before.map((b) => b.id).join(", ")}`);
   let moved = 0;
   const seen = new Set<string>();
   for (let i = 0; i < 16 && moved === 0; i++) {

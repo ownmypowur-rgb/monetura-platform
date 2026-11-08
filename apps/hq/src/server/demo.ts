@@ -108,14 +108,18 @@ function templateFor(agentId: string, title: string | null): Template | undefine
 
 /** Next events given recent rows (any order). Returns one or two events. */
 export function nextDemoEvents(recent: readonly EventRow[], rand: () => number = Math.random): NewEvent[] {
-  const ordered = [...recent].filter((r) => r.isDemo).sort((a, b) => a.id - b.id);
+  const liveDivisions = new Set(DIVISIONS.filter((d) => d.status === "live").map((d) => d.id));
+  const ordered = [...recent]
+    .filter((r) => r.isDemo && !liveDivisions.has(r.divisionId))
+    .sort((a, b) => a.id - b.id);
   const latestByTask = new Map<string, EventRow>();
   for (const row of ordered) if (row.taskId) latestByTask.set(row.taskId, row);
 
   const finished: HqEventType[] = ["completed"];
   const active = [...latestByTask.values()].filter((r) => !finished.includes(r.eventType) && r.agentId);
   const busyAgents = new Set(active.map((r) => r.agentId));
-  const staff = DIVISIONS.flatMap((d) =>
+  // Live divisions show only real activity: the generator never staffs them.
+  const staff = DIVISIONS.filter((d) => d.status !== "live").flatMap((d) =>
     staffedAgents(d).map((a) => ({ agentId: a.id, divisionId: d.id })),
   ).filter((s) => TASKS[s.agentId]);
   const free = staff.filter((s) => !busyAgents.has(s.agentId));

@@ -73,9 +73,15 @@ function agentStates(rows: readonly EventRow[]): Record<string, AgentState> {
       };
     }
   }
+  // Real events take priority: once an agent has any real row, or its division is
+  // live, demo rows no longer drive its state. "Live" therefore only ever comes
+  // from real rows, and a live division never shows staged activity.
+  const liveDivisions = new Set(DIVISIONS.filter((d) => d.status === "live").map((d) => d.id));
+  const agentsWithReal = new Set(rows.filter((r) => !r.isDemo && r.agentId).map((r) => r.agentId));
   const ascending = [...rows].sort((a, b) => a.id - b.id);
   for (const r of ascending) {
     if (!r.agentId) continue;
+    if (r.isDemo && (agentsWithReal.has(r.agentId) || liveDivisions.has(r.divisionId))) continue;
     const s = states[r.agentId];
     if (!s) continue;
     const status = AGENT_STATUSES.find((x) => x === r.status);

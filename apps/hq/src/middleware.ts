@@ -4,10 +4,11 @@ import { SESSION_COOKIE, verifySessionToken } from "./lib/session";
 
 /**
  * Lightweight cookie gate. No database or mysql2 here (Edge runtime).
- * Public: /tour, /login, /api/hq/login, and /api/hq/events, which enforces owner
- * access itself per its `mode` parameter. Everything else needs an owner session.
+ * Public: /tour, /login, /api/hq/login, /api/hq/events, which enforces owner
+ * access itself per its `mode` parameter, and /api/hq/events/ingest, which requires
+ * the HQ_INGEST_TOKEN bearer token itself. Everything else needs an owner session.
  */
-const PUBLIC_PATHS = new Set(["/tour", "/login", "/api/hq/login", "/api/hq/events"]);
+const PUBLIC_PATHS = new Set(["/tour", "/login", "/api/hq/login", "/api/hq/events", "/api/hq/events/ingest"]);
 
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;

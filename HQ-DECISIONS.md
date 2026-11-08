@@ -106,6 +106,12 @@ No `.env` file in either folder was opened.
 - Guided Tour pauses animation when paused, so the packet holds still.
 - ApexCRM's `drizzle/schema.ts` wasn't touched. New tables are in `drizzle/monetura-schema.ts`, prefixed `monetura_`, with Drizzle only and no raw SQL. `Drizzle insertId` is read as `result[0].insertId`.
 
+### Atlas ingest (Nov 8, 2026)
+- **Auth:** a single bearer token in `HQ_INGEST_TOKEN`, compared as SHA-256 digests with `timingSafeEqual` so lengths never leak. Under 32 characters or unset means ingest is off (503).
+- **Rate limit:** the shared in-memory limiter (30/min per IP per instance) plus a database count of real events in the last minute (60), because serverless instances don't share memory.
+- **Live divisions get no demo activity.** "Real events take priority for Atlas Command" was generalized: any `live` division shows only real rows, so a Live label can never sit next to staged work. This also quietens IT & Integrations' demo tasks until it reports real build events.
+- **Remy (atlas-ops)** stays in the registry, idle, with no real activity yet. Atlas does the coordination work itself for now.
+
 ## Approvals downstream stub
 
 `recordApproval` in `apps/hq/src/server/store.ts` records the approval row and a decision event, then logs that the downstream action is stubbed, at `TODO(hq-downstream)`. When a publishing or sending workflow exists behind an approval gate, trigger it there. Nothing external happens today.

@@ -1,9 +1,11 @@
 import "server-only";
-import { desc, eq, and, lt, inArray } from "drizzle-orm";
+import { desc, eq, and, lt, gte, inArray, count } from "drizzle-orm";
 import { getDb, moneturaHqApprovals, moneturaHqEvents } from "@monetura/db";
 import { nextDemoEvents, type EventRow, type NewEvent } from "./demo";
 
 const READ_LIMIT = 800;
+/** Real rows are fetched separately so a busy demo generator can never push them out of the window. */
+const REAL_READ_LIMIT = 300;
 const DEMO_TICK_MS = 5_000;
 const DEMO_RETENTION_MS = 3 * 24 * 60 * 60 * 1000;
 
@@ -57,7 +59,9 @@ function memoryAppend(events: NewEvent[]): number[] {
     state.rows.push({ ...e, id, createdAt: e.createdAt ?? new Date() });
     ids.push(id);
   }
-  state.rows = state.rows.slice(-READ_LIMIT);
+  const real = state.rows.filter((r) => !r.isDemo).slice(-REAL_READ_LIMIT);
+  const demo = state.rows.filter((r) => r.isDemo).slice(-READ_LIMIT);
+  state.rows = [...real, ...demo].sort((a, b) => a.id - b.id);
   return ids;
 }
 
@@ -69,11 +73,18 @@ export async function readOwnerRows(): Promise<{ rows: EventRow[]; decided: Set<
     return { rows: state.rows, decided: state.decided };
   }
   const db = getDb();
-  const rows = await db
-    .select()
-    .from(moneturaHqEvents)
-    .orderBy(desc(moneturaHqEvents.id))
-    .limit(READ_LIMIT);
+  const [recent, real] = await Promise.all([
+    db.select().from(moneturaHqEvents).orderBy(desc(moneturaHqEvents.id)).limit(READ_LIMIT),
+    db
+      .select()
+      .from(moneturaHqEvents)
+      .where(eq(moneturaHqEvents.isDemo, false))
+      .orderBy(desc(moneturaHqEvents.id))
+      .limit(REAL_READ_LIMIT),
+  ]);
+  const byId = new Map<number, (typeof recent)[number]>();
+  for (const r of [...recent, ...real]) byId.set(r.id, r);
+  const rows = [...byId.values()].sort((a, b) => b.id - a.id);
   const approvalEventIds = rows.filter((r) => r.eventType === "needs_approval").map((r) => r.id);
   const decided =
     approvalEventIds.length === 0
@@ -95,6 +106,32 @@ export async function readPublicRows(): Promise<EventRow[]> {
     .orderBy(desc(moneturaHqEvents.id))
     .limit(READ_LIMIT);
   return rows.map(toRow);
+}
+
+/* ---------- Real events (authenticated ingest) ---------- */
+
+export async function insertRealEvent(event: NewEvent): Promise<{ id: number; persisted: boolean }> {
+  const row: NewEvent = { ...event, isDemo: false };
+  if (!dbConfigured()) {
+    memory();
+    const [id] = memoryAppend([row]);
+    return { id: id ?? 0, persisted: false };
+  }
+  const result = await getDb().insert(moneturaHqEvents).values(toInsert(row));
+  return { id: result[0].insertId, persisted: true };
+}
+
+/** Real events created in the last `windowMs`, across every server instance. */
+export async function countRecentRealEvents(windowMs: number): Promise<number> {
+  const since = new Date(Date.now() - windowMs);
+  if (!dbConfigured()) {
+    return memory().rows.filter((r) => !r.isDemo && r.createdAt >= since).length;
+  }
+  const rows = await getDb()
+    .select({ n: count() })
+    .from(moneturaHqEvents)
+    .where(and(eq(moneturaHqEvents.isDemo, false), gte(moneturaHqEvents.createdAt, since)));
+  return rows[0]?.n ?? 0;
 }
 
 /* ---------- Demo ticking: only from authenticated owner polling ---------- */

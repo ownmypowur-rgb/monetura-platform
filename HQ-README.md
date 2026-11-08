@@ -98,7 +98,8 @@ agents / workflows ──insert──▶ monetura_hq_events ──▶ GET /api/h
 owner clicks Approve ──▶ POST /api/hq/approvals ──▶ monetura_hq_approvals + an approved/rejected event
 ```
 
-- **Reporting real work:** insert a row into `monetura_hq_events` with `is_demo = false`. Set `public_safe = true` only if it could be seen in public aggregates. The island picks it up on the next poll.
+- **Reporting real work:** `POST /api/hq/events/ingest` with `Authorization: Bearer $HQ_INGEST_TOKEN` and a JSON body: `agentId`, `divisionId` (both must exist in the registry, and the agent must belong to the division), `taskId`, `taskTitle`, `eventType` (`task_started`, `progress`, `handoff`, `needs_approval`, `completed`, `blocked`), `progress` 0 to 100, optional `status`, `fromDivisionId`/`toDivisionId` (required for a handoff), `payload` (up to 2,000 characters of JSON; `summary`, `stage`, `output` and `blocker` are shown) and `publicSafe` (default false). It writes an `is_demo = false` row. The token is compared in constant time; if `HQ_INGEST_TOKEN` is unset, ingest is off. Rate limited to 30 a minute per IP per instance and 60 real events a minute overall. Atlas posts through `tools/hq-event.mjs` in the separate `monetura-hq` workspace. Set `public_safe = true` only if it could be seen in public aggregates. The island picks it up on the next poll.
+- **Real beats demo:** once an agent has a real row, demo rows stop driving its state. Divisions with status `live` (Atlas Command, IT & Integrations) get no demo activity at all. Real rows are read separately from the demo window, so a busy demo generator can't push them out.
 - **Handoffs:** an event with `from_division_id` and `to_division_id` sends a light pulse along the paths.
 - **Approvals:** an event of type `needs_approval` appears under the bell and on the agent's card. Approve or Reject writes an approval row and a new event. **The downstream action is a stub** (see `recordApproval` in `src/server/store.ts`): today a decision is recorded and nothing is published or sent.
 - **Public feed:** `GET /api/hq/events?mode=public` filters to `public_safe = true` in the database query, then returns only aggregates built field by field. Unauthenticated requests can't cause writes.
@@ -108,12 +109,12 @@ owner clicks Approve ──▶ POST /api/hq/approvals ──▶ monetura_hq_appr
 
 | Real | Demo |
 |---|---|
-| The two tables, on the live database | Every event currently in them is `is_demo = true`, from the demo generator |
+| The two tables, on the live database | Events from the demo generator (`is_demo = true`, task ids starting `demo-`) |
 | Reading events from the database | The tasks, progress and handoffs those events describe |
 | Approvals recorded to the database | The publishing or sending an approval would trigger: stubbed |
 | Registry roles and departments | Counters: real counts replace them per counter once `is_demo = false` rows exist. Until then they show config baselines plus demo activity |
 | Owner login, public/private separation | Character names (placeholders) |
-| | Agents aren't connected: no agent writes to this feed yet |
+| Atlas's activity, posted through the ingest endpoint | Every department except Atlas Command and IT & Integrations |
 
 Anything from demo data is labelled **Demo**. **Live** only appears on data from `is_demo = false` events. On `/tour`, staff behaviour is simulated in the browser, because the public feed deliberately carries no agent data.
 
